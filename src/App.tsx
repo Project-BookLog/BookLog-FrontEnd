@@ -3,7 +3,7 @@ import MobileLayout from "./layout/MobileLayout";
 function App() {
   return (
     <MobileLayout>
-      <div>tmp</div>
+      <div>dummy</div>
     </MobileLayout>
   );
 }
