@@ -1,9 +1,13 @@
+import { Routes, Route } from "react-router-dom";
 import MobileLayout from "./layout/MobileLayout";
+import HomePage from "./pages/HomePage";
 
 function App() {
   return (
     <MobileLayout>
-      <div>dummy</div>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+      </Routes>
     </MobileLayout>
   );
 }

@@ -36,7 +36,7 @@ function NavBar({
   };
 
   return (
-      <header className="h-15 px-4 flex items-center justify-between bg-white">
+      <header className="h-15.5 px-4 flex items-center justify-between bg-white">
         <div className="flex items-center gap-2 min-w-0">
           {renderLeft()}
 
