@@ -7,7 +7,7 @@ type LikeCardProps = {
 
 function LikeCard({ title, description }: LikeCardProps) {
   return (
-    <div className="relative rounded-2xl bg-slate-900 text-white px-6 py-5 mt-2 overflow-hidden">
+    <div className="relative rounded-2xl bg-slate-900 text-white px-6 py-5 mt-2 mx-1 overflow-hidden">
       {/* 배경 */}
       <div className="absolute inset-0 opacity-90 blur-sm pointer-events-none">
         <div className="w-full h-full flex items-center justify-center">
