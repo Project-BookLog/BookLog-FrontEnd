@@ -1,51 +1,5 @@
 import React, { useState, useRef, useCallback } from "react";
-import { Dummy_book } from "../../assets/icons";
-
-type Book = {
-  id: number;
-  title: string;
-  author: string;
-  publisher: string;
-  progress: number; 
-  coverUrl?: never;
-  CoverIcon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-};
-
-const BOOKS: Book[] = [
-  {
-    id: 1,
-    title: "소년이 온다",
-    author: "한강 저",
-    publisher: "출판사",
-    progress: 30,
-    CoverIcon: Dummy_book,
-  },
-  {
-    id: 2,
-    title: "2번 책",
-    author: "2작가",
-    publisher: "2출판사",
-    progress: 40,
-    CoverIcon: Dummy_book,
-  },
-  {
-    id: 3,
-    title: "3번 책",
-    author: "3작가",
-    publisher: "3출판사",
-    progress: 56,
-    CoverIcon: Dummy_book,
-  },
-  {
-    id: 4,
-    title: "4번 책",
-    author: "4작가",
-    publisher: "4출판사",
-    progress: 38,
-    CoverIcon: Dummy_book,
-  },
-];
-
+import { BOOKS } from "../../data/book.mock";
 
 // 유틸: 원형 인덱스
 function getCircularIndex(index: number, length: number): number {
@@ -187,11 +141,15 @@ const CurrentReading: React.FC = () => {
                   isCenter ? "opacity-100" : "opacity-60",
                 ].join(" ")}
               >
+                {/* 여기: 이미지 래퍼 */}
                 <div
                   className={[
                     "w-30 h-45 rounded-sm overflow-hidden",
                     "flex items-center justify-center",
                     isCenter ? "shadow-slate-400" : "shadow-slate-300",
+                    // 애니메이션 추가
+                    "transition-transform duration-300 ease-out",
+                    isCenter ? "scale-100 translate-y-0" : "scale-90 translate-y-1",
                   ].join(" ")}
                 >
                   {book.coverUrl ? (
