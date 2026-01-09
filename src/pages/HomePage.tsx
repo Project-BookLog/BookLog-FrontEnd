@@ -1,8 +1,9 @@
 import { useState, useRef } from "react";
+import { Alarm, Logo2, Booklog } from "../assets/icons";
 import NavBar from "../components/NavBar";
 import Tabs from "../components/home/Tabs";
 import LikeCarousel from "../components/home/LikeCarousel";
-import { Alarm, Logo2, Booklog } from "../assets/icons";
+import CurrentReading from "../components/home/CurrentReading";
 
 function HomePage() {
   const [tab, setTab] = useState("홈");
@@ -44,7 +45,7 @@ function HomePage() {
       </div>
 
       {/* 내용 */}
-      <main className="px-1 pb-6 pt-4 space-y-12">
+      <main className="pb-6 pt-4 space-y-12">
         {/* 내가 좋아하는 ~~  */}
         <section ref={likeSectionRef}>
           <LikeCarousel />
@@ -52,6 +53,7 @@ function HomePage() {
 
         {/* 지금 읽고 있는 책  */}
         <section>
+          <CurrentReading />
         </section>
 
         {/* 랭킹 */}
