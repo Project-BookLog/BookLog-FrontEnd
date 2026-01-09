@@ -4,6 +4,7 @@ import NavBar from "../components/NavBar";
 import Tabs from "../components/home/Tabs";
 import LikeCarousel from "../components/home/LikeCarousel";
 import CurrentReading from "../components/home/CurrentReading";
+import Ranking from "../components/home/Ranking";
 
 function HomePage() {
   const [tab, setTab] = useState("홈");
@@ -58,6 +59,7 @@ function HomePage() {
 
         {/* 랭킹 */}
         <section>
+          <Ranking />
         </section>
 
         {/* 베스트셀러 */}
