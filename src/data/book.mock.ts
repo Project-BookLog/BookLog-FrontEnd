@@ -34,4 +34,20 @@ export const BOOKS: Book[] = [
     progress: 38,
     CoverIcon: Dummy_book,
   },
+    {
+    id: 5,
+    title: "5번 책",
+    author: "5작가",
+    publisher: "5출판사",
+    progress: 38,
+    CoverIcon: Dummy_book,
+  },
+    {
+    id: 6,
+    title: "6번 책",
+    author: "6작가",
+    publisher: "6출판사",
+    progress: 38,
+    CoverIcon: Dummy_book,
+  },
 ];
