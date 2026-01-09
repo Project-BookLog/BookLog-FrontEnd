@@ -28,12 +28,12 @@ function Ranking() {
                 </div>
 
                 {/* 책 정보 */}
-                <div className="mt-5 space-y-0.5 flex space-around">
+                <div className="mt-2 space-y-0.5 flex space-around">
                   <div className="w-5">
-                    <p className="text-xs font-semibold truncate">{id}</p>
+                    <p className="text-[15px] font-semibold truncate">{id}</p>
                   </div>
                   <div>
-                    <p className="text-xs font-semibold truncate">{title}</p>
+                    <p className="text-[15px] font-semibold truncate">{title}</p>
                     <p className="text-[11px] text-gray-700 truncate">
                       {author} | {publisher}
                     </p>
