@@ -6,6 +6,13 @@ import Logo2 from "./icons/Logo2.svg?react";
 import LogoBooklog from "./icons/LogoBooklog.svg?react";
 
 //시스템 아이콘 
+import Alarm from "./icons/Alarm.svg?react";
+import Back from "./icons/Back.svg?react";
+import CircleArrow from "./icons/CircleArrow.svg?react";
+
+//특수 페이지 아이콘
+import ErrorIcon from "./icons/ErrorIcon.svg?react";
+import Loading from "./icons/Loading.svg?react";
 import HomeIcon from "./icons/HomeIcon.svg?react";
 import Booklog from "./icons/Booklog.svg?react";
 import My_library from "./icons/My_library.svg?react";
@@ -47,6 +54,15 @@ export {
 
   BackIcon,
   CircleArrow,
+  ErrorIcon,
+  Loading,
+  HomeIcon,
+  Booklog,
+  My_library,
+  My_page,
+  Comment,
+  Share,
+  Search
 
 
   XIcon,
