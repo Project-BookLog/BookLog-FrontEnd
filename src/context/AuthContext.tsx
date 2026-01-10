@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, type PropsWithChildren 
 import type { RequestSigninDto } from "../types/auth";
 
 interface AuthContextType {
-    id: String | null;
+    id: string | null;
     login: (signInData: RequestSigninDto) => Promise<void>;
     logout: () => Promise<void>;
 }

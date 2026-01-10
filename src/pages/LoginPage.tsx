@@ -25,7 +25,6 @@ export const LoginPage = () => {
     });
 
     const handleSubmit = async () => {
-        console.log(values);
         await login(values);
     };
 
