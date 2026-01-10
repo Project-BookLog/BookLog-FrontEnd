@@ -7,7 +7,7 @@ export const SplashPage = () => {
         className="relative min-h-screen w-full bg-cover bg-center"
         style={{ backgroundImage: `url(${SplashBg})` }}
     >
-        <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(0,0,0,0.5)_0%,rgba(0,0,0,0.5)_100%)"/>
+        <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(0,0,0,0.5)_0%,rgba(0,0,0,0.5)_100%)]"/>
 
         <div className="relative z-10 min-h-screen flex items-center justify-center">
             <div className="flex flex-col items-center gap-5 w-[313px] -translate-y-[20vh]">
