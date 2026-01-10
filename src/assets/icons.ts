@@ -10,6 +10,9 @@ import Alarm from "./icons/Alarm.svg?react";
 import Back from "./icons/Back.svg?react";
 import CircleArrow from "./icons/CircleArrow.svg?react";
 
+//특수 페이지 아이콘
+import Error from "./icons/Error.svg?react";
+import Loading from "./icons/Loading.svg?react";
 
 export {
   Logo2,
@@ -17,5 +20,7 @@ export {
   Back,
   Booklog,
   Dummy_book,
-  CircleArrow
+  CircleArrow,
+  Error,
+  Loading
 };
