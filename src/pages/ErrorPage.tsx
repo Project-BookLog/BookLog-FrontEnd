@@ -1,4 +1,4 @@
-import { Error } from "../assets/icons"
+import { ErrorIcon } from "../assets/icons"
 
 export const ErrorPage = () => {
 
@@ -9,7 +9,7 @@ export const ErrorPage = () => {
     return (
         <div className="min-h-screen flex items-center justify-center">
             <div className="flex flex-col items-center gap-6 w-full">
-                <Error className="w-[200px] h-[200px]"/>
+                <ErrorIcon className="w-[200px] h-[200px]"/>
                 <div className="flex flex-col items-center gap-[10px] self-stretch">
                     <p className="text-black text-center text-[18px] font-semibold leading-[21.6px]">
                         이 페이지는 누군가 잠시 대출 중이에요.
