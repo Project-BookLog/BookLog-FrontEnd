@@ -20,7 +20,7 @@ export const ErrorPage = () => {
                     </p>
                 </div>
                 <button
-                    className="flex w-[103px] py-[12px] px-[8px] justify-center items-center gap-[10px] rounded-[50px] bg-[#3049C0] hover:bg-[#263A99] text-white text-[14px]  font-medium leading-[19.6px]"
+                    className="flex w-[103px] py-[12px] px-[8px] justify-center items-center gap-[10px] rounded-[50px] bg-[#3049C0] hover:bg-[#263A99] text-white text-[14px] font-medium leading-[19.6px] cursor-pointer"
                     onClick={handleRetry}
                 >
                     다시 시도
