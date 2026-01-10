@@ -6,10 +6,7 @@ import LikeCarousel from "../components/home/LikeCarousel";
 import CurrentReading from "../components/home/CurrentReading";
 import Ranking from "../components/home/Ranking";
 import BestSeller from "../components/home/BestSeller";
-<<<<<<< HEAD
-=======
 import NavbarBottom from "../components/NavBarBottom";
->>>>>>> 8dcf3f45e4430bfae1c808bd2eb4be91853e9cdf
 
 function HomePage() {
   const [tab, setTab] = useState("홈");
@@ -83,11 +80,7 @@ function HomePage() {
       </div>
 
       {/* 내용 */}
-<<<<<<< HEAD
-      <main className="pb-6 pt-4 space-y-12">
-=======
       <main className="pb-6 pt-4 space-y-12 mb-10">
->>>>>>> 8dcf3f45e4430bfae1c808bd2eb4be91853e9cdf
 
         {/* 내가 좋아하는 ~~  */}
         <section ref={likeSectionRef} className="scroll-mt-15">
@@ -119,11 +112,7 @@ function HomePage() {
             subtitle="내 취향에 맞는 문체별 책을 골라 읽어보세요!"
           />
         </section>
-<<<<<<< HEAD
-        <section ref={immersionRef} className="mb-70 scroll-mt-15">
-=======
         <section ref={immersionRef} className="scroll-mt-15">
->>>>>>> 8dcf3f45e4430bfae1c808bd2eb4be91853e9cdf
           <BestSeller
             type="immersion"
             title="몰입도별 베스트셀러"
