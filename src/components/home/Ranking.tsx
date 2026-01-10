@@ -12,7 +12,7 @@ function Ranking() {
 
       {/* 가로 스크롤 리스트 */}
       <div className="-mx-6 overflow-x-auto no-scrollbar">
-        <div className="flex space-x-2 px-4 pb-5">
+        <div className="flex space-x-2 px-4 ">
           {BOOKS.map((book, idx) => {
             const { id, title, author, publisher, CoverIcon } = book; // Book 타입 구조분해
             return (
