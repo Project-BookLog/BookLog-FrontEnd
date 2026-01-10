@@ -11,7 +11,7 @@ const CurrentReading: React.FC = () => {
   if (length === 0) {
     return (
       <div className="px-4">
-        <p className="text-sm text-slate-500">
+        <p className="text-[18px] text-gray-700">
           현재 읽고 있는 책이 없습니다.
         </p>
       </div>
@@ -52,7 +52,7 @@ const CurrentReading: React.FC = () => {
   return (
     <div>
       <div className="px-4 mb-0">
-        <div className="text-[16px] font-medium pb-0 mb-0">
+        <div className="text-[18px] font-semibold pb-0 mb-0">
           지금 읽고 있는 책
         </div>
         <p className="text-[12px] text-gray-700 m-0">
