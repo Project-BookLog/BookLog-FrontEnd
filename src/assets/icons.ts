@@ -14,6 +14,9 @@ import CircleArrow from "./icons/CircleArrow.svg?react";
 import Error from "./icons/Error.svg?react";
 import Loading from "./icons/Loading.svg?react";
 
+//소셜 로그인 아이콘
+import KakaoTalk from "./icons/KakaoTalk.svg?react";
+
 export {
   Logo2,
   Alarm,
@@ -22,5 +25,6 @@ export {
   Dummy_book,
   CircleArrow,
   Error,
-  Loading
+  Loading,
+  KakaoTalk
 };
