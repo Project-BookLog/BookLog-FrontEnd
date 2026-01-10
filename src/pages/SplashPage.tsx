@@ -1,4 +1,4 @@
-import { Booklog } from "../assets/icons";
+import { LogoBooklog } from "../assets/icons";
 import SplashBg from "../assets/Splash.svg";
 
 export const SplashPage = () => {
@@ -7,9 +7,10 @@ export const SplashPage = () => {
         className="relative min-h-screen w-full bg-cover bg-center"
         style={{ backgroundImage: `url(${SplashBg})` }}
     >
+
         <div className="relative z-10 min-h-screen flex items-center justify-center">
             <div className="flex flex-col items-center gap-5 w-[313px] -translate-y-[20vh]">
-                <Booklog className="[&_*]:fill-white w-[127px] h-[50px]" />
+                <LogoBooklog className="[&_*]:fill-white w-[127px] h-[50px]" />
                 <div className="self-stretch">
                     <p className="text-white text-center text-[14px] font-normal leading-[19.6px]">
                         기록을 통해 취향을 발견하고, 취향을 통해 연결되는
