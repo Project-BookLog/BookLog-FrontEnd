@@ -45,7 +45,7 @@ export const LoginPage = () => {
                             {...getInputProps("id")}
                             className={`flex h-[56px] px-[24px] py-[15px] items-center gap-[10px] self-stretch rounded-[12px] border-none focus:outline-none focus:ring-0
                                 ${!values.id ? "bg-gray-100" : "bg-white"}`}
-                            type={"id"}
+                            type={"text"}
                             placeholder={"ID"}
                         />
                         <input
