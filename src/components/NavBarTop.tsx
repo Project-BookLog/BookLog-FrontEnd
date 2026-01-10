@@ -11,7 +11,7 @@ type NavBarProps = {
   onBack?: () => void;
 };
 
-function NavBar({
+function NavBarTop({
   title,
   subtitle,
   rightText,
@@ -68,4 +68,4 @@ function NavBar({
   );
 }
 
-export default NavBar;
+export default NavBarTop;
