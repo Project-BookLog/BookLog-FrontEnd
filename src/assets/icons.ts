@@ -31,7 +31,7 @@ export {
   Dummy_book,
   CircleArrow,
   ErrorIcon,
-  Loading
+  Loading,
   HomeIcon,
   Booklog,
   My_library,
