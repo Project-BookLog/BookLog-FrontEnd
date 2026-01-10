@@ -5,15 +5,7 @@ import Dummy_book from "./icons/dummy_book.svg?react";
 import Logo2 from "./icons/Logo2.svg?react";
 import LogoBooklog from "./icons/LogoBooklog.svg?react";
 
-//시스템 아이콘 
-import Alarm from "./icons/Alarm.svg?react";
-import Back from "./icons/Back.svg?react";
-import CircleArrow from "./icons/CircleArrow.svg?react";
-
-//특수 페이지 아이콘
-import Error from "./icons/Error.svg?react";
-import ErrorIcon from "./icons/ErrorIcon.svg?react";
-import Loading from "./icons/Loading.svg?react";
+//시스템 아이콘
 import HomeIcon from "./icons/HomeIcon.svg?react";
 import Booklog from "./icons/Booklog.svg?react";
 import My_library from "./icons/My_library.svg?react";
@@ -35,6 +27,12 @@ import Arrow from "./icons/Arrow.svg?react";
 import Setting from "./icons/Setting.svg?react";
 import Kebab from "./icons/Kebab.svg?react";
 
+
+//특수 페이지 아이콘
+import Error from "./icons/Error.svg?react";
+import ErrorIcon from "./icons/ErrorIcon.svg?react";
+import Loading from "./icons/Loading.svg?react";
+
 //navbar Top
 import BackIcon from "./icons/BackIcon.svg?react";
 import CircleArrow from "./icons/CircleArrow.svg?react";
@@ -42,9 +40,10 @@ import CircleArrow from "./icons/CircleArrow.svg?react";
 //검색페이지
 import XIcon from "./icons/XIcon.svg?react";
 
-
 //소셜 로그인 아이콘
 import KakaoTalk from "./icons/KakaoTalk.svg?react";
+
+
 
 export {
   Dummy_book,
@@ -56,22 +55,16 @@ export {
   Report, Album, Pencil, Menu, CheckIcon, Reset,
   Arrow, Setting, Kebab,
 
+  Error, Loading, ErrorIcon,
+
   BackIcon,
   CircleArrow,
-  Error,
-  Loading,
-  KakaoTalk
-  Loading
-  ErrorIcon,
-  Loading,
-  HomeIcon,
-  Booklog,
-  My_library,
-  My_page,
-  Comment,
-  Share,
-  Search
-
 
   XIcon,
+
+  KakaoTalk,
+
+  
+
+
 };
