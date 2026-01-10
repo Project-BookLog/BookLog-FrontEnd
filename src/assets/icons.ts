@@ -43,6 +43,9 @@ import CircleArrow from "./icons/CircleArrow.svg?react";
 import XIcon from "./icons/XIcon.svg?react";
 
 
+//소셜 로그인 아이콘
+import KakaoTalk from "./icons/KakaoTalk.svg?react";
+
 export {
   Dummy_book,
 
@@ -56,6 +59,8 @@ export {
   BackIcon,
   CircleArrow,
   Error,
+  Loading,
+  KakaoTalk
   Loading
   ErrorIcon,
   Loading,
