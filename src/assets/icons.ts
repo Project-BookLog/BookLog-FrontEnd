@@ -1,5 +1,6 @@
 //더미
 import Dummy_book from "./icons/dummy_book.svg?react";
+import Dummy_author from "./icons/dummy_author.svg?react";
 
 //로고
 import Logo2 from "./icons/Logo2.svg?react";
@@ -46,7 +47,7 @@ import KakaoTalk from "./icons/KakaoTalk.svg?react";
 
 
 export {
-  Dummy_book,
+  Dummy_book, Dummy_author,
 
   Logo2,LogoBooklog,
 

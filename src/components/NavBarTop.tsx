@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { BackIcon } from "../assets/icons";
 
-// NavBarTop.tsx 수정 예시: title 대신 centerSlot을 허용
 type NavBarProps = {
   title?: string;
   subtitle?: string;
@@ -9,7 +8,7 @@ type NavBarProps = {
   rightSlot?: ReactNode;
   back?: boolean;
   leftContent?: ReactNode;
-  centerSlot?: ReactNode; // 추가
+  centerSlot?: ReactNode;
   onBack?: () => void;
 };
 
@@ -39,7 +38,7 @@ function NavBarTop({
   };
 
   return (
-    <header className="h-15.5 px-4 flex items-center justify-between bg-white">
+    <header className="h-15.5 mt-2 px-4 flex items-center justify-between bg-white">
       <div className="flex items-center gap-2 min-w-0 flex-1">
         {renderLeft()}
 
