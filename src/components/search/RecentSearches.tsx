@@ -36,7 +36,7 @@ function RecentSearches({
         <button
           type="button"
           onClick={handleClear}
-          className="text-caption-03 text-gray-600"
+          className="text-caption-02 text-gray-600"
         >
           전체 삭제
         </button>
