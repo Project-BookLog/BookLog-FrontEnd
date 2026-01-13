@@ -7,7 +7,7 @@ export default function Step_1_Page() {
   const stepData = ONBOARDING_QUESTION[1];
   const selected = answers[1] || [];
 
-  const canNext = selected.length >= 1 || selected.length >= stepData.step_max;
+  const canNext = selected.length >= 1 || selected.length == stepData.step_max;
   
   return (
     <div className="min-h-screen bg-bg flex flex-col items-center">

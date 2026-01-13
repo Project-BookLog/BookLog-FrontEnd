@@ -58,7 +58,7 @@ export default function Step_2_Page() {
                   return (
                     <button
                       key={opt.label}
-                      onClick={() => toggleAnswer(stepData.step, opt.label)}
+                      onClick={() => toggleAnswer(stepData.step, opt.label, stepData.step_max)}
                       disabled={isDisabled}
                       className={`flex w-[164px] px-5 py-[14px] flex-col justify-center items-start gap-[4px] rounded-[12px] bg-gray-100 ${ isSelected ? "bg-lightblue-1" : "bg-gray-100" } cursor-pointer`}
                     >
