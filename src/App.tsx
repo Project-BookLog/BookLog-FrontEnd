@@ -4,7 +4,6 @@ import HomePage from "./pages/HomePage";
 import { LoginPage } from "./pages/LoginPage";
 import { SplashPage } from "./pages/SplashPage";
 import SearchPage from "./pages/SearchPage";
-import OnboardingPage from "./pages/onboarding/OnBoardingPage";
 
 function App() {
   return (
@@ -14,7 +13,6 @@ function App() {
         <Route path="/login" element={<LoginPage/>} />
         <Route path="/splash" element={<SplashPage />} />
         <Route path="/search" element={<SearchPage />} />
-        <Route path="/onboarding" element={<OnboardingPage/>}/>
       </Routes>
     </MobileLayout>
   );
