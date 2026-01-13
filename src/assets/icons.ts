@@ -44,6 +44,13 @@ import XIcon from "./icons/XIcon.svg?react";
 //소셜 로그인 아이콘
 import KakaoTalk from "./icons/KakaoTalk.svg?react";
 
+//온보딩 테스트 아이콘
+import Onboarding_warm from "./icons/Onboarding_warm.svg?react";
+import Onboarding_calm from "./icons/Onboarding_calm.svg?react";
+import Onboarding_cool from "./icons/Onboarding_cool.svg?react";
+import Onboarding_dreamlike from "./icons/Onboarding_dreamlike.svg?react";
+import Onboarding_pleasant from "./icons/Onboarding_pleasant.svg?react";
+import Onboarding_dark from "./icons/Onboarding_dark.svg?react";
 
 
 export {
@@ -65,7 +72,7 @@ export {
 
   KakaoTalk,
 
-  
+  Onboarding_warm, Onboarding_calm, Onboarding_cool, Onboarding_dreamlike, Onboarding_pleasant, Onboarding_dark
 
 
 };
