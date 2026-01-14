@@ -1,11 +1,11 @@
 import { useState, useRef } from "react";
 import { Alarm, Logo2, LogoBooklog } from "../assets/icons";
 import NavBarTop from "../components/NavBarTop";
-import Tabs from "../home/Tabs";
-import LikeCarousel from "../home/LikeCarousel";
-import CurrentReading from "../home/CurrentReading";
-import Ranking from "../home/Ranking";
-import BestSeller from "../home/BestSeller";
+import Tabs from "../components/home/Tabs";
+import LikeCarousel from "../components/home/LikeCarousel";
+import CurrentReading from "../components/home/CurrentReading";
+import Ranking from "../components/home/Ranking";
+import BestSeller from "../components/home/BestSeller";
 import NavbarBottom from "../components/NavBarBottom";
 
 function HomePage() {
