@@ -4,6 +4,9 @@ import HomePage from "./pages/HomePage";
 import { LoginPage } from "./pages/LoginPage";
 import { SplashPage } from "./pages/SplashPage";
 import SearchPage from "./pages/SearchPage";
+import { MyLibraryPage } from "./pages/MyLibrary/MyLibraryPage";
+import { libraries } from "./data/myLibrary.mock";
+import { MyLibraryDetail } from "./pages/MyLibrary/MyLibraryDetailPage";
 import BooklogPage from "./pages/BooklogPage";
 import BooklogDetailPage from "./pages/BooklogDetailPage";
 
@@ -15,6 +18,8 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/splash" element={<SplashPage />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/mylibrary" element={<MyLibraryPage libraries={libraries}/>}/>
+        <Route path="/my-library/:libraryName" element={<MyLibraryDetail libraries={libraries}/>} />
         <Route path="/booklog" element={<BooklogPage />} />
         <Route path="/booklog/:booklogId" element={<BooklogDetailPage />} />
       </Routes>
