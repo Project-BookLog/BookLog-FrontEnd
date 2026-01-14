@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BOOKS } from "../../data/book.mock";
+import { BOOKS } from "../data/book.mock";
 
 const TABS = {
   mood: ["잔잔한", "묵직한", "따뜻한", "서늘한", "몽환적"],
