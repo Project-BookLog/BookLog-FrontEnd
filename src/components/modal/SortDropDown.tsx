@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { CheckIcon, Vector } from "../../assets/icons";
 import { BOOK_ORDER, sortOptions } from "../../enum/book";
 
@@ -8,21 +9,37 @@ type SortModalProps = {
 };
 
 export function SortDropDown({ currentSort, onSelectSort, onClose }: SortModalProps) {
+
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        onClose();
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+    
+  }, [onClose]);
+
   return (
-    <div
-      className="fixed inset-0 z-40 bg-black/10 backdrop-blur"
-      onClick={onClose}
-    >
       <div
-        className="absolute flex w-[154px] px-5 py-2 flex-col items-center gap-[2px] rounded-[12px] bg-white"
-        onClick={(e) => e.stopPropagation()}
+        ref={ref}
+        className="absolute top-full right-0 mt-2 z-50 flex w-[154px] px-5 py-2 flex-col items-center gap-[2px] rounded-[12px] bg-white"
       >
         {sortOptions.map((option, index) => (
           <div key={option.value} className="w-full flex flex-col">
             <button
               key={option.value}
               className="flex py-2 justify-between items-center self-stretch"
-              onClick={() => onSelectSort(option.value)}
+              onClick={() => {
+                onSelectSort(option.value);
+                onClose();
+              }}
             >
               <p className="text-gray-900 text-subtitle-02-m">{option.label}</p>
               {currentSort === option.value && <CheckIcon className="w-4 h-4"/>}
@@ -34,7 +51,6 @@ export function SortDropDown({ currentSort, onSelectSort, onClose }: SortModalPr
             )}
           </div>
         ))}
-      </div>
     </div>
   );
 }
