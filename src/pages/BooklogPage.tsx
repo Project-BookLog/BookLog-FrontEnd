@@ -1,0 +1,226 @@
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import BookTag from "../components/booklog/BookTag";
+import FilterBar from "../components/booklog/FilterBar";
+import NavbarBottom from "../components/NavBarBottom";
+import resetImg from "../assets/icons/reset.svg";
+import BookmarkImg from "../assets/icons/bookmark.svg";
+import BookmarkcImg from "../assets/icons/bookmarkc.svg";
+
+function TagPill({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center rounded bg-[#E9EBF4] px-2 py-1 text-caption-02 font-medium text-[#3049C0]">
+      {children}
+    </span>
+  );
+}
+
+function BooklogContentImage({
+  isBook = false,
+  label = "img",
+  bookTitle,
+  bookAuthor,
+}: {
+  isBook?: boolean;
+  label?: string;
+  bookTitle?: string;
+  bookAuthor?: string;
+}) {
+  return (
+    <div className="relative h-[140px] w-[140px] shrink-0 overflow-hidden rounded-[8px] bg-[#CDCCCB]">
+      <div className="absolute inset-0 grid place-items-center text-caption-01 text-[#4B4B4B]">
+        {isBook ? "책 img" : label}
+      </div>
+
+      {/* 책 이미지일 때만 BookTag */}
+      {isBook && (
+        <div className="absolute left-[10px] bottom-[10px]">
+          <BookTag title={bookTitle ?? "책 제목"} author={bookAuthor ?? "저자명 저"} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+type Post = {
+  id: string;
+  username: string;
+  timeAgo: string;
+  views: number;
+  bookmarkCount: number;
+  body: string;
+  tags: string[];
+  bookTitle: string;
+  bookAuthor: string;
+
+  /** 데모용: 추가 이미지 개수 (추가한만큼 옆으로 스크롤) */
+  imageCount?: number;
+};
+
+function PostCard({ post }: { post: Post }) {
+  const navigate = useNavigate();
+  const [bookmarked, setBookmarked] = useState(false);
+
+  const goDetail = () => {
+    navigate(`/booklog/${post.id}`, { state: { post } });
+  };
+
+  const extraImages = Array.from({ length: Math.max(1, post.imageCount ?? 1) });
+
+  return (
+    <article
+      className="w-full cursor-pointer"
+      role="button"
+      tabIndex={0}
+      onClick={goDetail}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") goDetail();
+      }}
+    >
+      {/* 상단 정보 */}
+      <div className="flex items-start justify-between px-4">
+        <div className="flex items-center gap-3">
+          <div className="grid h-[35px] w-[35px] place-items-center rounded-full bg-[#CDCCCB] text-caption-02 text-[#4B4B4B]">
+            이미지
+          </div>
+
+          <div className="min-w-0">
+            <div className="text-body-01-sb text-[#0A0A0A]">{post.username}</div>
+            <div className="mt-0.5 text-caption-02 text-[#81807F]">
+              {post.timeAgo} · 조회 {post.views}
+            </div>
+          </div>
+        </div>
+
+        {/* ✅ 북마크 버튼 (이미지 토글) */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setBookmarked((v) => !v);
+          }}
+          className="flex items-center gap-1 pt-1"
+          aria-label="북마크"
+        >
+          <img
+            src={bookmarked ? BookmarkcImg : BookmarkImg}
+            alt=""
+            className="h-5 w-5"
+            draggable={false}
+          />
+          <span className="text-caption-01 text-[#9B9A97]">
+            {post.bookmarkCount + (bookmarked ? 1 : 0)}
+          </span>
+        </button>
+      </div>
+
+      {/* ✅ 이미지 영역: row는 px-4로 유저네임 라인 맞추고, 첫 카드만 +8px 들여쓰기 */}
+      <div className="mt-4">
+        <div
+          className="
+            flex gap-3 overflow-x-auto
+            px-4 pb-1
+            [-ms-overflow-style:none]
+            [scrollbar-width:none]
+            [&::-webkit-scrollbar]:hidden
+          "
+        >
+          <div className="pl-[45px]">
+            <BooklogContentImage isBook bookTitle={post.bookTitle} bookAuthor={post.bookAuthor} />
+          </div>
+
+          {/* 추가 이미지들 */}
+          {extraImages.map((_, idx) => (
+            <BooklogContentImage key={idx} label="img" />
+          ))}
+
+          {/* 오른쪽 끝 여백 */}
+          <div className="w-4 shrink-0" />
+        </div>
+      </div>
+
+      {/* 본문/태그 */}
+      <div className="px-4 pl-[60px]">
+        <p className="mt-3 line-clamp-2 text-caption-01 text-[#4D4D4C]">{post.body}</p>
+
+        <div className="mt-3 flex flex-wrap gap-2">
+          {post.tags.map((t) => (
+            <TagPill key={t}>{t}</TagPill>
+          ))}
+        </div>
+      </div>
+
+      {/* 구분선 */}
+      <div className="mt-6 mb-5 h-[1px] w-full bg-[#E7E5E4]" />
+    </article>
+  );
+}
+
+/** -----------------------------
+ *  페이지
+ *  ----------------------------- */
+export default function BooklogPage() {
+  const posts = useMemo<Post[]>(
+    () => [
+      {
+        id: "1",
+        username: "User Name",
+        timeAgo: "3분 전",
+        views: 27,
+        bookmarkCount: 20,
+        body:
+          "이 책은 어쩌구 다른 유저의 북로그 내용 다른 유저의 북로그 내용 다른 유저의 북로그 내용 다른 유저의 북로그 내용 다른 유저의 북로그 내용 유저의 북로그 내용 다른 유저의 북로그 내용 다른 유저의 북로그 내용 ",
+        tags: ["잔잔한, 따뜻한", "사유적", "생각이 필요한"],
+        bookTitle: "책 제목",
+        bookAuthor: "저자명 저",
+        imageCount: 1,
+      },
+      {
+        id: "2",
+        username: "User Name",
+        timeAgo: "3분 전",
+        views: 27,
+        bookmarkCount: 20,
+        body: "이 책은 어쩌구 다른 유저의 북로그 내용 다른 유저의 북로그 내용…",
+        tags: ["잔잔한, 따뜻한", "사유적", "생각이 필요한"],
+        bookTitle: "책 제목",
+        bookAuthor: "저자명 저",
+        imageCount: 3,
+      },
+    ],
+    []
+  );
+
+  return (
+    <div className="min-h-screen bg-[#F7F5F3] pb-24">
+      <div className="mx-auto w-full max-w-[420px]">
+        {/* 타이틀 */}
+        <header className="px-4 pt-8">
+          <h1 className="text-title-02 text-[#0A0A0A]">북로그</h1>
+        </header>
+
+        {/* 필터 */}
+        <div className="mt-4">
+          <FilterBar
+            resetSrc={resetImg}
+            onReset={() => console.log("reset")}
+            onClickMood={() => console.log("분위기")}
+            onClickStyle={() => console.log("문체")}
+            onClickImmersion={() => console.log("몰입도")}
+          />
+        </div>
+
+        {/* 리스트 */}
+        <main className="mt-6">
+          {posts.map((p) => (
+            <PostCard key={p.id} post={p} />
+          ))}
+        </main>
+
+        <div className="h-10" />
+      </div>
+      <NavbarBottom />
+    </div>
+  );
+}

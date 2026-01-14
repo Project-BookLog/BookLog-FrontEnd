@@ -3,7 +3,7 @@ import useForm from "../hooks/useForm";
 import { validateSignin, type UserSigninInformation } from "../utils/validate";
 import { useAuth } from "../context/AuthContext";
 import { useEffect } from "react";
-import { Booklog, KakaoTalk } from "../assets/icons";
+import { KakaoTalk, LogoBooklog } from "../assets/icons";
 
 export const LoginPage = () => {
     const navigate = useNavigate();
@@ -36,7 +36,7 @@ export const LoginPage = () => {
         <div className="min-h-screen flex flex-col items-center justify-center bg-bg gap-15">
             <div className="flex flex-col w-[127px] items-center gap-[18px]">
                 <img className="flex flex-col w-[85.874px] h-[88.231px] px-[30px] py-[34px] items-center justify-center gap-[10px] bg-[#D9D9D9]"/>
-                <Booklog className="[&_*]:fill-primary w-[127px] h-[50px]" />
+                <LogoBooklog className="[&_*]:fill-primary w-[127px] h-[50px]" />
             </div>
             <div className="flex flex-col w-[335px] items-center gap-3">
                 <div className="flex flex-col items-start gap-4 self-stretch">

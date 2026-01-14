@@ -27,6 +27,8 @@ import Reset from "./icons/Reset.svg?react";
 import Arrow from "./icons/Arrow.svg?react";
 import Setting from "./icons/Setting.svg?react";
 import Kebab from "./icons/Kebab.svg?react";
+import ArrowDown from "./icons/ArrowDown.svg?react";
+import Vector from "./icons/Vector.svg?react";
 
 
 //특수 페이지 아이콘
@@ -44,6 +46,13 @@ import XIcon from "./icons/XIcon.svg?react";
 //소셜 로그인 아이콘
 import KakaoTalk from "./icons/KakaoTalk.svg?react";
 
+//온보딩 테스트 아이콘
+import Onboarding_warm from "./icons/Onboarding_warm.svg?react";
+import Onboarding_calm from "./icons/Onboarding_calm.svg?react";
+import Onboarding_cool from "./icons/Onboarding_cool.svg?react";
+import Onboarding_dreamlike from "./icons/Onboarding_dreamlike.svg?react";
+import Onboarding_pleasant from "./icons/Onboarding_pleasant.svg?react";
+import Onboarding_dark from "./icons/Onboarding_dark.svg?react";
 
 
 export {
@@ -54,7 +63,7 @@ export {
   Alarm, HomeIcon, Booklog, My_library, My_page, 
   Share, Search, Quit, Camera, Comment, Archive, 
   Report, Album, Pencil, Menu, CheckIcon, Reset,
-  Arrow, Setting, Kebab,
+  Arrow, Setting, Kebab, ArrowDown, Vector,
 
   Error, Loading, ErrorIcon,
 
@@ -65,7 +74,7 @@ export {
 
   KakaoTalk,
 
-  
+  Onboarding_warm, Onboarding_calm, Onboarding_cool, Onboarding_dreamlike, Onboarding_pleasant, Onboarding_dark
 
 
 };

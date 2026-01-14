@@ -5,6 +5,7 @@ export type Book = {
   title: string;
   author: string;
   publisher: string;
+  createdAt: string | Date;
   progress: number;
   coverUrl?: never;
   CoverIcon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
