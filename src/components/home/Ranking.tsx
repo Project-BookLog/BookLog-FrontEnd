@@ -1,4 +1,4 @@
-import { BOOKS } from "../data/book.mock";
+import { BOOKS } from "../../data/book.mock";
 function Ranking() {
   return (
     <section className="px-6">

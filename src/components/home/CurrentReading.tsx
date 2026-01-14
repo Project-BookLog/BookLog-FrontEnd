@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Carousel from "react-multi-carousel";
 import type { CarouselInternalState } from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import { BOOKS } from "../data/book.mock";
+import { BOOKS } from "../../data/book.mock";
 
 const CurrentReading: React.FC = () => {
   const length = BOOKS.length;
