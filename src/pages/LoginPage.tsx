@@ -12,7 +12,7 @@ export const LoginPage = () => {
 
     useEffect(() => {
         if (id) {
-           navigate("/"); 
+           navigate("/onboarding"); 
         }
     }, [navigate, id]);
 
