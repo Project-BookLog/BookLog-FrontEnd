@@ -1,4 +1,4 @@
-import { Dummy_book, CircleArrow } from "../../assets/icons";
+import { Dummy_book, CircleArrow } from "../assets/icons";
 
 type LikeCardProps = {
   title: string;

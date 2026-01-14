@@ -10,7 +10,7 @@ const TABS = ["전체", "작가", "도서"] as const;
 
 function SearchTabs({ active, onChange }: TabsProps) {
   return (
-    <nav className="flex justify-start px-2 gap-6 text-subtitle-01-sb h-12">
+    <nav className="flex justify-start px-2 gap-6 text-subtitle-01-sb h-10">
       {TABS.map((tab) => {
         const isActive = tab === active;
 
