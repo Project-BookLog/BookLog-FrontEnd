@@ -17,6 +17,8 @@ type Post = {
   bookTitle: string;
   bookAuthor: string;
   publisher?: string;
+  // ✅ 나중에 API 붙이면 이거 추가해서 쓰면 제일 깔끔함
+  // userId: string;
 };
 
 function MoreIcon({ className = "" }: { className?: string }) {
@@ -84,6 +86,10 @@ export default function BooklogDetailPage() {
     []
   );
 
+  // ✅ 임시: 지금은 post.id를 userId처럼 사용
+  // 나중에 post.userId가 생기면 이 줄만 post.userId로 바꾸면 됨
+  const profileUserId = post.id;
+
   return (
     <div className="min-h-screen bg-[#F7F5F3]">
       <div className="mx-auto w-full max-w-[420px] bg-[#F7F5F3]">
@@ -103,10 +109,15 @@ export default function BooklogDetailPage() {
           }
         />
 
-        {/* ✅ 유저 영역 */}
+        {/* ✅ 유저 영역 (클릭 시 다른유저프로필로 이동) */}
         <section className="px-4 pt-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 min-w-0">
+            <button
+              type="button"
+              onClick={() => navigate(`/users/${profileUserId}`)}
+              className="flex items-center gap-3 min-w-0 text-left cursor-pointer"
+              aria-label="유저 프로필로 이동"
+            >
               <div className="h-10 w-10 rounded-full bg-[#D9D9D9]" />
               <div className="min-w-0">
                 <div className="text-body-01-sb text-[#1F1F1F] truncate">{post.username}</div>
@@ -114,11 +125,13 @@ export default function BooklogDetailPage() {
                   {post.email ?? "email@example.com"}
                 </div>
               </div>
-            </div>
+            </button>
 
+            {/* 팔로우 버튼은 그대로 두되, 눌러도 프로필 이동 안 되게 */}
             <button
               type="button"
               className="h-[27px] rounded bg-[#E7E5E4] px-3 text-caption-01 font-medium text-[#4D4D4C]"
+              onClick={(e) => e.stopPropagation()}
             >
               팔로우
             </button>
@@ -138,7 +151,6 @@ export default function BooklogDetailPage() {
               [&::-webkit-scrollbar]:hidden
             "
           >
-            {/* 왼쪽: BookContent */}
             <div className="flex-shrink-0 w-[240px]">
               <BookContent
                 title={post.bookTitle}
@@ -148,22 +160,18 @@ export default function BooklogDetailPage() {
               />
             </div>
 
-            {/* 오른쪽: 사진 이미지 칸 */}
             <div className="flex-shrink-0 h-[250px] w-[240px] rounded-[12px] bg-[#727272] grid place-items-center text-caption-01 text-white/80">
               사진
             </div>
           </div>
 
-          {/* 본문 */}
           <p className="mt-3 text-body-03 text-[#0A0A0A]">{post.body}</p>
 
-          {/* 하단 메타 */}
           <div className="mt-4 flex items-center justify-between text-caption-01 text-[#81807F]">
             <div>
               {post.timeAgo} · 조회 {post.views}
             </div>
 
-            {/* ✅ 북마크 버튼 */}
             <button
               type="button"
               onClick={(e) => {
@@ -186,10 +194,8 @@ export default function BooklogDetailPage() {
           </div>
         </section>
 
-        {/* ✅ 구분선 */}
         <div className="mt-8 mb-3 h-[8px] bg-[#EFEDEB]" />
 
-        {/* ✅ Orbital과 비슷한 도서 */}
         <section className="px-4 pt-5">
           <h2 className="text-body-01-sb text-[#000000]">Orbital과 비슷한 도서</h2>
           <p className="mt-1 text-caption-01 text-[#676665]">
@@ -207,7 +213,6 @@ export default function BooklogDetailPage() {
           </div>
         </section>
 
-        {/* ✅ 비슷한 주제의 인기글 */}
         <section className="px-4 pt-6 pb-10">
           <h2 className="text-body-01-sb text-[#000000]">비슷한 주제의 인기글</h2>
           <p className="mt-1 text-caption-01 text-[#676665]">
