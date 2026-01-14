@@ -10,7 +10,7 @@ export function MyLibraryPage ({ libraries }: { libraries: Library[] }) {
     
     return (
         <div className="min-h-screen w-full flex flex-col items-center bg-bg">
-            <div className="dlex h-[62px] px-5 pt-5 pb-2 items-center self-stretch">
+            <div className="flex h-[62px] px-5 pt-5 pb-2 items-center self-stretch">
                 <p className="text-black text-head">내 서재</p>
             </div>
             <div className="flex flex-col w-[375px] items-start gap-7 mt-8">

@@ -4,6 +4,9 @@ import HomePage from "./pages/HomePage";
 import { LoginPage } from "./pages/LoginPage";
 import { SplashPage } from "./pages/SplashPage";
 import SearchPage from "./pages/SearchPage";
+import { MyLibraryPage } from "./pages/MyLibrary/MyLibraryPage";
+import { libraries } from "./data/myLibrary.mock";
+import { MyLibraryDetail } from "./pages/MyLibrary/MyLibraryDetailPage";
 
 function App() {
   return (
@@ -13,6 +16,8 @@ function App() {
         <Route path="/login" element={<LoginPage/>} />
         <Route path="/splash" element={<SplashPage />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/mylibrary" element={<MyLibraryPage libraries={libraries}/>}/>
+        <Route path="/my-library/:libraryName" element={<MyLibraryDetail libraries={libraries}/>} />
       </Routes>
     </MobileLayout>
   );
