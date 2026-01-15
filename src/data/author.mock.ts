@@ -12,6 +12,7 @@ const SAMPLE_BOOKS: Book[] = [
     createdAt: "2023-01-01",
     progress: 0,
     CoverIcon: Dummy_book,
+    createdAt: ""
   },
   {
     id: 2,
@@ -21,8 +22,10 @@ const SAMPLE_BOOKS: Book[] = [
     createdAt: "2024-01-01",
     progress: 0,
     CoverIcon: Dummy_book,
+    createdAt: ""
   },
 ];
+
 export const AUTHORS: Author[] = [
   {
     id: "1",
