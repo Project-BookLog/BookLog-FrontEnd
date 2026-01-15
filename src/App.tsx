@@ -9,6 +9,7 @@ import { libraries } from "./data/myLibrary.mock";
 import { MyLibraryDetail } from "./pages/myLibrary/MyLibraryDetailPage";
 import BooklogPage from "./pages/BooklogPage";
 import BooklogDetailPage from "./pages/BooklogDetailPage";
+import BookDetail from "./pages/detail/BookDetail";
 import OnboardingPage from "./pages/onboarding/OnBoardingPage";
 
 function App() {
@@ -19,11 +20,14 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/splash" element={<SplashPage />} />
         <Route path="/search" element={<SearchPage />} />
+        {/* <Route path="/book/:bookId" element={<BookDetail />} /> */}
+        <Route path="/bookdetail" element={<BookDetail />} />
         <Route path="/onboarding" element={<OnboardingPage />} />
         <Route path="/mylibrary" element={<MyLibraryPage libraries={libraries}/>}/>
         <Route path="/my-library/:libraryName" element={<MyLibraryDetail libraries={libraries}/>} />
         <Route path="/booklog" element={<BooklogPage />} />
         <Route path="/booklog/:booklogId" element={<BooklogDetailPage />} />
+
       </Routes>
     </MobileLayout>
   );
