@@ -34,7 +34,7 @@ export function MyLibraryDetail({ libraries }: { libraries: Library[] }) {
   );
 
   const [sortOrder, setSortOrder] = useState<BOOK_ORDER>(library?.sort ?? BOOK_ORDER.NEWEST);
-  const [isSortModalOpen, setIsSortModalOpen] = useState(false);
+  const [isDropDownOpen, setIsDropDownOpen] = useState(false);
 
   const filteredBooks = useMemo(() => {
     if (activeTab === "ALL") return library?.books;
@@ -101,19 +101,19 @@ export function MyLibraryDetail({ libraries }: { libraries: Library[] }) {
             <p className="text-gray-600 text-body-03">총 {filteredBooks?.length ?? 0}권</p>
             <button
               className="flex items-center gap-[2px]"
-              onClick={() => setIsSortModalOpen(!isSortModalOpen)}
+              onClick={() => setIsDropDownOpen(!isDropDownOpen)}
             >
               <p className="text-gray-600 text-body-03">{currentSortLabel}</p>
               <ArrowDown className="w-[14px] h-[14px]"/>
             </button>
-            {isSortModalOpen && (
+            {isDropDownOpen && (
               <SortDropDown
                 currentSort={sortOrder}
                 onSelectSort={(order) => {
                   setSortOrder(order);
-                  setIsSortModalOpen(false);
+                  setIsDropDownOpen(false);
                 }}
-                onClose={() => setIsSortModalOpen(false)}
+                onClose={() => setIsDropDownOpen(false)}
               />
             )}
           </div>
