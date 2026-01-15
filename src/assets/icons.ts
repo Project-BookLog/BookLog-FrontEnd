@@ -23,11 +23,13 @@ import Album from "./icons/Album.svg?react";
 import Pencil from "./icons/Pencil.svg?react";
 import Menu from "./icons/Menu.svg?react";
 import CheckIcon from "./icons/CheckIcon.svg?react";
+import CheckIconWhite from "./icons/CheckIconWhite.svg?react";
 import Reset from "./icons/Reset.svg?react";
 import Arrow from "./icons/Arrow.svg?react";
 import Setting from "./icons/Setting.svg?react";
 import Kebab from "./icons/Kebab.svg?react";
 import ArrowDown from "./icons/ArrowDown.svg?react";
+import ArrowRight from "./icons/ArrowRight.svg?react";
 import Vector from "./icons/Vector.svg?react";
 
 
@@ -62,8 +64,8 @@ export {
 
   Alarm, HomeIcon, Booklog, My_library, My_page, 
   Share, Search, Quit, Camera, Comment, Archive, 
-  Report, Album, Pencil, Menu, CheckIcon, Reset,
-  Arrow, Setting, Kebab, ArrowDown, Vector,
+  Report, Album, Pencil, Menu, CheckIcon, CheckIconWhite, Reset,
+  Arrow, Setting, Kebab, ArrowDown, ArrowRight, Vector,
 
   Error, Loading, ErrorIcon,
 

@@ -51,7 +51,7 @@ export function ConfirmModal({
 
     return (
         <div
-            className="fixed inset-0 min-h-screen flex items-center justify-center bg-black/15 backdrop-blur-[2px]"
+            className="fixed inset-0 z-50 min-h-screen flex items-center justify-center bg-black/15 backdrop-blur-[2px]"
             onClick={onClose}
         >
             <div
@@ -65,13 +65,13 @@ export function ConfirmModal({
                 <div className="flex justify-center items-center gap-1 self-stretch">
                     <button
                         onClick={onConfirm}
-                        className="flex justify-center items-center w-[120px] px-[10px] py-[14px] gap-[10px] rounded-[8px] bg-warning-bg text-center text-subtitle-02-sb text-warning"
+                        className="flex justify-center items-center w-[120px] px-[10px] py-[14px] gap-[10px] rounded-[8px] bg-warning-bg text-center text-subtitle-02-sb text-warning cursor-pointer"
                     >
                         {confirmText}
                     </button>
                     <button
                         onClick={onClose}
-                        className="flex justify-center items-center w-[120px] px-[10px] py-[14px] gap-[10px] rounded-[8px] bg-gray-100 text-center text-subtitle-02-sb text-gray-700"
+                        className="flex justify-center items-center w-[120px] px-[10px] py-[14px] gap-[10px] rounded-[8px] bg-gray-100 text-center text-subtitle-02-sb text-gray-700 cursor-pointer"
                     >
                         {cancelText}
                     </button>

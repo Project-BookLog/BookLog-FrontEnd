@@ -22,7 +22,7 @@ export function MyLibraryPage ({ libraries }: { libraries: Library[] }) {
                                 className="flex items-center gap-[2px]"
                                 onClick={() => navigate(`/my-library/${library.name}`)}
                             >
-                                <p className="text-body-03 text-gray-500">전체보기</p>
+                                <p className="text-body-03 text-gray-500 cursor-pointer">전체보기</p>
                                 <BackIcon className="w-[14px] h-[14px] rotate-180"/>
                             </button>
                         </div>

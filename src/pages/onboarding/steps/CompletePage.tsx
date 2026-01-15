@@ -29,7 +29,7 @@ export default function CompletePage() {
       <div className="flex flex-end self-stretch px-5 pt-5 pb-0 gap-[2px]">
         <button
           onClick={() => navigate("/")}
-          className="flex w-[335px] px-[10px] py-[16px] justify-center items-center gap-[10px] rounded-[12px] bg-primary text-white"
+          className="flex w-[335px] px-[10px] py-[16px] justify-center items-center gap-[10px] rounded-[12px] bg-primary active:bg-[#263A99] text-white"
         >
           <p className="text-center text-subtitle-02-sb">
             확인

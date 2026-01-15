@@ -61,7 +61,7 @@ export default function Step_1_Page() {
         <button
           onClick={nextStep}
           disabled={!canNext}
-          className="flex w-[335px] px-[10px] py-[16px] justify-center items-center gap-[10px] rounded-[12px] bg-primary disabled:bg-gray-200 text-white disabled:text-gray-600"
+          className="flex w-[335px] px-[10px] py-[16px] justify-center items-center gap-[10px] rounded-[12px] bg-primary active:bg-[#263A99] disabled:bg-gray-200 text-white disabled:text-gray-600"
         >
           <p className="text-center text-subtitle-02-sb">
             다음

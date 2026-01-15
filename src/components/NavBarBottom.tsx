@@ -57,7 +57,7 @@ function NavbarBottom() {
 
         {/* 서재 */}
         <NavLink
-          to="/mylibrary"
+          to="/my-library"
           className={({ isActive }) =>
             `${baseItem} ${isActive ? "bg-[#242424] px-4" : "px-2"}`
           }
