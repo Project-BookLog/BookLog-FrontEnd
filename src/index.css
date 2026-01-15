@@ -199,12 +199,6 @@
     font-weight: var(--fw-m);
     line-height: 1.4;
   }
-  .text-en-subtitle-01 {
-    font-family: var(--font-en);
-    font-size: 16px;
-    font-weight: var(--fw-m);
-    line-height: 1.4;
-  }
   .text-en-subtitle-02 {
     font-family: var(--font-en);
     font-size: 15px;

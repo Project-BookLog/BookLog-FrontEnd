@@ -1,6 +1,6 @@
-function BookRecommeded() {
+function BookRecommended() {
 
-  const tagstyle = "h-9 text-body-03 text-gray-700 items-center px-3 py-1 rounded-full bg-gray-100 text-body-03";
+  const tagstyle = "h-9 text-gray-700 items-center px-3 py-1 rounded-full bg-gray-100 text-body-03";
 
   return (
     <section className="px-6 mt-6">
@@ -42,4 +42,4 @@ function BookRecommeded() {
   );
 }
 
-export default BookRecommeded;
+export default BookRecommended;

@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import NavBarTop from "../../components/NavBarTop";
 import { Dummy_book } from "../../assets/icons";
 import Tabs from "../../components/detail/Tab";
-import BookRecommeded from "../../components/detail/BookRecommeded";
+import BookRecommeded from "../../components/detail/BookRecommended";
 import BookInfo from "../../components/detail/BookInfo";
 import BookLogCarousel from "../../components/detail/BookLogCarousel";
 
 export const BookDetail = () => {
-  const [tab, setTab] = useState("홈");
+  const [tab, setTab] = useState("책 추천");
 
   const RecommendedRef = useRef<HTMLElement | null>(null);
   const InfoRef = useRef<HTMLElement | null>(null);
