@@ -37,9 +37,8 @@ export const LibraryActionDropDown = ({actions, onClose}: ActionDropDownProps) =
             className="absolute top-full right-4 mt-3 z-50 flex w-[154px] px-5 py-2 flex-col items-center gap-[2px] rounded-[12px] bg-white"
         >
             {visibleActions.map((action, index) => (
-                <div className="w-full flex flex-col">
+                <div key={action.label} className="w-full flex flex-col">
                     <button
-                        key={action.label}
                         className="flex py-2 justify-between items-center self-stretch cursor-pointer"
                         onClick={() => {
                             action.onClick();
