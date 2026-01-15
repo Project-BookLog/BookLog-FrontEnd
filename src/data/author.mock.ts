@@ -9,6 +9,7 @@ const SAMPLE_BOOKS: Book[] = [
     title: "책 제목 1",
     author: "작가 A",
     publisher: "출판사 A",
+    createdAt: "2023-01-01",
     progress: 0,
     CoverIcon: Dummy_book,
     createdAt: ""
@@ -18,6 +19,7 @@ const SAMPLE_BOOKS: Book[] = [
     title: "책 제목 2",
     author: "작가 A",
     publisher: "출판사 B",
+    createdAt: "2024-01-01",
     progress: 0,
     CoverIcon: Dummy_book,
     createdAt: ""

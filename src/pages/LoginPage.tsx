@@ -60,7 +60,7 @@ export const LoginPage = () => {
                         type="button"
                         onClick={handleSubmit}
                         disabled={isDisabled}
-                        className="flex px-[10px] py-[16px] justify-center items-center gap-[10px] self-stretch rounded-[12px] bg-primary hover:bg-[#263A99] disabled:bg-gray-200 text-white text-center text-[15px] font-semibold leading-[21px] cursor-pointer disabled:cursor-not-allowed"
+                        className="flex px-[10px] py-[16px] justify-center items-center gap-[10px] self-stretch rounded-[12px] bg-primary active:bg-[#263A99] disabled:bg-gray-200 text-white text-center text-[15px] font-semibold leading-[21px] cursor-pointer disabled:cursor-not-allowed"
                     >   
                         로그인
                     </button>

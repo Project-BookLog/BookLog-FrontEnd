@@ -11,6 +11,14 @@ import BooklogPage from "./pages/BooklogPage";
 import BooklogDetailPage from "./pages/BooklogDetailPage";
 import BookDetail from "./pages/detail/BookDetail";
 import OnboardingPage from "./pages/onboarding/OnBoardingPage";
+import { EditBooksPage } from "./pages/myLibrary/EditBooksPage";
+import { useToast } from "./context/ToastContext";
+import { Toast } from "./components/toast/Toast";
+
+function GlobalToast() {
+  const { message } = useToast();
+  return message ? <Toast message={message} /> : null;
+}
 
 function App() {
   return (
@@ -23,12 +31,13 @@ function App() {
         {/* <Route path="/book/:bookId" element={<BookDetail />} /> */}
         <Route path="/bookdetail" element={<BookDetail />} />
         <Route path="/onboarding" element={<OnboardingPage />} />
-        <Route path="/mylibrary" element={<MyLibraryPage libraries={libraries}/>}/>
+        <Route path="/my-library" element={<MyLibraryPage libraries={libraries}/>}/>
         <Route path="/my-library/:libraryName" element={<MyLibraryDetail libraries={libraries}/>} />
         <Route path="/booklog" element={<BooklogPage />} />
         <Route path="/booklog/:booklogId" element={<BooklogDetailPage />} />
-
+        <Route path="/my-library/:libraryName/edit-books" element={<EditBooksPage libraries={libraries}/>} />
       </Routes>
+      <GlobalToast />
     </MobileLayout>
   );
 }
