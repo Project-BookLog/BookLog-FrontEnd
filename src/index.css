@@ -5,6 +5,30 @@
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100..900&display=swap");
 
+
+.book-desc-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* 책 소개: 3줄 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.book-toc-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 5; /* 목차: 5줄 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.book-desc-expanded,
+.book-toc-expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  -webkit-box-orient: unset;
+  overflow: visible;
+}
+
+
 /* 디자인 토큰 정의 */
 @theme {
   /* 폰트 패밀리 */
@@ -145,6 +169,68 @@
 
   .text-caption-02 {
     font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: var(--fw-m);
+    line-height: 1.4;
+  }
+
+  /* en */
+  .text-en-head {
+    font-family: var(--font-en);
+    font-size: 24px;
+    font-weight: var(--fw-sb);
+    line-height: 1.2;
+  }
+  .text-en-title-01 {
+    font-family: var(--font-en);
+    font-size: 20px;
+    font-weight: var(--fw-sb);
+    line-height: 1.2;
+  }
+  .text-en-title-02 {
+    font-family: var(--font-en);
+    font-size: 18px;
+    font-weight: var(--fw-sb);
+    line-height: 1.2;
+  }
+  .text-en-subtitle-01 {
+    font-family: var(--font-en);
+    font-size: 16px;
+    font-weight: var(--fw-m);
+    line-height: 1.4;
+  }
+  .text-en-subtitle-01 {
+    font-family: var(--font-en);
+    font-size: 16px;
+    font-weight: var(--fw-m);
+    line-height: 1.4;
+  }
+  .text-en-subtitle-02 {
+    font-family: var(--font-en);
+    font-size: 15px;
+    font-weight: var(--fw-m);
+    line-height: 1.4;
+  }
+  .text-en-body-01 {
+    font-family: var(--font-en);
+    font-size: 14px;
+    font-weight: var(--fw-m);
+    line-height: 1.4;
+  }
+  .text-en-body-02 {
+    font-family: var(--font-en);
+    font-size: 13px;
+    font-weight: var(--fw-m);
+    line-height: 1.4;
+  }
+  .text-en-caption-01 {
+    font-family: var(--font-en);
+    font-size: 12px;
+    font-weight: var(--fw-m);
+    line-height: 1.4;
+  }
+  .text-en-caption-02 {
+    font-family: var(--font-en);
     font-size: 11px;
     font-weight: var(--fw-m);
     line-height: 1.4;

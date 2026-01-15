@@ -11,6 +11,7 @@ const SAMPLE_BOOKS: Book[] = [
     publisher: "출판사 A",
     progress: 0,
     CoverIcon: Dummy_book,
+    createdAt: ""
   },
   {
     id: 2,
@@ -19,8 +20,10 @@ const SAMPLE_BOOKS: Book[] = [
     publisher: "출판사 B",
     progress: 0,
     CoverIcon: Dummy_book,
+    createdAt: ""
   },
 ];
+
 export const AUTHORS: Author[] = [
   {
     id: "1",
