@@ -11,7 +11,6 @@ type NavBarProps = {
   centerSlot?: ReactNode;
   onBack?: () => void;
 };
-
 function NavBarTop({
   title,
   subtitle,
@@ -37,21 +36,40 @@ function NavBarTop({
     );
   };
 
-  return (
-    <header className="h-15.5 mt-2 px-4 flex items-center justify-between bg-white">
-      <div className="flex items-center gap-2 min-w-0 flex-1">
-        {renderLeft()}
+  const renderRight = () => {
+    if (rightSlot) return rightSlot;
+    if (rightText) {
+      return (
+        <button type="button" className="text-subtitle-02-sb">
+          {rightText}
+        </button>
+      );
+    }
+    // 오른쪽이 없을 때도 왼쪽과 균형 맞추기 위한 더미
+    return <div className="w-6" />; // BackIcon 정도 폭에 맞춰서 조절
+  };
 
-        <div className="flex flex-col min-w-0 flex-1">
+  return (
+    <header className="h-15.5 mt-2 px-4 flex items-center bg-white">
+      {/* 왼쪽 영역 */}
+      <div className="shrink-0">
+        {renderLeft()}
+      </div>
+
+      {/* 중앙 영역: 항상 flex-1 + 가운데 정렬 */}
+      <div className="flex-1 flex justify-center min-w-0">
+        <div className="flex flex-col items-center min-w-0">
           {centerSlot ? (
             centerSlot
           ) : (
             <>
               {title && (
-                <span className="text-title-01 truncate">{title}</span>
+                <span className="text-title-01 truncate text-center">
+                  {title}
+                </span>
               )}
               {subtitle && (
-                <span className="text-subtitle-02-m text-gray-700 truncate">
+                <span className="text-subtitle-02 truncate text-center">
                   {subtitle}
                 </span>
               )}
@@ -60,15 +78,13 @@ function NavBarTop({
         </div>
       </div>
 
-      {rightSlot ? (
-        <div className="shrink-0">{rightSlot}</div>
-      ) : rightText ? (
-        <button type="button" className="text-subtitle-02-sb">
-          {rightText}
-        </button>
-      ) : null}
+      {/* 오른쪽 영역 */}
+      <div className="shrink-0">
+        {renderRight()}
+      </div>
     </header>
   );
 }
+
 
 export default NavBarTop;
