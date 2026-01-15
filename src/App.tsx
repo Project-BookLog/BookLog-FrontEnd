@@ -35,7 +35,7 @@ function App() {
         <Route path="/my-library/:libraryName" element={<MyLibraryDetail libraries={libraries}/>} />
         <Route path="/booklog" element={<BooklogPage />} />
         <Route path="/booklog/:booklogId" element={<BooklogDetailPage />} />
-        
+        <Route path="/my-library/:libraryName/edit-books" element={<EditBooksPage libraries={libraries}/>} />
       </Routes>
       <GlobalToast />
     </MobileLayout>
