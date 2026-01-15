@@ -41,11 +41,15 @@ export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
     const isSelected = (bookId: number) => selectedBooks.includes(bookId);
     const isDisabled = selectedBooks.length === 0;
 
+    const handleCancel = () => {
+        setSelectedBooks([]);
+        navigate(`/my-library/${libraryName}`)
+    };
+
     const handleDelete = () => {
         console.log("삭제할 책 ID:", selectedBooks);
         showToast("도서 목록이 편집되었어요.");
         navigate(`/my-library/${libraryName}`)
-
     };
 
     return (
@@ -65,7 +69,7 @@ export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
                     description="중단한 내용은 복구할 수 없어요."
                     confirmText="중단"
                     cancelText="취소"
-                    onConfirm={() => navigate(`/my-library/${libraryName}`)}
+                    onConfirm={handleCancel}
                     onClose={() => setIsModalOpen(false)}
                 />
             }
