@@ -1,16 +1,13 @@
-type Tab = "전체" | "작가" | "도서";
-
 type TabsProps = {
-  active: Tab;
-  onChange: (tab: Tab) => void;
+  active: string;
+  onChange: (tab: string) => void;
 };
 
+const TABS = ["책 추천", "책 정보", "북로그"];
 
-const TABS = ["전체", "작가", "도서"] as const;
-
-function SearchTabs({ active, onChange }: TabsProps) {
+function Tabs({ active, onChange }: TabsProps) {
   return (
-    <nav className="flex justify-start px-2 gap-6 text-subtitle-01-sb h-10">
+    <nav className="flex justify-start gap-5 text-sm h-[50px]">
       {TABS.map((tab) => {
         const isActive = tab === active;
 
@@ -20,7 +17,7 @@ function SearchTabs({ active, onChange }: TabsProps) {
             type="button"
             onClick={() => onChange(tab)}
             className={[
-              "border-b-2",
+              "border-b-2",  
               isActive
                 ? "font-semibold text-primary border-primary"
                 : "border-transparent text-gray-400",
@@ -34,5 +31,4 @@ function SearchTabs({ active, onChange }: TabsProps) {
   );
 }
 
-
-export default SearchTabs;
+export default Tabs;
