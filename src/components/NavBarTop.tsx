@@ -46,7 +46,7 @@ function NavBarTop({
       );
     }
     // 오른쪽이 없을 때도 왼쪽과 균형 맞추기 위한 더미
-    return <div className="w-6" />; // BackIcon 정도 폭에 맞춰서 조절
+    return <div className="w-6" />; 
   };
 
   return (
@@ -56,7 +56,7 @@ function NavBarTop({
         {renderLeft()}
       </div>
 
-      {/* 중앙 영역: 항상 flex-1 + 가운데 정렬 */}
+      {/* 중앙 영역 */}
       <div className="flex-1 flex justify-center min-w-0">
         <div className="flex flex-col items-center min-w-0">
           {centerSlot ? (
