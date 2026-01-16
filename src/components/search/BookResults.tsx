@@ -24,6 +24,7 @@ type FilterChipProps = {
   onClick?: () => void;
 };
 
+
 function FilterChip({ label, isActive, onClick }: FilterChipProps) {
   return (
     <button
@@ -93,6 +94,15 @@ function BookResults({
         return copied;
     }
   }, [items, currentSort]);
+
+  // const handleBookClick = (bookId: number) => {
+  //   navigate(`/bookdetail/${bookId}`);
+  // };
+  const handleBookClick = () => {
+    navigate("/bookdetail");
+  };
+  
+
 
   const renderItems = mode === "full" ? sortedItems : items;
 
@@ -201,11 +211,15 @@ function BookResults({
         {renderItems.map((book) => {
           const { CoverIcon } = book;
 
+
+
           return (
             <button
               key={book.id}
               type="button"
               className="flex w-full items-center gap-5"
+              // onClick={() => handleBookClick(book.id)} 
+              onClick={handleBookClick}
             >
               <div className="flex h-26 w-17 items-center justify-center overflow-hidden rounded">
                 <CoverIcon className="h-full w-full" />

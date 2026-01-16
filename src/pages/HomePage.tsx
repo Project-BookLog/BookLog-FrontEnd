@@ -59,7 +59,7 @@ function HomePage() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-bg">
       {/* navbar */}
       <NavBarTop
         back={false}
@@ -73,8 +73,8 @@ function HomePage() {
       />
 
       {/* tab*/}
-      <div className="sticky top-0 z-10 bg-gray-500">
-        <div className="px-6 border-b border-gray-200 bg-white">
+      <div className="sticky top-0 z-10 bg-bg">
+        <div className="px-6 border-b border-gray-200">
           <Tabs active={tab} onChange={handleChangeTab} />
         </div>
       </div>
@@ -82,22 +82,20 @@ function HomePage() {
       {/* 내용 */}
       <main className="pb-6 pt-4 space-y-12 mb-10">
 
-        {/* 내가 좋아하는 ~~  */}
         <section ref={likeSectionRef} className="scroll-mt-15">
           <LikeCarousel />
         </section>
 
-        {/* 지금 읽고 있는 책  */}
         <section className="mb-12" >
           <CurrentReading />
         </section>
 
-        {/* 랭킹 */}
         <section ref={rankingRef} className="scroll-mt-15">
           <Ranking />
         </section>
 
-        {/* 베스트셀러 */}
+
+
         <section ref={moodRef} className="scroll-mt-15">
           <BestSeller
             type="mood"
