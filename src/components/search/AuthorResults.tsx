@@ -46,15 +46,6 @@ function AuthorResults({
           <p className="text-body-03 text-gray-600">
             총 <span className="text-primary">{total}</span>명
           </p>
-
-          <button
-            type="button"
-            className="flex items-center gap-1 text-body-03 text-gray-600"
-          >
-            <span>최신순</span>
-            <BackIcon className="w-4 h-4 rotate-270" />
-            {/* 나중에 정렬 드롭다운 넣을 자리 */}
-          </button>
         </div>
       )}
 

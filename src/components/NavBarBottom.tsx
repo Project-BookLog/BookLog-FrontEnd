@@ -1,15 +1,19 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { HomeIcon, Booklog, My_library, My_page, Search } from "../assets/icons";
-import PlusImg from "../assets/icons/plus.svg";
+import { HomeIcon, Booklog, My_library, My_page, Search, Plus } from "../assets/icons";
 
 function NavbarBottom() {
   const navigate = useNavigate();
   const location = useLocation();
 
   const isBooklogActive = location.pathname.startsWith("/booklog");
+  const isMyLibraryActive = location.pathname.startsWith("/my-library");
+  const isMyPageActive = location.pathname.startsWith("/mypage");
 
   const baseItem =
     "flex items-center justify-center h-12 rounded-full transition-colors flex-none";
+
+  // ✅ 북로그/서재에서는 플러스 버튼, 그 외에는 검색 버튼 (마이페이지에서는 우측 버튼 숨김)
+  const showPlus = isBooklogActive || isMyLibraryActive;
 
   return (
     <div className="fixed bottom-0 left-1/2 z-50 flex w-full max-w-sm -translate-x-1/2 items-center justify-between px-5 pb-6">
@@ -57,7 +61,7 @@ function NavbarBottom() {
 
         {/* 서재 */}
         <NavLink
-          to="/mylibrary"
+          to="/my-library"
           className={({ isActive }) =>
             `${baseItem} ${isActive ? "bg-[#242424] px-4" : "px-2"}`
           }
@@ -96,28 +100,29 @@ function NavbarBottom() {
         </NavLink>
       </nav>
 
-      {/* ✅ 우측 버튼: 북로그면 plus / 아니면 검색 */}
-      {isBooklogActive ? (
-        <button
-          type="button"
-          onClick={() => {
-            console.log("북로그 글 작성");
-          }}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-black"
-          aria-label="북로그 작성"
-        >
-          <img src={PlusImg} alt="" className="h-6 w-6 invert" draggable={false} />
-        </button>
-      ) : (
-        <button
-          type="button"
-          onClick={() => navigate("/search")}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-black text-white"
-          aria-label="검색"
-        >
-          <Search className="w-6 h-6" />
-        </button>
-      )}
+      {/* ✅ 우측 버튼: 마이페이지에서는 숨김 / 북로그&서재면 plus / 아니면 검색 */}
+      {!isMyPageActive &&
+        (showPlus ? (
+          <button
+            type="button"
+            onClick={() => {
+              console.log("작성하기");
+            }}
+            className="flex h-14 w-14 items-center justify-center rounded-full bg-black"
+            aria-label="작성하기"
+          >
+            <Plus className="h-6 w-6 invert" />
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => navigate("/search")}
+            className="flex h-14 w-14 items-center justify-center rounded-full bg-black text-white"
+            aria-label="검색"
+          >
+            <Search className="w-6 h-6" />
+          </button>
+        ))}
     </div>
   );
 }
