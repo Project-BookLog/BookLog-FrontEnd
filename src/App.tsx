@@ -3,24 +3,31 @@ import MobileLayout from "./layout/MobileLayout";
 import { Outlet } from "react-router-dom";
 import { FilterProvider } from "./context/FilterContext";
 
-import HomePage from "./pages/HomePage";
+// 온보딩
 import { LoginPage } from "./pages/LoginPage";
 import { SplashPage } from "./pages/SplashPage";
+
+// 홈
+import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/home/SearchPage";
 import SearchFilterPage from "./pages/home/SearchFilterPage";
+import BookDetail from "./pages/detail/BookDetail";
 
+//북로그
+import BooklogPage from "./pages/BooklogPage";
+import BooklogDetailPage from "./pages/BooklogDetailPage";
+import UserProfilePage from "./pages/UserProfilePage";
 
+//서재
 import { MyLibraryPage } from "./pages/MyLibrary/MyLibraryPage";
 import { libraries } from "./data/myLibrary.mock";
 import { MyLibraryDetail } from "./pages/MyLibrary/MyLibraryDetailPage";
 import { EditBooksPage } from "./pages/MyLibrary/EditBooksPage";
 
-import BooklogPage from "./pages/BooklogPage";
-import BooklogDetailPage from "./pages/BooklogDetailPage";
-import UserProfilePage from "./pages/UserProfilePage";
 
-import BookDetail from "./pages/detail/BookDetail";
+// 마이페이지
 import OnboardingPage from "./pages/onboarding/OnBoardingPage";
+import MyPage from "./pages/mypage/MyPage";
 
 import { useToast } from "./context/ToastContext";
 import { Toast } from "./components/toast/Toast";
@@ -53,6 +60,8 @@ function App() {
           path="/my-library/:libraryName/edit-books"
           element={<EditBooksPage libraries={libraries} />}
         />
+
+        <Route path="/mypage" element={<MyPage />} />
 
         {/* 공통 + #40 추가 */}
         <Route path="/booklog" element={<BooklogPage />} />
