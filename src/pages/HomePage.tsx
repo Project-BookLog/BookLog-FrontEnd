@@ -74,7 +74,7 @@ function HomePage() {
 
       {/* tab*/}
       <div className="sticky top-0 z-10 bg-bg">
-        <div className="px-6 border-b border-gray-200">
+        <div className="px-5 border-b border-gray-200">
           <Tabs active={tab} onChange={handleChangeTab} />
         </div>
       </div>

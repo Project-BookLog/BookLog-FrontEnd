@@ -22,24 +22,24 @@ function BestSeller({ type, title, subtitle }: BestSellerSectionProps) {
   const books = BOOKS;
   
   return (
-    <section className="space-y-3 px-6 mb-12">
-      <div>
-        <h2 className="text-[18px] font-semibold">{title}</h2>
-        <p className="text-[12px] text-gray-700">{subtitle}</p>
+    <section className="space-y-3 mb-12">
+      <div className="px-5">
+        <h2 className="text-title-02 text-[#000000]">{title}</h2>
+        <p className="text-body-03 text-gray-700">{subtitle}</p>
       </div>
 
 
-      {/* 상단 탭 */}
-      <div className="overflow-x-auto no-scrollbar">
-        <div className="flex flex-nowrap gap-2 text-xs">
+      {/* 태그*/}
+      <div className="overflow-x-auto no-scrollbar pl-5">
+        <div className="flex flex-nowrap gap-2 text-body-01-m">
           {categories.map((label, index) => (
             <button
               key={label}
               onClick={() => setActive(index)}
-              className={`shrink-0 px-3 py-1 h-9 rounded-full border ${
+              className={`shrink-0 px-3 py-1 h-9 rounded-full ${
                 index === active
                   ? "bg-black text-white border-black"
-                  : "bg-gray-200 border-gray-200"
+                  : "bg-gray-100"
               }`}
             >
               {label}
@@ -50,7 +50,7 @@ function BestSeller({ type, title, subtitle }: BestSellerSectionProps) {
 
 
 
-      <div className="overflow-x-auto no-scrollbar">
+      <div className="overflow-x-auto no-scrollbar px-5">
         <div className="grid grid-rows-3 auto-cols-[220px] grid-flow-col gap-y-3 gap-x-1.5 py-2">
         {books.map((book) => (
           <div
@@ -65,16 +65,16 @@ function BestSeller({ type, title, subtitle }: BestSellerSectionProps) {
             {/* 책 정보 */}
             <div className="mt-2 flex items-start space-x-2">
               <div className="w-3">
-                <p className="text-[15px] font-semibold truncate">
+                <p className="text-subtitle-02-sb text-black truncate">
                   {book.id}
                 </p>
               </div>
               <div>
-                <p className="text-[15px] font-semibold truncate">
+                <p className="text-subtitle-02-sb truncate">
                   {book.title}
                 </p>
-                <p className="text-[11px] text-gray-700 truncate">
-                  {book.author} | {book.publisher}
+                <p className="text-caption-02 text-gray-700 truncate">
+                  {book.author}<span className="text-gray-500"> | </span>{book.publisher}
                 </p>
               </div>
             </div>
