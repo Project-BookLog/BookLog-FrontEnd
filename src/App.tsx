@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import MobileLayout from "./layout/MobileLayout";
+import { Outlet } from "react-router-dom";
 import { FilterProvider } from "./context/FilterContext";
 
 import HomePage from "./pages/HomePage";
@@ -36,9 +37,10 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/splash" element={<SplashPage />} />
-        <Route path="/search" element={<FilterProvider><SearchPage /></FilterProvider>} />
-        <Route path="/search/filter" element={<FilterProvider><SearchFilterPage /></FilterProvider>} />
-
+        <Route element={<FilterProvider><Outlet /></FilterProvider>}>
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/search/filter" element={<SearchFilterPage />} />
+        </Route>
         {/* main */}
         <Route path="/bookdetail" element={<BookDetail />} />
         <Route path="/onboarding" element={<OnboardingPage />} />
