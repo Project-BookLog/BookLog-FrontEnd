@@ -1,4 +1,3 @@
-// src/components/search/BookResults.tsx
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Book } from "../../types/book.types";

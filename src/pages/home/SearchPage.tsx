@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import NavBarTop from "../../components/NavBarTop";
 import NavBarSearchInput from "../../components/NavBarSerachInput";
@@ -23,12 +23,13 @@ type BookWithFilter = (typeof BOOKS)[number] & {
 };
 
 function SearchPage() {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const qFromUrl = searchParams.get("q") ?? "";
   const tabFromUrl = searchParams.get("tab");
 
   const [keyword, setKeyword] = useState(qFromUrl);
-  const { filter, setFilter } = useFilter();
+  const {filter, setFilter } = useFilter();
   const [activeTab, setActiveTab] = useState<Tab>(
     tabFromUrl === "book" ? "도서" : "전체",
   );
@@ -93,6 +94,7 @@ function SearchPage() {
     <div className="min-h-screen bg-bg">
       <NavBarTop
         back
+        onBack={() => navigate("/")} 
         centerSlot={
           <div className="w-full flex-1">
             <NavBarSearchInput
