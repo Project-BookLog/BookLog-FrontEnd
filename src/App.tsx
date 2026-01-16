@@ -1,10 +1,14 @@
 import { Routes, Route } from "react-router-dom";
 import MobileLayout from "./layout/MobileLayout";
+import { Outlet } from "react-router-dom";
+import { FilterProvider } from "./context/FilterContext";
 
 import HomePage from "./pages/HomePage";
 import { LoginPage } from "./pages/LoginPage";
 import { SplashPage } from "./pages/SplashPage";
-import SearchPage from "./pages/SearchPage";
+import SearchPage from "./pages/home/SearchPage";
+import SearchFilterPage from "./pages/home/SearchFilterPage";
+
 
 import { MyLibraryPage } from "./pages/MyLibrary/MyLibraryPage";
 import { libraries } from "./data/myLibrary.mock";
@@ -33,8 +37,10 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/splash" element={<SplashPage />} />
-        <Route path="/search" element={<SearchPage />} />
-
+        <Route element={<FilterProvider><Outlet /></FilterProvider>}>
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/search/filter" element={<SearchFilterPage />} />
+        </Route>
         {/* main */}
         <Route path="/bookdetail" element={<BookDetail />} />
         <Route path="/onboarding" element={<OnboardingPage />} />

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type { Book } from "../../types/book.types";
 import { BackIcon, Reset } from "../../assets/icons";
 import { SortDropDown } from "../dropdown/SortDropDown";
@@ -13,9 +14,7 @@ type BookResultsProps = {
   mode?: "compact" | "full";
   onMoreClick?: () => void;
 
-  // 필터 관련
   selectedFilters?: Partial<Record<FilterKey, string>>;
-  onFilterChange?: (key: FilterKey, value: string) => void;
   onResetFilters?: () => void;
 };
 
@@ -31,33 +30,36 @@ function FilterChip({ label, isActive, onClick }: FilterChipProps) {
       type="button"
       onClick={onClick}
       className={[
-        "inline-flex items-center gap-1 rounded-full border px-4 py-1",
-        "text-body-01-m whitespace-nowrap h-9",
+        "inline-flex h-9 items-center gap-1 whitespace-nowrap rounded-full border px-4 py-1",
+        "text-body-01-m",
         isActive
-          ? "border-primary bg-primary/5 text-primary"
+          ? "bg-black text-white"
           : "border-gray-200 bg-bg text-gray-700",
       ].join(" ")}
     >
       <span>{label}</span>
-      <BackIcon className="w-3 h-3 rotate-270" />
+      <BackIcon className={isActive? "h-3.5 w-3.5 rotate-270 text-white" : "h-3.5 w-3.5 rotate-270 text-gray-700"}/>
     </button>
   );
 }
 
 function BookResults({
+  keyword,
   total,
   items,
   mode = "compact",
   onMoreClick,
   selectedFilters,
-  onFilterChange,
   onResetFilters,
 }: BookResultsProps) {
+  const navigate = useNavigate();
+
   const isCompact = mode === "compact";
   const showMoreButton = isCompact && total > items.length;
 
-  // 정렬 상태는 BookResults 내부에서만 관리
-  const [currentSort, setCurrentSort] = useState<BOOK_ORDER>(BOOK_ORDER.NEWEST);
+  const [currentSort, setCurrentSort] = useState<BOOK_ORDER>(
+    BOOK_ORDER.NEWEST,
+  );
   const [isSortOpen, setIsSortOpen] = useState(false);
 
   const currentSortLabel =
@@ -70,12 +72,14 @@ function BookResults({
       case BOOK_ORDER.NEWEST:
         return copied.sort(
           (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+            new Date(b.createdAt).getTime() -
+            new Date(a.createdAt).getTime(),
         );
       case BOOK_ORDER.OLDEST:
         return copied.sort(
           (a, b) =>
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+            new Date(a.createdAt).getTime() -
+            new Date(b.createdAt).getTime(),
         );
       case BOOK_ORDER.TITLE:
         return copied.sort((a, b) =>
@@ -90,12 +94,18 @@ function BookResults({
     }
   }, [items, currentSort]);
 
-  // compact 모드에서는 그냥 props 그대로, full에서는 정렬된 리스트 사용
   const renderItems = mode === "full" ? sortedItems : items;
+
+  const goFilter = (from: FilterKey) => {
+    const params = new URLSearchParams();
+    if (keyword.trim()) params.set("q", keyword.trim());
+    params.set("from", from);
+    params.set("tab", "book");
+    navigate(`/search/filter?${params.toString()}`);
+  };
 
   return (
     <section className="relative px-6">
-      {/* 배경 오버레이 */}
       {isSortOpen && (
         <button
           type="button"
@@ -104,7 +114,7 @@ function BookResults({
         />
       )}
 
-      {/* compact */}
+      {/* compact 헤더 */}
       {isCompact && (
         <header className="mb-3 flex items-center justify-between">
           <div className="flex items-baseline gap-2">
@@ -124,49 +134,33 @@ function BookResults({
         </header>
       )}
 
-      {/* full */}
+      {/* full 모드 상단 필터/정렬 */}
       {!isCompact && (
         <>
           <div className="mb-5 flex items-center gap-3">
             <button
               type="button"
               onClick={onResetFilters}
-              className="flex h-9 w-9 bg-gray-100 items-center justify-center rounded-full border border-gray-200"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-gray-100"
             >
               <Reset className="h-4 w-4" />
             </button>
 
-            {/* 필터 */}
-            <div className="flex flex-1 gap-2 overflow-x-auto">
+            <div className="flex flex-1 gap-2 overflow-x-auto no-scrollbar">
               <FilterChip
-                label="분위기"
+                label={selectedFilters?.mood || "분위기"}
                 isActive={!!selectedFilters?.mood}
-                onClick={() =>
-                  onFilterChange?.(
-                    "mood",
-                    selectedFilters?.mood ? "" : "some-value",
-                  )
-                }
+                onClick={() => goFilter("mood")}
               />
               <FilterChip
-                label="문체"
+                label={selectedFilters?.style || "문체"}
                 isActive={!!selectedFilters?.style}
-                onClick={() =>
-                  onFilterChange?.(
-                    "style",
-                    selectedFilters?.style ? "" : "some-value",
-                  )
-                }
+                onClick={() => goFilter("style")}
               />
-              <FilterChip 
-                label="몰입도"
+              <FilterChip
+                label={selectedFilters?.immersion || "몰입도"}
                 isActive={!!selectedFilters?.immersion}
-                onClick={() =>
-                  onFilterChange?.(
-                    "immersion",
-                    selectedFilters?.immersion ? "" : "some-value",
-                  )
-                }
+                onClick={() => goFilter("immersion")}
               />
             </div>
           </div>
@@ -176,8 +170,7 @@ function BookResults({
               총 <span className="text-primary">{total}</span>권
             </p>
 
-            {/* 정렬 드랍다운 */}
-            <div className="relative inline-flex z-50">
+            <div className="relative z-50 inline-flex">
               <button
                 type="button"
                 className="flex items-center gap-1 text-body-03 text-gray-600"
@@ -189,7 +182,7 @@ function BookResults({
 
               {isSortOpen && (
                 <div className="pointer-events-none">
-                  <div className="translate-x-5 mt-3 pointer-events-auto">
+                  <div className="pointer-events-auto mt-3 translate-x-5">
                     <SortDropDown
                       currentSort={currentSort}
                       onSelectSort={(sort) => setCurrentSort(sort)}
@@ -204,7 +197,7 @@ function BookResults({
       )}
 
       {/* 공통 리스트 */}
-      <div className="space-y-3 mb-10">
+      <div className="mb-10 space-y-3">
         {renderItems.map((book) => {
           const { CoverIcon } = book;
 
