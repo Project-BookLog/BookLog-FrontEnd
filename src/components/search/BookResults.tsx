@@ -1,6 +1,8 @@
-import React from "react";
+import { useMemo, useState } from "react";
 import type { Book } from "../../types/book.types";
 import { BackIcon, Reset } from "../../assets/icons";
+import { SortDropDown } from "../dropdown/SortDropDown";
+import { BOOK_ORDER, sortOptions } from "../../enum/book";
 
 type FilterKey = "mood" | "style" | "immersion";
 
@@ -33,7 +35,7 @@ function FilterChip({ label, isActive, onClick }: FilterChipProps) {
         "text-body-01-m whitespace-nowrap h-9",
         isActive
           ? "border-primary bg-primary/5 text-primary"
-          : "border-gray-200 bg-white text-gray-700",
+          : "border-gray-200 bg-bg text-gray-700",
       ].join(" ")}
     >
       <span>{label}</span>
@@ -54,8 +56,54 @@ function BookResults({
   const isCompact = mode === "compact";
   const showMoreButton = isCompact && total > items.length;
 
+  // 정렬 상태는 BookResults 내부에서만 관리
+  const [currentSort, setCurrentSort] = useState<BOOK_ORDER>(BOOK_ORDER.NEWEST);
+  const [isSortOpen, setIsSortOpen] = useState(false);
+
+  const currentSortLabel =
+    sortOptions.find((o) => o.value === currentSort)?.label ?? "정렬";
+
+  const sortedItems = useMemo(() => {
+    const copied = [...items];
+
+    switch (currentSort) {
+      case BOOK_ORDER.NEWEST:
+        return copied.sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        );
+      case BOOK_ORDER.OLDEST:
+        return copied.sort(
+          (a, b) =>
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+        );
+      case BOOK_ORDER.TITLE:
+        return copied.sort((a, b) =>
+          a.title.localeCompare(b.title, "ko", { sensitivity: "base" }),
+        );
+      case BOOK_ORDER.AUTHOR:
+        return copied.sort((a, b) =>
+          a.author.localeCompare(b.author, "ko", { sensitivity: "base" }),
+        );
+      default:
+        return copied;
+    }
+  }, [items, currentSort]);
+
+  // compact 모드에서는 그냥 props 그대로, full에서는 정렬된 리스트 사용
+  const renderItems = mode === "full" ? sortedItems : items;
+
   return (
-    <section className="px-6">
+    <section className="relative px-6">
+      {/* 배경 오버레이 */}
+      {isSortOpen && (
+        <button
+          type="button"
+          onClick={() => setIsSortOpen(false)}
+          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px]"
+        />
+      )}
+
       {/* compact */}
       {isCompact && (
         <header className="mb-3 flex items-center justify-between">
@@ -110,7 +158,7 @@ function BookResults({
                   )
                 }
               />
-              <FilterChip
+              <FilterChip 
                 label="몰입도"
                 isActive={!!selectedFilters?.immersion}
                 onClick={() =>
@@ -128,20 +176,36 @@ function BookResults({
               총 <span className="text-primary">{total}</span>권
             </p>
 
-            <button
-              type="button"
-              className="flex items-center gap-1 text-body-03 text-gray-600"
-            >
-              <span>최신 순</span>
-              <BackIcon className="h-4 w-4 rotate-270" />
-            </button>
+            {/* 정렬 드랍다운 */}
+            <div className="relative inline-flex z-50">
+              <button
+                type="button"
+                className="flex items-center gap-1 text-body-03 text-gray-600"
+                onClick={() => setIsSortOpen((prev) => !prev)}
+              >
+                <span>{currentSortLabel}</span>
+                <BackIcon className="h-4 w-4 rotate-270" />
+              </button>
+
+              {isSortOpen && (
+                <div className="pointer-events-none">
+                  <div className="translate-x-5 mt-3 pointer-events-auto">
+                    <SortDropDown
+                      currentSort={currentSort}
+                      onSelectSort={(sort) => setCurrentSort(sort)}
+                      onClose={() => setIsSortOpen(false)}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </>
       )}
 
       {/* 공통 리스트 */}
       <div className="space-y-3 mb-10">
-        {items.map((book) => {
+        {renderItems.map((book) => {
           const { CoverIcon } = book;
 
           return (
