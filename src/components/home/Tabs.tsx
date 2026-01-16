@@ -7,7 +7,7 @@ const TABS = ["홈", "실시간 랭킹", "분위기별", "문체별", "몰입도
 
 function Tabs({ active, onChange }: TabsProps) {
   return (
-    <nav className="flex justify-between text-sm h-[50px]">
+    <nav className="flex justify-between text-sm h-[50px] bg-bg">
       {TABS.map((tab) => {
         const isActive = tab === active;
 

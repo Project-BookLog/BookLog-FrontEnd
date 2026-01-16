@@ -75,9 +75,13 @@ export const BookDetail = () => {
   }, [tab]);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-bg">
       {/* navbar */}
-      <NavBarTop back={true} title="책 정보" />
+      <NavBarTop 
+        back={true}
+        onBack={() => history.back()} 
+        title="책 정보" 
+      />
 
       <main className="pb-6 pt-4 space-y-5 mb-10">
         {/* 상단 책 썸네일 + 정보 */}
@@ -104,7 +108,7 @@ export const BookDetail = () => {
         </div>
 
         {/* 탭 active -> 화면 중앙에 가장 가까운 섹션으로 설정 */} 
-        <div className="sticky top-0 z-10 bg-gray-500">
+        <div className="sticky top-0 z-10 bg-bg">
           <div className="px-6 border-b border-gray-200 bg-white">
             <Tabs active={tab} onChange={handleChangeTab} />
           </div>
