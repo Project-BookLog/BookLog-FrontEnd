@@ -47,13 +47,10 @@ function NavBarTop({
         </button>
       );
     }
-
-    // 안 쓰는 경우: 공간만 유지
-    // return <div className="w-6 h-6 invisible" />;
   };
 
   return (
-    <header className="mt-2 px-4 flex items-center bg-white">
+    <header className="mt-2 px-4 flex items-center bg-bg">
       {/* 왼쪽 영역 */}
       <div className="shrink-0">
         {renderLeft()}
@@ -63,7 +60,6 @@ function NavBarTop({
       <div className="flex-1 min-w-0 px-2">
         <div className="flex flex-col justify-center min-w-0 w-full">
           {centerSlot ? (
-            // 검색창 같은 커스텀 슬롯
             <div className="w-full min-w-0">
               {centerSlot}
             </div>

@@ -18,7 +18,7 @@ function SearchPage() {
   const hasKeyword = keyword.trim().length > 0;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-bg">
       <NavBarTop
         back
         centerSlot={
