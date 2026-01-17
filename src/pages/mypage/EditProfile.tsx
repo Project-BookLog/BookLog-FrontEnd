@@ -91,6 +91,7 @@ function EditProfile() {
                   className="sr-only peer"
                   checked={shelfPublic}
                   onChange={(e) => setShelfPublic(e.target.checked)}
+                  aria-labelledby="shlef-visibility-switch"
                 />
                 <div className={switchStyle}></div>
               </label>
@@ -108,6 +109,7 @@ function EditProfile() {
                   className="sr-only peer"
                   checked={logPublic}
                   onChange={(e) => setLogPublic(e.target.checked)}
+                  aria-labelledby="booklog-visibility-switch"
                 />
                 <div className={switchStyle}></div>
               </label>
