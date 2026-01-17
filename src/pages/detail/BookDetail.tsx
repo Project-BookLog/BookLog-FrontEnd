@@ -1,19 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import NavBarTop from "../../components/NavBarTop";
 import { Dummy_book } from "../../assets/icons";
-import Tabs from "../../components/detail/Tab";
+import Tab from "../../components/Tab";
 import BookRecommeded from "../../components/detail/BookRecommended";
 import BookInfo from "../../components/detail/BookInfo";
 import BookLogCarousel from "../../components/detail/BookLogCarousel";
 
+const TABS = ["책 추천", "책 정보", "북로그"] as const;
+type TabType = (typeof TABS)[number];
+
 export const BookDetail = () => {
-  const [tab, setTab] = useState("책 추천");
+  const [tab, setTab] = useState<TabType>("책 추천");
 
   const RecommendedRef = useRef<HTMLElement | null>(null);
   const InfoRef = useRef<HTMLElement | null>(null);
   const BookLogRef = useRef<HTMLElement | null>(null);
 
-  const handleChangeTab = (nextTab: string) => {
+  const handleChangeTab = (nextTab: TabType) => {
     setTab(nextTab);
 
     const getTarget = () => {
@@ -27,8 +30,8 @@ export const BookDetail = () => {
     if (!el) return;
 
     const rect = el.getBoundingClientRect();
-    const offsetTop = window.scrollY + rect.top; // 섹션 실제 Y 위치
-    const OFFSET = 80; // 위로 이동 (px)
+    const offsetTop = window.scrollY + rect.top;
+    const OFFSET = 80;
 
     window.scrollTo({
       top: offsetTop - OFFSET,
@@ -36,19 +39,17 @@ export const BookDetail = () => {
     });
   };
 
-
   useEffect(() => {
     const handleScroll = () => {
-      const sections: { name: string; el: HTMLElement | null }[] = [
+      const sections: { name: TabType; el: HTMLElement | null }[] = [
         { name: "책 추천", el: RecommendedRef.current },
         { name: "책 정보", el: InfoRef.current },
         { name: "북로그", el: BookLogRef.current },
       ];
 
-      // 탭 높이만큼 살짝 위로 보정 (-40)
       const viewportMiddle = window.scrollY + window.innerHeight / 2 - 40;
 
-      let closestName = tab;
+      let closestName: TabType = tab;
       let closestDistance = Infinity;
 
       sections.forEach(({ name, el }) => {
@@ -69,18 +70,17 @@ export const BookDetail = () => {
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll(); 
+    handleScroll();
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, [tab]);
 
   return (
     <div className="min-h-screen bg-bg">
-      {/* navbar */}
-      <NavBarTop 
+      <NavBarTop
         back={true}
-        onBack={() => history.back()} 
-        title="책 정보" 
+        onBack={() => history.back()}
+        title="책 정보"
       />
 
       <main className="pb-6 pt-4 space-y-5 mb-10">
@@ -107,10 +107,15 @@ export const BookDetail = () => {
           </div>
         </div>
 
-        {/* 탭 active -> 화면 중앙에 가장 가까운 섹션으로 설정 */} 
+        {/* 탭 */}
         <div className="sticky top-0 z-10 bg-bg">
           <div className="px-6 border-b border-gray-200 bg-white">
-            <Tabs active={tab} onChange={handleChangeTab} />
+            <Tab
+              tabs={TABS}
+              active={tab}
+              onChange={handleChangeTab}
+              align="start"
+            />
           </div>
         </div>
 
