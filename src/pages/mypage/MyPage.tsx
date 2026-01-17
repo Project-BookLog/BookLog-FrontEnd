@@ -3,6 +3,8 @@ import { mockUser } from "../../data/user.mock";
 import UserInfoCard from "../../components/mypage/UserInfoCard";
 import ReadingStatus from "../../components/mypage/ReadingStatus";
 import ReadingRanking from "../../components/mypage/ReadingRanking";
+import ReadingCalendar from "../../components/mypage/ReadingCalendar";
+import NavbarBottom from "../../components/NavBarBottom";
 
 function MyPage() {
   return (
@@ -26,6 +28,13 @@ function MyPage() {
         <section className="px-5 mt-8">
           <ReadingRanking />
         </section>
+
+        <section className="px-5 mt-8 mb-28">
+          <ReadingCalendar />
+        </section>
+
+        <NavbarBottom />
+
       </main>
     </div>
   );

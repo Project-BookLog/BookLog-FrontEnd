@@ -9,7 +9,7 @@ function ReadingStatus() {
       </header>
 
       {/* 내용 영역 */}
-      <section className="w-full bg-gray-100 rounded-lg p-4">
+      <section className="w-full bg-gray-100 rounded-[12px] p-4">
         {/* subitle */}
         <div className="flex justify-between items-center">
           <div className="w-full text-subtitle-01-sb">이번 달 독서 현황 35%</div>
