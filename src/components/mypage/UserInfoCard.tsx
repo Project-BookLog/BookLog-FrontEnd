@@ -58,10 +58,10 @@ function UserInfoCard({ user }: UserInfoCardProps) {
         {/* 버튼 */}
         <section>
           <div className="flex gap-2">
-            <button className="h-11 w-71 rounded-lg bg-gray-200 text-subtitle-02-sb text-gray-900">
-              프로필편집
+            <button className="h-11 w-71 rounded-[12px] bg-gray-200 text-subtitle-02-sb text-gray-900">
+              프로필 편집
             </button>
-            <button className="flex h-11 w-11 items-center justify-center rounded-lg bg-gray-200">
+            <button className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-gray-200">
               <Share className="h-6 w-6 text-black" />
             </button>
           </div>
