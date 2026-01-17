@@ -46,11 +46,21 @@ export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
         navigate(`/my-library/${libraryName}`)
     };
 
-    const handleDelete = () => {
+    const handleDeleteFromAll = () => {
         console.log("삭제할 책 ID:", selectedBooks);
         showToast("도서 목록이 편집되었어요.");
         navigate(`/my-library/${libraryName}`)
     };
+
+    const handleRemoveFromLibrary = () => {
+        console.log("삭제할 책 ID:", selectedBooks);
+        showToast("삭제가 완료되었어요.")
+        navigate(`/my-library/${libraryName}`)
+    }
+
+    const handleMoveBboks = () => {
+        console.log("이동할 책 ID:", selectedBooks)
+    }
 
     return (
         <div className="min-h-screen w-full flex flex-col items-center bg-bg">
@@ -59,7 +69,13 @@ export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
                     className="w-6 h-6 cursor-pointer"
                     onClick={() => setIsModalOpen(true)}
                 />
-                <p className="text-black text-title-01">도서 목록 편집하기</p>
+                {library.name === "전체 도서" ? (
+                    <p className="text-black text-title-01">도서 목록 편집하기</p>
+                ) : selectedBooks.length === 0 ? (
+                    <p className="text-black text-title-01">도서 선택</p>
+                ) : (
+                    <p className="text-black text-title-01">{selectedBooks.length}개의 도서 선택됨</p>
+                )}
                 <div className="w-6 h-6 pl-[7px] pr-[8px] py-[3px]"></div>
             </div>
             {isModalOpen && 
@@ -74,10 +90,17 @@ export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
                 />
             }
             {library.books.length === 0 ? (
-                <div className="flex flex-1 flex-col items-center gap-[10px] justify-center">
-                    <p className="text-center text-gray-900 text-title-02">편집할 도서가 없습니다.</p>
-                    <p className="text-center text-gray-600 text-body-03">먼저 읽고 있거나 읽고 싶은 책을 담아보세요.</p>
-                </div>
+                library.name === "전체 도서" ? (
+                    <div className="flex flex-1 flex-col items-center gap-[10px] justify-center">
+                        <p className="text-center text-gray-900 text-title-02">편집할 도서가 없습니다.</p>
+                        <p className="text-center text-gray-600 text-body-03">먼저 읽고 있거나 읽고 싶은 책을 담아보세요.</p>
+                    </div>
+                ) : (
+                    <div className="flex flex-1 flex-col items-center gap-[10px] justify-center">
+                        <p className="text-center text-gray-900 text-title-02">아직 서재가 비어있습니다.</p>
+                        <p className="text-center text-gray-600 text-body-03">편집할 도서가 없네요.<br/>먼저 읽고 싶은 책들을 서재에 담아볼까요?</p>
+                    </div>
+                )
             ) : (
                 <div className="flex w-[375px] px-5 flex-col items-start gap-4">
                     <div className="flex items-center gap-2 cursor-pointer" onClick={toggleSelectAll}>
@@ -101,15 +124,36 @@ export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
                     </div>
                 </div>
             )}
-            <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-40 flex px-5 pt-5 items-end gap-[2px] self-stretch">
-                <button
-                    className="flex w-[335px] px-[10px] py-4 justify-center items-center gap-[10px] rounded-[12px] bg-primary active:bg-[#263A99] disabled:bg-gray-200 text-white disabled:text-gray-600 cursor-pointer"
-                    disabled={isDisabled}
-                    onClick={handleDelete}
-                >
-                    <p className="text-center text-subtitle-01-sb">삭제</p>
-                </button>
-            </div>
+            {library.books.length !== 0 &&  (library.name === "전체 도서" ? (
+                <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-40 flex px-5 pt-5 items-end gap-[2px] self-stretch">
+                    <button
+                        className="flex w-[335px] px-[10px] py-4 justify-center items-center gap-[10px] rounded-[12px] bg-primary active:bg-[#263A99] disabled:bg-gray-200 text-white disabled:text-gray-600 cursor-pointer"
+                        disabled={isDisabled}
+                        onClick={handleDeleteFromAll}
+                    >
+                        <p className="text-center text-subtitle-01-sb">삭제</p>
+                    </button>
+                </div>
+                ) : (
+                <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-40 flex px-5 pt-5 items-end gap-[2px] self-stretch">
+                    <div className="flex items-start gap-[10px]">
+                        <button
+                            className="flex w-[162px] px-[10px] py-4 justify-center items-center gap-[10px] rounded-[12px] bg-gray-200"
+                            disabled={isDisabled}
+                            onClick={handleRemoveFromLibrary}
+                        >
+                            <p className="text-center text-warning text-subtitle-02-sb">삭제</p>
+                        </button>
+                        <button
+                            className="flex w-[162px] px-[10px] py-4 justify-center items-center gap-[10px] rounded-[12px] bg-black"
+                            disabled={isDisabled}
+                            onClick={handleMoveBboks}
+                        >
+                            <p className="text-center text-white text-subtitle-02-sb">서재 이동</p>
+                        </button>
+                    </div>
+                </div>
+            ))}
         </div>
     )
 }
