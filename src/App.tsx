@@ -6,6 +6,7 @@ import { FilterProvider } from "./context/FilterContext";
 // 온보딩
 import { LoginPage } from "./pages/LoginPage";
 import { SplashPage } from "./pages/SplashPage";
+import OnboardingPage from "./pages/onboarding/OnBoardingPage";
 
 // 홈
 import HomePage from "./pages/HomePage";
@@ -24,10 +25,10 @@ import { libraries } from "./data/myLibrary.mock";
 import { MyLibraryDetail } from "./pages/MyLibrary/MyLibraryDetailPage";
 import { EditBooksPage } from "./pages/MyLibrary/EditBooksPage";
 
-
 // 마이페이지
-import OnboardingPage from "./pages/onboarding/OnBoardingPage";
 import MyPage from "./pages/mypage/MyPage";
+import EditProfile from "./pages/mypage/EditProfile";
+
 
 import { useToast } from "./context/ToastContext";
 import { Toast } from "./components/toast/Toast";
@@ -62,6 +63,7 @@ function App() {
         />
 
         <Route path="/mypage" element={<MyPage />} />
+        <Route path="/editprofile" element={<EditProfile />} />
 
         {/* 공통 + #40 추가 */}
         <Route path="/booklog" element={<BooklogPage />} />
