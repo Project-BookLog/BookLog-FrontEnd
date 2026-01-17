@@ -50,7 +50,7 @@ function NavBarTop({
   };
 
   return (
-    <header className="h-15.5 mt-2 px-4 flex items-center bg-white">
+    <header className="h-15.5 mt-2 px-4 flex items-center bg-[#F7F5F3]">
       {/* 왼쪽 영역 */}
       <div className="shrink-0">
         {renderLeft()}
