@@ -89,7 +89,11 @@ function ReadingCalendar() {
                   }`}
                 >
                   {/* 날짜 */}
-                  <div className="flex justify-center h-[30px]" >
+                  <div 
+                    className={`flex justify-center ${
+                      hasBook ? 'h-[30px]' : 'h-[18px]'
+                    }`} 
+                  >
                     {date > 0 && (
                       <p className="text-body-03 text-gray-600 leading-none">
                         {date}
