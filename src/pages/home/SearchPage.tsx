@@ -5,16 +5,17 @@ import NavBarTop from "../../components/NavBarTop";
 import NavBarSearchInput from "../../components/NavBarSerachInput";
 import RecentSearches from "../../components/search/RecentSearches";
 import RecommendedSearches from "../../components/search/RecommendedSearches";
-import SearchTabs from "../../components/search/SearchTabs";
+import Tab from "../../components/Tab";
 import AuthorResults from "../../components/search/AuthorResults";
 import BookResults from "../../components/search/BookResults";
 
 import { BOOKS } from "../../data/book.mock";
 import { AUTHORS } from "../../data/author.mock";
 import { useFilter } from "../../hooks/useFilter";
-import { initialFilterState } from "../../context/FilterContext"; 
+import { initialFilterState } from "../../context/FilterContext";
 
-type Tab = "전체" | "작가" | "도서";
+const TABS = ["전체", "작가", "도서"] as const;
+type TabType = (typeof TABS)[number];
 
 type BookWithFilter = (typeof BOOKS)[number] & {
   mood?: string;
@@ -29,12 +30,13 @@ function SearchPage() {
   const tabFromUrl = searchParams.get("tab");
 
   const [keyword, setKeyword] = useState(qFromUrl);
-  const {filter, setFilter } = useFilter();
-  const [activeTab, setActiveTab] = useState<Tab>(
-    tabFromUrl === "book" ? "도서" : "전체",
+  const { filter, setFilter } = useFilter();
+
+  const [activeTab, setActiveTab] = useState<TabType>(
+    tabFromUrl === "book" ? "도서" : "전체"
   );
 
-  // URL q가 바뀔 때 keyword 동기화 (필터에서 돌아온 경우 대비)
+  // URL q가 바뀔 때 keyword 동기화
   useEffect(() => {
     setKeyword(qFromUrl);
   }, [qFromUrl]);
@@ -54,14 +56,14 @@ function SearchPage() {
       return next;
     });
     setFilter(initialFilterState);
-    setActiveTab("전체");  
+    setActiveTab("전체");
   };
 
   const handleResetFilters = () => {
     setFilter(initialFilterState);
   };
 
-  const handleChangeTab = (tab: Tab) => {
+  const handleChangeTab = (tab: TabType) => {
     setActiveTab(tab);
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
@@ -76,9 +78,8 @@ function SearchPage() {
       (BOOKS as BookWithFilter[]).filter((book) => {
         if (filter.mood && book.mood !== filter.mood) return false;
         if (filter.style && book.style !== filter.style) return false;
-        if (filter.immersion && book.immersion !== filter.immersion)
-          return false;
-        // 검색어 필터까지 걸고 싶으면 title/author 포함 여부 체크
+        if (filter.immersion && book.immersion !== filter.immersion) return false;
+        // 검색어 필터
         if (keyword.trim().length > 0) {
           const k = keyword.trim();
           const inTitle = book.title.includes(k);
@@ -87,14 +88,14 @@ function SearchPage() {
         }
         return true;
       }),
-    [filter.mood, filter.style, filter.immersion, keyword],
+    [filter.mood, filter.style, filter.immersion, keyword]
   );
 
   return (
     <div className="min-h-screen bg-bg">
       <NavBarTop
         back
-        onBack={() => navigate("/")} 
+        onBack={() => navigate("/")}
         centerSlot={
           <div className="w-full flex-1">
             <NavBarSearchInput
@@ -108,7 +109,12 @@ function SearchPage() {
 
       {hasKeyword && (
         <div className="mt-2 px-4">
-          <SearchTabs active={activeTab} onChange={handleChangeTab} />
+          <Tab
+            tabs={TABS}
+            active={activeTab}
+            onChange={handleChangeTab}
+            align="start"
+          />
         </div>
       )}
 
@@ -121,7 +127,7 @@ function SearchPage() {
 
             <section className="px-6">
               <RecommendedSearches
-                items={["검색어1", "검색어2", "검색어3", "검색어4", "검색어4"]}
+                items={["검색어1", "검색어2", "검색어3", "검색어4", "검색어5"]}
               />
             </section>
           </>
@@ -167,7 +173,7 @@ function SearchPage() {
                 total={filteredBooks.length}
                 items={filteredBooks}
                 mode="full"
-                onResetFilters={handleResetFilters} 
+                onResetFilters={handleResetFilters}
                 selectedFilters={{
                   mood: filter.mood ?? "",
                   style: filter.style ?? "",
