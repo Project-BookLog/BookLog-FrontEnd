@@ -33,6 +33,7 @@ import EditPage from "./pages/myLibrary/EditPage";
 import MyPage from "./pages/mypage/MyPage";
 import EditProfile from "./pages/mypage/EditProfile";
 import Setting from "./pages/mypage/Setting";
+import ReadingCalendarPage from "./pages/mypage/ReadingCalenderPage";
 
 
 
@@ -72,9 +73,10 @@ function App() {
 
         {/* 4. 마이페이지 */}
         <Route path="/mypage" element={<MyPage />} />
-        <Route path="/editprofile" element={<EditProfile />} />
+        <Route path="/mypage/editprofile" element={<EditProfile />} />
         <Route path="/users/:userId" element={<UserProfilePage />} />
         <Route path="/setting" element={<Setting />} />
+        <Route path="/mypage/readingcalendar" element={<ReadingCalendarPage />} />
         
       </Routes>
 
