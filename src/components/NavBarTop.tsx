@@ -30,29 +30,44 @@ function NavBarTop({
       <button
         type="button"
         onClick={onBack}
-        className={`shrink-0 ${subtitle ? "-translate-y-1.5" : ""}`}
+        className={subtitle ? "-translate-y-1.5" : ""}
       >
         <BackIcon className="w-6 h-6" />
       </button>
     );
   };
 
-  return (
-    <header className="h-15.5 mt-2 px-4 flex items-center justify-between bg-white">
-      <div className="flex items-center gap-2 min-w-0 flex-1">
-        {renderLeft()}
+  const renderRight = () => {
+    if (rightSlot) return rightSlot;
 
-        <div className="flex flex-col min-w-0 flex-1">
+    if (rightText) {
+      return (
+        <button type="button" className="text-subtitle-02-sb">
+          {rightText}
+        </button>
+      );
+    }
+  };
+
+  return (
+    <header className="pt-2 h-17 px-4 flex items-center bg-bg">
+      {/* 왼쪽 영역 */}
+      <div className="shrink-0">
+        {renderLeft()}
+      </div>
+
+      {/* 중앙 영역 */}
+      <div className="flex-1 min-w-0 px-2">
+        <div className="flex flex-col justify-center min-w-0 w-full">
           {centerSlot ? (
-            centerSlot
+            <div className="w-full min-w-0">
+              {centerSlot}
+            </div>
           ) : (
             <>
               {title && (
-                <span className="text-title-01 truncate">{title}</span>
-              )}
-              {subtitle && (
-                <span className="text-subtitle-02-m text-gray-700 truncate">
-                  {subtitle}
+                <span className="text-title-01 truncate text-center pr-6">
+                  {title}
                 </span>
               )}
             </>
@@ -60,13 +75,10 @@ function NavBarTop({
         </div>
       </div>
 
-      {rightSlot ? (
-        <div className="shrink-0">{rightSlot}</div>
-      ) : rightText ? (
-        <button type="button" className="text-subtitle-02-sb">
-          {rightText}
-        </button>
-      ) : null}
+      {/* 오른쪽 영역 */}
+      <div className="shrink-0">
+        {renderRight()}
+      </div>
     </header>
   );
 }

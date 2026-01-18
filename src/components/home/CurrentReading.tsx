@@ -51,11 +51,11 @@ const CurrentReading: React.FC = () => {
 
   return (
     <div>
-      <div className="px-4 mb-0">
-        <div className="text-[18px] font-semibold pb-0 mb-0">
+      <div className="px-5 mb-0">
+        <div className="text-title-02 text-[#000000] pb-0 mb-0">
           지금 읽고 있는 책
         </div>
-        <p className="text-[12px] text-gray-700 m-0">
+        <p className="text-body-03 text-gray-700 m-0">
           @@님이 현재 읽고 있는 책은{" "}
           <span className="text-primary">{BOOKS.length}권</span>
           이에요.
@@ -113,11 +113,11 @@ const CurrentReading: React.FC = () => {
                 {/* 책 정보 */}
                 {isCenter && (
                   <div className="mt-7 w-30 text-center">
-                    <p className="truncate text-[15px] font-medium">
+                    <p className="truncate text-subtitle-02-sb">
                       {book.title}
                     </p>
 
-                    <p className="mt-0.5 truncate text-[11px]">
+                    <p className="mt-0.5 truncate text-caption-02">
                       <span className="text-gray-600">{book.author}</span>
                       <span className="text-gray-400"> | </span>
                       <span className="text-gray-600">{book.publisher}</span>
@@ -130,10 +130,10 @@ const CurrentReading: React.FC = () => {
                           style={{ width: `${book.progress}%` }}
                         />
                       </div>
-                      <span className="text-[16px] font-medium ml-3">
+                      <span className="text-subtitle-02-sb ml-3">
                         {book.progress}
                       </span>
-                      <span className="text-[11px] pt-0.5 pl-0.25">%</span>
+                      <span className="text-en-caption-02 pt-0.5 pl-0.25">%</span>
                     </div>
                   </div>
                 )}

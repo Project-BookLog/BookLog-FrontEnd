@@ -17,6 +17,9 @@ type Post = {
   bookTitle: string;
   bookAuthor: string;
   publisher?: string;
+
+  // ✅ 나중에 API 붙이면 이거 추가해서 쓰면 제일 깔끔함
+  // userId: string;
 };
 
 function MoreIcon({ className = "" }: { className?: string }) {
@@ -76,13 +79,41 @@ export default function BooklogDetailPage() {
 
   const similarBooks = useMemo(
     () => [
-      { id: "s1", title: "소년이 온다", author: "한강 저", publisher: "출판사", tags: ["잔잔한", "사유적", "생각이 필요한"] },
-      { id: "s2", title: "책 제목", author: "저자명 저", publisher: "출판사", tags: ["잔잔한", "사유적", "생각이 필요한"] },
-      { id: "s3", title: "책 제목", author: "저자명 저", publisher: "출판사", tags: ["잔잔한", "사유적", "생각이 필요한"] },
-      { id: "s4", title: "책 제목", author: "저자명 저", publisher: "출판사", tags: ["잔잔한", "사유적", "생각이 필요한"] },
+      {
+        id: "s1",
+        title: "소년이 온다",
+        author: "한강 저",
+        publisher: "출판사",
+        tags: ["잔잔한", "사유적", "생각이 필요한"],
+      },
+      {
+        id: "s2",
+        title: "책 제목",
+        author: "저자명 저",
+        publisher: "출판사",
+        tags: ["잔잔한", "사유적", "생각이 필요한"],
+      },
+      {
+        id: "s3",
+        title: "책 제목",
+        author: "저자명 저",
+        publisher: "출판사",
+        tags: ["잔잔한", "사유적", "생각이 필요한"],
+      },
+      {
+        id: "s4",
+        title: "책 제목",
+        author: "저자명 저",
+        publisher: "출판사",
+        tags: ["잔잔한", "사유적", "생각이 필요한"],
+      },
     ],
     []
   );
+
+  // ✅ 임시: 지금은 post.id를 userId처럼 사용
+  // 나중에 post.userId가 생기면 이 줄만 post.userId로 바꾸면 됨
+  const profileUserId = post.id;
 
   return (
     <div className="min-h-screen bg-[#F7F5F3]">
@@ -103,10 +134,15 @@ export default function BooklogDetailPage() {
           }
         />
 
-        {/* ✅ 유저 영역 */}
+        {/* ✅ 유저 영역 (클릭 시 다른유저프로필로 이동) */}
         <section className="px-4 pt-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 min-w-0">
+            <button
+              type="button"
+              onClick={() => navigate(`/users/${profileUserId}`)}
+              className="flex items-center gap-3 min-w-0 text-left"
+              aria-label="유저 프로필로 이동"
+            >
               <div className="h-10 w-10 rounded-full bg-[#D9D9D9]" />
               <div className="min-w-0">
                 <div className="text-body-01-sb text-[#1F1F1F] truncate">{post.username}</div>
@@ -114,11 +150,12 @@ export default function BooklogDetailPage() {
                   {post.email ?? "email@example.com"}
                 </div>
               </div>
-            </div>
+            </button>
 
             <button
               type="button"
               className="h-[27px] rounded bg-[#E7E5E4] px-3 text-caption-01 font-medium text-[#4D4D4C]"
+              onClick={(e) => e.stopPropagation()}
             >
               팔로우
             </button>
@@ -192,9 +229,7 @@ export default function BooklogDetailPage() {
         {/* ✅ Orbital과 비슷한 도서 */}
         <section className="px-4 pt-5">
           <h2 className="text-body-01-sb text-[#000000]">Orbital과 비슷한 도서</h2>
-          <p className="mt-1 text-caption-01 text-[#676665]">
-            게시글에 언급된 도서와 비슷한 도서예요.
-          </p>
+          <p className="mt-1 text-caption-01 text-[#676665]">게시글에 언급된 도서와 비슷한 도서예요.</p>
 
           <div className="mt-3 -mx-4 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <div className="flex gap-3 px-4">
@@ -210,9 +245,7 @@ export default function BooklogDetailPage() {
         {/* ✅ 비슷한 주제의 인기글 */}
         <section className="px-4 pt-6 pb-10">
           <h2 className="text-body-01-sb text-[#000000]">비슷한 주제의 인기글</h2>
-          <p className="mt-1 text-caption-01 text-[#676665]">
-            게시글과 비슷한 내용의 게시글을 모아봤어요
-          </p>
+          <p className="mt-1 text-caption-01 text-[#676665]">게시글과 비슷한 내용의 게시글을 모아봤어요</p>
 
           <div className="mt-4 space-y-4">
             {[1, 2, 3].map((i) => (
@@ -222,9 +255,7 @@ export default function BooklogDetailPage() {
                   <p className="mt-1 line-clamp-2 text-caption-02 text-[#4D4D4C]">
                     유저가작성한글을 유저가작성한글을 유저가작성한글을…
                   </p>
-                  <div className="mt-2 text-caption-02 text-[#81807F]">
-                    1일 전 · 조회 65 · 저장 14
-                  </div>
+                  <div className="mt-2 text-caption-02 text-[#81807F]">1일 전 · 조회 65 · 저장 14</div>
                 </div>
                 <div className="h-[80px] w-[80px] shrink-0 rounded-[12px] bg-[#D9D9D9]" />
               </div>
