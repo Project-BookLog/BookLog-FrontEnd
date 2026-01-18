@@ -99,7 +99,7 @@ function HomePage() {
   }, [activeTab]); 
 
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="min-h-screen bg-bg overflow-x-hidden">
       {/* navbar */}
       <NavBarTop
         back={false}

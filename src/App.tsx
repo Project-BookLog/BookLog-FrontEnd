@@ -32,6 +32,7 @@ import EditPage from "./pages/myLibrary/EditPage";
 // 4. 마이페이지
 import MyPage from "./pages/mypage/MyPage";
 import EditProfile from "./pages/mypage/EditProfile";
+import Setting from "./pages/mypage/Setting";
 
 
 
@@ -73,7 +74,8 @@ function App() {
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/editprofile" element={<EditProfile />} />
         <Route path="/users/:userId" element={<UserProfilePage />} />
-
+        <Route path="/setting" element={<Setting />} />
+        
       </Routes>
 
       <GlobalToast />
