@@ -10,7 +10,7 @@ const ReadingRankingList = () => {
       <ul className="space-y-5">
         {users.map((user: usersRanking) => (
           <Fragment key={user.name}>
-            <li className="flex h-10 items-center gap-x-3">
+            <li className="flex h-15 pb-5 items-center gap-x-3 border-b-1 border-gray-100">
               <div className="text-subtitle-01-m text-gray-700 px-1">{user.rank}</div>
               
               <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center">
@@ -26,7 +26,6 @@ const ReadingRankingList = () => {
                 </p>
               </div>
             </li>
-            <hr className="text-gray-100" />
           </Fragment>
         ))}
       </ul>
