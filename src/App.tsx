@@ -26,6 +26,8 @@ import { MyLibraryPage } from "./pages/MyLibrary/MyLibraryPage";
 import { libraries } from "./data/myLibrary.mock";
 import { MyLibraryDetail } from "./pages/MyLibrary/MyLibraryDetailPage";
 import { EditBooksPage } from "./pages/MyLibrary/EditBooksPage";
+import AddLibraryPage from "./pages/MyLibrary/AddLibraryPage";
+import EditPage from "./pages/MyLibrary/EditPage"; 
 
 // 마이페이지
 import MyPage from "./pages/mypage/MyPage";
@@ -62,7 +64,10 @@ function App() {
         {/* main */}
         <Route path="/bookdetail" element={<BookDetail />} />
         <Route path="/onboarding" element={<OnboardingPage />} />
+
         <Route path="/my-library" element={<MyLibraryPage libraries={libraries} />} />
+        <Route path="/my-library/add" element={<AddLibraryPage />} />
+        <Route path="/my-library/edit" element={<EditPage />} />
         <Route
           path="/my-library/:libraryName"
           element={<MyLibraryDetail libraries={libraries} />}
@@ -72,6 +77,7 @@ function App() {
           element={<EditBooksPage libraries={libraries} />}
         />
 
+   
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/editprofile" element={<EditProfile />} />
 
