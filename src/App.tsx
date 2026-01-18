@@ -34,7 +34,7 @@ import MyPage from "./pages/mypage/MyPage";
 import EditProfile from "./pages/mypage/EditProfile";
 import Setting from "./pages/mypage/Setting";
 import ReadingCalendarPage from "./pages/mypage/ReadingCalenderPage";
-
+import ReadingRankingPage from "./pages/mypage/ReadingRankingPage";
 
 
 function GlobalToast() {
@@ -77,6 +77,7 @@ function App() {
         <Route path="/users/:userId" element={<UserProfilePage />} />
         <Route path="/setting" element={<Setting />} />
         <Route path="/mypage/readingcalendar" element={<ReadingCalendarPage />} />
+        <Route path="/mypage/readingranking" element={<ReadingRankingPage />} />
         
       </Routes>
 
