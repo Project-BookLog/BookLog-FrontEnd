@@ -11,8 +11,8 @@ function ReadingCalendarPage() {
   const thisMonth = today.getMonth() + 1; // 1~12
 
   // 기본값: 현재 달
-  const [year, setYear] = useState(2026);
-  const [month, setMonth] = useState(1); // 1~12
+  const [year, setYear] = useState(thisYear);
+  const [month, setMonth] = useState(thisMonth);
 
   const isCurrentMonth =
     year === thisYear && month === thisMonth;

@@ -13,7 +13,7 @@ function CalendarCommentCard() {
 
         {/* content */}
         <div className="mt-2">
-          <p className="text-caption-02 text-gray-600">어느덧 1월의 잘반, 독서로 채운 11일의 기록입니다.<br />Yoon님의 독서 취향이 담긴 1월의 독서 캘린더입니다. </p>
+          <p className="text-caption-02 text-gray-600">어느덧 1월의 절반, 독서로 채운 11일의 기록입니다.<br />Yoon님의 독서 취향이 담긴 1월의 독서 캘린더입니다. </p>
         </div>
 
       </section>
