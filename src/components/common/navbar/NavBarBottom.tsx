@@ -6,7 +6,7 @@ import {
   My_page,
   Search,
   Plus,
-} from "../assets/icons";
+} from "../../../assets/icons"
 
 function NavbarBottom() {
   const navigate = useNavigate();
@@ -19,10 +19,9 @@ function NavbarBottom() {
   const baseItem =
     "flex items-center justify-center h-12 rounded-full transition-colors flex-none";
 
-  // ✅ 북로그/서재에서는 플러스 버튼, 그 외에는 검색 버튼 (마이페이지에서는 우측 버튼 숨김)
+
   const showPlus = isBooklogActive || isMyLibraryActive;
 
-  // ✅ + 버튼: 서재 '메인(/my-library)'에서만 서재추가로 이동
   const handlePlusClick = () => {
     if (location.pathname === "/my-library") {
       navigate("/my-library/add");

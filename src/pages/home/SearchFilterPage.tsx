@@ -1,6 +1,6 @@
 import { useNavigate, useSearchParams  } from "react-router-dom";
 import { useFilter } from "../../hooks/useFilter";
-import NavBarTop from "../../components/NavBarTop";
+import NavBarTop from "../../components/common/navbar/NavBarTop";
 import { useEffect } from "react";
 
 const moods = ["따뜻한", "잔잔한", "유쾌한", "어두운", "서늘한", "몽환적인"] as const;

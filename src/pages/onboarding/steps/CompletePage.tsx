@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { BackIcon } from "../../../assets/icons";
-import { OnboardingIcon2 } from "../../../components/icons/OnboardingIcon2";
+import { OnboardingIcon2 } from "../../../components/onboarding/OnboardingIcon2";
 import { useAuth } from "../../../context/AuthContext";
 import { useOnboarding } from "../../../context/OnboardingContext";
 

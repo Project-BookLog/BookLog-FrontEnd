@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type { Book } from "../../types/book.types";
-import { BackIcon, Reset } from "../../assets/icons";
-import { SortDropDown } from "../dropdown/SortDropDown";
-import { BOOK_ORDER, sortOptions } from "../../enum/book";
+import type { Book } from "../../../types/book.types";
+import { BackIcon, Reset } from "../../../assets/icons";
+import { SortDropDown } from "../../common/dropdown/SortDropDown";
+import { BOOK_ORDER, sortOptions } from "../../../enum/book";
 
 type FilterKey = "mood" | "style" | "immersion";
 

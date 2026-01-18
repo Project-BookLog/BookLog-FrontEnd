@@ -1,12 +1,12 @@
 import { useEffect, useState, useRef } from "react"; // useEffect 추가
 import { Alarm, Logo2, LogoBooklog } from "../assets/icons";
-import NavBarTop from "../components/NavBarTop";
-import Tab from "../components/Tab";
+import NavBarTop from "../components/common/navbar/NavBarTop";
+import Tab from "../components/common/Tab";
 import LikeCarousel from "../components/home/LikeCarousel";
 import CurrentReading from "../components/home/CurrentReading";
 import Ranking from "../components/home/Ranking";
 import BestSeller from "../components/home/BestSeller";
-import NavbarBottom from "../components/NavBarBottom";
+import NavbarBottom from "../components/common/navbar/NavBarBottom";
 
 const TABS = ["홈", "실시간 랭킹", "분위기별", "문체별", "몰입도별"] as const;
 type TapType = (typeof TABS)[number];

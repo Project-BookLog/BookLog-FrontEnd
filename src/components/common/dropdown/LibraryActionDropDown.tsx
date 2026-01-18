@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { ArrowRight, Vector } from "../../assets/icons";
+import { ArrowRight, Vector } from "../../../assets/icons";
 
 export type LibraryAction = {
   label: string;

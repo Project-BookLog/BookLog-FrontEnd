@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import BookTag from "../components/booklog/BookTag";
-import FilterBar from "../components/booklog/FilterBar";
-import NavbarBottom from "../components/NavBarBottom";
-import resetImg from "../assets/icons/reset.svg";
-import BookmarkImg from "../assets/icons/bookmark.svg";
-import BookmarkcImg from "../assets/icons/bookmarkc.svg";
+import BookTag from "../../components/booklog/BookTag";
+import FilterBar from "../../components/booklog/FilterBar";
+import NavbarBottom from "../../components/common/navbar/NavBarBottom";
+import resetImg from "../../assets/icons/reset.svg";
+import BookmarkImg from "../../assets/icons/Bookmark.svg";
+import BookmarkcImg from "../../assets/icons/Bookmarkc.svg";
 
 function TagPill({ children }: { children: React.ReactNode }) {
   return (
