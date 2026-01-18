@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
-import { CheckIcon, Vector } from "../../assets/icons";
-import { BOOK_ORDER, sortOptions } from "../../enum/book";
+import { CheckIcon, Vector } from "../../../assets/icons";
+import { BOOK_ORDER, sortOptions } from "../../../enum/book";
 
 type SortDropDownProps = {
   currentSort: BOOK_ORDER;

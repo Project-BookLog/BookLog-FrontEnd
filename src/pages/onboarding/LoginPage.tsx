@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import useForm from "../hooks/useForm";
-import { validateSignin, type UserSigninInformation } from "../utils/validate";
-import { useAuth } from "../context/AuthContext";
+import useForm from "../../hooks/useForm";
+import { validateSignin, type UserSigninInformation } from "../../utils/validate";
+import { useAuth } from "../../context/AuthContext";
 import { useEffect } from "react";
-import { KakaoTalk, LogoBooklog } from "../assets/icons";
+import { KakaoTalk, LogoBooklog } from "../../assets/icons";
 
 export const LoginPage = () => {
     const navigate = useNavigate();

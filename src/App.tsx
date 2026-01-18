@@ -2,36 +2,38 @@ import { Routes, Route } from "react-router-dom";
 import MobileLayout from "./layout/MobileLayout";
 import { Outlet } from "react-router-dom";
 import { FilterProvider } from "./context/FilterContext";
+import { useToast } from "./context/ToastContext";
+import { Toast } from "./components/common/Toast";
 
-// 온보딩
-import { LoginPage } from "./pages/LoginPage";
-import { SplashPage } from "./pages/SplashPage";
+// 0. 온보딩
+import { LoginPage } from "./pages/onboarding/LoginPage";
+import { SplashPage } from "./pages/onboarding/SplashPage";
 import OnboardingPage from "./pages/onboarding/OnBoardingPage";
 
-// 홈
+// 1. 홈
 import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/home/SearchPage";
 import SearchFilterPage from "./pages/home/SearchFilterPage";
-import BookDetail from "./pages/detail/BookDetail";
+import BookDetail from "./pages/home/BookDetail";
 
-//북로그
-import BooklogPage from "./pages/BooklogPage";
-import BooklogDetailPage from "./pages/BooklogDetailPage";
-import UserProfilePage from "./pages/UserProfilePage";
+// 2. 북로그
+import BooklogPage from "./pages/booklog/BooklogPage";
+import BooklogDetailPage from "./pages/booklog/BooklogDetailPage";
+import UserProfilePage from "./pages/mypage/UserProfilePage";
 
-//서재
-import { MyLibraryPage } from "./pages/MyLibrary/MyLibraryPage";
+// 3. 서재
+import { MyLibraryPage } from "./pages/myLibrary/MyLibraryPage";
 import { libraries } from "./data/myLibrary.mock";
-import { MyLibraryDetail } from "./pages/MyLibrary/MyLibraryDetailPage";
-import { EditBooksPage } from "./pages/MyLibrary/EditBooksPage";
+import { MyLibraryDetail } from "./pages/myLibrary/MyLibraryDetailPage";
+import { EditBooksPage } from "./pages/myLibrary/EditBooksPage";
+import AddLibraryPage from "./pages/myLibrary/AddLibraryPage";
+import EditPage from "./pages/myLibrary/EditPage";
 
-// 마이페이지
+// 4. 마이페이지
 import MyPage from "./pages/mypage/MyPage";
 import EditProfile from "./pages/mypage/EditProfile";
 
 
-import { useToast } from "./context/ToastContext";
-import { Toast } from "./components/toast/Toast";
 
 function GlobalToast() {
   const { message } = useToast();
@@ -42,33 +44,36 @@ function App() {
   return (
     <MobileLayout>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        {/* 0. 온보딩 */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/splash" element={<SplashPage />} />
+        <Route path="/onboarding" element={<OnboardingPage />} />
+
+        {/* 1. 홈 */}
+        <Route path="/" element={<HomePage />} />
         <Route element={<FilterProvider><Outlet /></FilterProvider>}>
           <Route path="/search" element={<SearchPage />} />
           <Route path="/search/filter" element={<SearchFilterPage />} />
         </Route>
-        {/* main */}
         <Route path="/bookdetail" element={<BookDetail />} />
-        <Route path="/onboarding" element={<OnboardingPage />} />
-        <Route path="/my-library" element={<MyLibraryPage libraries={libraries} />} />
-        <Route
-          path="/my-library/:libraryName"
-          element={<MyLibraryDetail libraries={libraries} />}
-        />
-        <Route
-          path="/my-library/:libraryName/edit-books"
-          element={<EditBooksPage libraries={libraries} />}
-        />
+        {/* <Route path="/book/:bookId" element={<BookDetail />} /> */}
 
-        <Route path="/mypage" element={<MyPage />} />
-        <Route path="/editprofile" element={<EditProfile />} />
-
-        {/* 공통 + #40 추가 */}
+        {/* 2. 북로그 */}
         <Route path="/booklog" element={<BooklogPage />} />
         <Route path="/booklog/:booklogId" element={<BooklogDetailPage />} />
+
+        {/* 3. 서재 */}
+        <Route path="/my-library" element={<MyLibraryPage libraries={libraries}/>}/>
+        <Route path="/my-library/:libraryName" element={<MyLibraryDetail libraries={libraries}/>} />
+        <Route path="/my-library/:libraryName/edit-books" element={<EditBooksPage libraries={libraries}/>} />
+        <Route path="/my-library/add" element={<AddLibraryPage />} />
+        <Route path="/my-library/edit" element={<EditPage />} />
+
+        {/* 4. 마이페이지 */}
+        <Route path="/mypage" element={<MyPage />} />
+        <Route path="/editprofile" element={<EditProfile />} />
         <Route path="/users/:userId" element={<UserProfilePage />} />
+
       </Routes>
 
       <GlobalToast />

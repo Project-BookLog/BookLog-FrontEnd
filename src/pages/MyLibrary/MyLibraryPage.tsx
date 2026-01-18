@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import { BackIcon } from "../../assets/icons"
 import { GradationFrame } from "../../components/myLibrary/GradationFrame"
-import NavbarBottom from "../../components/NavBarBottom"
+import NavbarBottom from "../../components/common/navbar/NavBarBottom"
 import type { Library } from "../../types/library"
 
 export function MyLibraryPage ({ libraries }: { libraries: Library[] }) {

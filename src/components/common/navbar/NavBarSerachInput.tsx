@@ -1,4 +1,4 @@
-import { Search } from "../assets/icons";
+import { Search } from "../../../assets/icons";
 
 type SearchInputProps = {
   value: string;

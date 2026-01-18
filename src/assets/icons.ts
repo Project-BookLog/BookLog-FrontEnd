@@ -32,6 +32,7 @@ import ArrowDown from "./icons/ArrowDown.svg?react";
 import ArrowRight from "./icons/ArrowRight.svg?react";
 import Vector from "./icons/Vector.svg?react";
 import Plus from "./icons/Plus.svg?react";
+import Bookmark from "./icons/bookmark.svg?react";
 
 
 //특수 페이지 아이콘
@@ -67,6 +68,7 @@ export {
   Share, Search, Quit, Camera, Comment, Archive, 
   Report, Album, Pencil, Menu, CheckIcon, CheckIconWhite, Reset,
   Arrow, Setting, Kebab, ArrowDown, ArrowRight, Vector, Plus,
+  Bookmark,
 
   Error, Loading, ErrorIcon,
 

@@ -4,7 +4,7 @@ import UserInfoCard from "../../components/mypage/UserInfoCard";
 import ReadingStatus from "../../components/mypage/ReadingStatus";
 import ReadingRanking from "../../components/mypage/ReadingRanking";
 import ReadingCalendar from "../../components/mypage/ReadingCalendar";
-import NavbarBottom from "../../components/NavBarBottom";
+import NavbarBottom from "../../components/common/navbar/NavBarBottom";
 
 function MyPage() {
   return (

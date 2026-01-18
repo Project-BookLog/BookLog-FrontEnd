@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // history.back() 대체
-import NavBarTop from "../../components/NavBarTop";
+import NavBarTop from "../../components/common/navbar/NavBarTop";
 import { XIcon, Pencil } from "../../assets/icons";
 
 function EditProfile() {

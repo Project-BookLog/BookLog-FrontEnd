@@ -1,4 +1,4 @@
-import XIcon from "../../assets/icons/XIcon.svg?react";
+import { XIcon } from "../../../assets/icons";
 
 type RecentSearchesProps = {
   items: string[];

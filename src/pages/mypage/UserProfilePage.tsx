@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
-import NavBar from "../components/NavBarTop";
-import ShareImg from "../assets/icons/Share.svg";
-import BookmarkImg from "../assets/icons/bookmark.svg";
+import NavBarTop from "../../components/common/navbar/NavBarTop";
+import { Share, Bookmark } from "../../assets/icons";
 
 type Tab = "library" | "blog";
 
@@ -84,7 +83,7 @@ export default function UserProfilePage() {
 
   return (
     <div className="min-h-screen bg-[#F7F5F3]">
-      <NavBar title="유저 프로필" />
+      <NavBarTop title="유저 프로필" />
 
       {/* ✅ 상단 카드 */}
       <div className="bg-[#F7F5F3] px-5 py-5">
@@ -150,7 +149,7 @@ export default function UserProfilePage() {
             aria-label="share"
             className="grid h-[45px] w-[45px] place-items-center rounded-[12px] bg-[#E7E5E4]"
           >
-            <img src={ShareImg} alt="" className="h-5 w-5" draggable={false} />
+            <Share className="h-5 w-5" />
           </button>
         </div>
       </div>
@@ -312,7 +311,7 @@ function BlogCard({ post }: { post: BlogPost }) {
         </div>
 
         <div className="flex items-center gap-1 text-caption-01 text-[#9B9A97]">
-          <img src={BookmarkImg} alt="" className="h-5 w-5" draggable={false} />
+          <Bookmark className="h-5 w-5" />
           <span>{post.bookmarkCount}</span>
         </div>
       </div>

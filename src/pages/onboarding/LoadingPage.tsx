@@ -1,4 +1,4 @@
-import { Loading } from "../assets/icons";
+import { Loading } from "../../assets/icons";
 
 export const LoadingPage = () => {
 

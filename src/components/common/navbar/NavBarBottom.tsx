@@ -1,5 +1,12 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { HomeIcon, Booklog, My_library, My_page, Search, Plus } from "../assets/icons";
+import {
+  HomeIcon,
+  Booklog,
+  My_library,
+  My_page,
+  Search,
+  Plus,
+} from "../../../assets/icons"
 
 function NavbarBottom() {
   const navigate = useNavigate();
@@ -12,8 +19,23 @@ function NavbarBottom() {
   const baseItem =
     "flex items-center justify-center h-12 rounded-full transition-colors flex-none";
 
-  // ✅ 북로그/서재에서는 플러스 버튼, 그 외에는 검색 버튼 (마이페이지에서는 우측 버튼 숨김)
+
   const showPlus = isBooklogActive || isMyLibraryActive;
+
+  const handlePlusClick = () => {
+    if (location.pathname === "/my-library") {
+      navigate("/my-library/add");
+      return;
+    }
+
+    // (선택) 북로그에서의 + 동작은 여기서 이어서 정의하면 됨
+    if (isBooklogActive) {
+      console.log("작성하기");
+      return;
+    }
+
+    // 그 외 페이지에서는 아무 동작 안 함
+  };
 
   return (
     <div className="fixed bottom-0 left-1/2 z-50 flex w-full max-w-sm -translate-x-1/2 items-center justify-between px-5 pb-6">
@@ -105,9 +127,7 @@ function NavbarBottom() {
         (showPlus ? (
           <button
             type="button"
-            onClick={() => {
-              console.log("작성하기");
-            }}
+            onClick={handlePlusClick}
             className="flex h-14 w-14 items-center justify-center rounded-full bg-black"
             aria-label="작성하기"
           >
