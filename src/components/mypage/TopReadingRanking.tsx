@@ -1,5 +1,3 @@
-import { BackIcon } from "../../assets/icons";
-
 const users = [
   { name: "Maru", rank: 2, books: 3, days: 8 },
   { name: "Yoon", rank: 1, books: 4, days: 10 },
@@ -12,20 +10,9 @@ const rankLabel: Record<number, string> = {
   3: "3rd",
 };
 
-function ReadingRanking() {
+function TopReadingRanking() {
   return (
     <div className="bg-bg">
-      <header className="mb-3.5 flex justify-between">
-        <p className="text-title-02">독서 랭킹</p>
-        <button
-          type="button"
-          className="flex items-center gap-0.5 text-gray-500 text-body-03"
-        >
-          <span>전체보기</span>
-          <BackIcon className="rotate-180 w-[14px] h-[14px]" />
-        </button>
-      </header>
-
       <section className="w-full mt-[14px]">
         {/* 랭킹 리스트 */}
         <div className="flex items-end justify-between">
@@ -75,4 +62,4 @@ function ReadingRanking() {
   );
 }
 
-export default ReadingRanking;
+export default TopReadingRanking;

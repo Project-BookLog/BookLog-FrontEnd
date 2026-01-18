@@ -2,7 +2,7 @@ import { Setting, BackIcon } from "../../assets/icons";
 import { mockUser } from "../../data/user.mock";
 import UserInfoCard from "../../components/mypage/UserInfoCard";
 import ReadingStatus from "../../components/mypage/ReadingStatus";
-import ReadingRanking from "../../components/mypage/ReadingRanking";
+import TopReadingRanking from "../../components/mypage/TopReadingRanking";
 import ReadingCalendar from "../../components/mypage/ReadingCalendar";
 import NavbarBottom from "../../components/common/navbar/NavBarBottom";
 import { useNavigate } from "react-router-dom";
@@ -25,6 +25,10 @@ function MyPage() {
 
   const handleCalendarClick = () => {
     navigate("/mypage/readingcalendar"); 
+  };
+
+  const handleRankingClick = () => {
+    navigate("/mypage/readingranking"); 
   };
   
 
@@ -51,11 +55,27 @@ function MyPage() {
         <section className="px-5 mt-8">
           <ReadingStatus />
         </section>
-        
+
+
+        {/* 독서 랭킹 */}
         <section className="px-5 mt-8">
-          <ReadingRanking />
+          <div className="mb-3.5 flex justify-between">
+            <p className="text-title-02">독서 랭킹</p>
+            <button
+              type="button"
+              onClick={handleRankingClick}
+              className="flex items-center gap-0.5 text-gray-500 text-body-03"
+            >
+              <span>전체보기</span>
+              <BackIcon className="rotate-180 w-[14px] h-[14px]" />
+            </button>
+          </div>
+
+          <TopReadingRanking />
         </section>
 
+
+        {/* 독서 캘린더 */}
         <section className="px-5 mt-8 mb-28">
           <div className="mb-3.5 flex justify-between">
             <p className="text-title-02">독서 캘린더</p>
