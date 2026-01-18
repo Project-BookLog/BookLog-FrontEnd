@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { BackIcon } from "../assets/icons";
+import { BackIcon } from "../../../assets/icons";
 
 type NavBarProps = {
   title?: string;

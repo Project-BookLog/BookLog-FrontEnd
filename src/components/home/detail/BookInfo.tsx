@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BackIcon } from "../../assets/icons";
+import { BackIcon } from "../../../assets/icons";
 
 function BookInfo() {
   const [descExpanded, setDescExpanded] = useState(false);

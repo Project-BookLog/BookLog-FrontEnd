@@ -1,4 +1,4 @@
-import { BOOKLOGS } from "../../data/booklog.mock";
+import { BOOKLOGS } from "../../../data/booklog.mock";
 import BookLogCard from "./BookLogCard";
 
 function BookLogCarousel() {

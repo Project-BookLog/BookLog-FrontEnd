@@ -1,13 +1,13 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import NavBarTop from "../../components/NavBarTop";
-import NavBarSearchInput from "../../components/NavBarSerachInput";
-import RecentSearches from "../../components/search/RecentSearches";
-import RecommendedSearches from "../../components/search/RecommendedSearches";
-import Tab from "../../components/Tab";
-import AuthorResults from "../../components/search/AuthorResults";
-import BookResults from "../../components/search/BookResults";
+import NavBarTop from "../../components/common/navbar/NavBarTop";
+import NavBarSearchInput from "../../components/common/navbar/NavBarSerachInput";
+import RecentSearches from "../../components/home/search/RecentSearches";
+import RecommendedSearches from "../../components/home/search/RecommendedSearches";
+import Tab from "../../components/common/Tab";
+import AuthorResults from "../../components/home/search/AuthorResults";
+import BookResults from "../../components/home/search/BookResults";
 
 import { BOOKS } from "../../data/book.mock";
 import { AUTHORS } from "../../data/author.mock";

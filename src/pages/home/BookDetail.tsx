@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import NavBarTop from "../../components/NavBarTop";
+import NavBarTop from "../../components/common/navbar/NavBarTop";
 import { Dummy_book } from "../../assets/icons";
-import Tab from "../../components/Tab";
-import BookRecommeded from "../../components/detail/BookRecommended";
-import BookInfo from "../../components/detail/BookInfo";
-import BookLogCarousel from "../../components/detail/BookLogCarousel";
+import Tab from "../../components/common/Tab";
+import BookRecommeded from "../../components/home/detail/BookRecommended";
+import BookInfo from "../../components/home/detail/BookInfo";
+import BookLogCarousel from "../../components/home/detail/BookLogCarousel";
 
 const TABS = ["책 추천", "책 정보", "북로그"] as const;
 type TabType = (typeof TABS)[number];

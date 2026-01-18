@@ -1,4 +1,4 @@
-import { Reset } from "../../assets/icons";
+import { Reset } from "../../../assets/icons";
 
 type RecommendedSearchesProps = {
   title?: string;

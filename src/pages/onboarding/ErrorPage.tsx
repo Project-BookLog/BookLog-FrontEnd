@@ -1,4 +1,4 @@
-import { ErrorIcon } from "../assets/icons"
+import { ErrorIcon } from "../../assets/icons"
 
 export const ErrorPage = () => {
 

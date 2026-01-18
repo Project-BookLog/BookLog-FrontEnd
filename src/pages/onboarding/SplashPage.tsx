@@ -1,5 +1,5 @@
-import { LogoBooklog } from "../assets/icons";
-import SplashBg from "../assets/Splash.svg";
+import { LogoBooklog } from "../../assets/icons";
+import SplashBg from "../../assets/icons/Splash.svg";
 
 export const SplashPage = () => {
   return (

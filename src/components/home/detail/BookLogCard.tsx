@@ -1,4 +1,4 @@
-import type { BookLog } from "../../types/booklog.types";
+import type { BookLog } from "../../../types/booklog.types";
 
 type BookLogCardProps = BookLog & {
   isLast?: boolean;

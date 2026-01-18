@@ -1,5 +1,5 @@
-import type { Author } from "../../types/book.types";
-import { BackIcon } from "../../assets/icons";
+import type { Author } from "../../../types/book.types";
+import { BackIcon } from "../../../assets/icons";
 
 type AuthorResultsProps = {
   keyword: string;

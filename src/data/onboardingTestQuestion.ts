@@ -1,6 +1,6 @@
 import { Onboarding_calm, Onboarding_cool, Onboarding_dark, Onboarding_dreamlike, Onboarding_pleasant, Onboarding_warm } from "../assets/icons";
-import { OnboardingIcon1 } from "../components/icons/OnboardingIcon1";
-import { OnboardingIcon2 } from "../components/icons/OnboardingIcon2";
+import { OnboardingIcon1 } from "../components/onboarding/OnboardingIcon1";
+import { OnboardingIcon2 } from "../components/onboarding/OnboardingIcon2";
 import type { OnboardingQuestion } from "../types/onboardingQuestion";
 
 export const ONBOARDING_QUESTION: OnboardingQuestion[] = [

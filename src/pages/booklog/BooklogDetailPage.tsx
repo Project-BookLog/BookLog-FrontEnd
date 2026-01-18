@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import NavBar from "../components/NavBarTop";
-import BookContent from "../components/booklog/BookContent";
-import BookmarkImg from "../assets/icons/bookmark.svg";
-import BookmarkcImg from "../assets/icons/bookmarkc.svg";
+import NavBar from "../../components/common/navbar/NavBarTop";
+import BookContent from "../../components/booklog/BookContent";
+import BookmarkImg from "../../assets/icons/Bookmark.svg";
+import BookmarkcImg from "../../assets/icons/Bookmarkc.svg";
 
 type Post = {
   id: string;

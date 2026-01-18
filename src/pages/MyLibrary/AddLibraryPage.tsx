@@ -1,8 +1,8 @@
 // src/pages/MyLibrary/AddLibraryPage.tsx
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import NavBarTop from "../../components/NavBarTop";
-import { ConfirmModal } from "../../components/modal/ConfirmModal";
+import NavBarTop from "../../components/common/navbar/NavBarTop";
+import { ConfirmModal } from "../../components/common/ConfirmModal";
 import { useToast } from "../../context/ToastContext";
 
 function ClearIcon({ className = "" }: { className?: string }) {

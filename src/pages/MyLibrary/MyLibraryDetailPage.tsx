@@ -5,8 +5,8 @@ import { useMemo, useState } from "react";
 import { BookCard } from "../../components/myLibrary/BookCard";
 import { ReadingBookCard } from "../../components/myLibrary/ReadingBookCard";
 import { BOOK_ORDER, sortOptions } from "../../enum/book";
-import { SortDropDown } from "../../components/dropdown/SortDropDown";
-import { LibraryActionDropDown, type LibraryAction } from "../../components/dropdown/LibraryActionDropDown";
+import { SortDropDown } from "../../components/common/dropdown/SortDropDown";
+import { LibraryActionDropDown, type LibraryAction } from "../../components/common/dropdown/LibraryActionDropDown";
 
 type LibraryTab = "ALL" | "WISHLIST" | "READING" | "DONE";
 
