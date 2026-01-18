@@ -85,146 +85,146 @@
   /* ===== 타이포그래피 유틸 ===== */
   .text-head {
     font-family: var(--font-sans);
-    font-size: 24px;
+    font-size: 25px;
     font-weight: var(--fw-sb);
     line-height: 1.2; 
   }
 
   .text-title-01 {
     font-family: var(--font-sans);
-    font-size: 20px;
+    font-size: 21px;
     font-weight: var(--fw-sb);
     line-height: 1.2;
   }
 
   .text-title-02 {
     font-family: var(--font-sans);
-    font-size: 18px;
+    font-size: 19px;
     font-weight: var(--fw-sb);
     line-height: 1.2;
   }
 
   .text-subtitle-01-sb {
     font-family: var(--font-sans);
-    font-size: 16px;
+    font-size: 17px;
     font-weight: var(--fw-sb);
     line-height: 1.4; 
   }
 
   .text-subtitle-01-m {
     font-family: var(--font-sans);
-    font-size: 16px;
+    font-size: 17px;
     font-weight: var(--fw-m);
     line-height: 1.4;
   }
 
   .text-subtitle-02-sb {
     font-family: var(--font-sans);
-    font-size: 15px;
+    font-size: 16px;
     font-weight: var(--fw-sb);
     line-height: 1.4;
   }
 
   .text-subtitle-02-m {
     font-family: var(--font-sans);
-    font-size: 15px;
+    font-size: 16px;
     font-weight: var(--fw-m);
     line-height: 1.4;
   }
 
   .text-body-01-sb {
     font-family: var(--font-sans);
-    font-size: 14px;
+    font-size: 15px;
     font-weight: var(--fw-sb);
     line-height: 1.4;
   }
 
   .text-body-01-m {
     font-family: var(--font-sans);
-    font-size: 14px;
+    font-size: 15px;
     font-weight: var(--fw-m);
     line-height: 1.4;
   }
 
   .text-body-02 {
     font-family: var(--font-sans);
-    font-size: 14px;
+    font-size: 15px;
     font-weight: var(--fw-m);
     line-height: 1.6;
   }
 
   .text-body-03 {
     font-family: var(--font-sans);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: var(--fw-m);
     line-height: 1.4;
   }
 
   .text-caption-01 {
     font-family: var(--font-sans);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: var(--fw-m);
     line-height: 1.4;
   }
 
   .text-caption-02 {
     font-family: var(--font-sans);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: var(--fw-m);
     line-height: 1.4;
   }
 
   /* en */
   .text-en-head {
-    font-family: var(--font-en);
+    font-family: var(--font-en) !important;
     font-size: 24px;
     font-weight: var(--fw-sb);
     line-height: 1.2;
   }
   .text-en-title-01 {
-    font-family: var(--font-en);
+    font-family: var(--font-en) !important;
     font-size: 20px;
     font-weight: var(--fw-sb);
     line-height: 1.2;
   }
   .text-en-title-02 {
-    font-family: var(--font-en);
+    font-family: var(--font-en) !important;
     font-size: 18px;
     font-weight: var(--fw-sb);
     line-height: 1.2;
   }
   .text-en-subtitle-01 {
-    font-family: var(--font-en);
+    font-family: var(--font-en) !important;
     font-size: 16px;
     font-weight: var(--fw-m);
     line-height: 1.4;
   }
   .text-en-subtitle-02 {
-    font-family: var(--font-en);
+    font-family: var(--font-en) !important;
     font-size: 15px;
     font-weight: var(--fw-m);
     line-height: 1.4;
   }
   .text-en-body-01 {
-    font-family: var(--font-en);
+    font-family: var(--font-en) !important;
     font-size: 14px;
     font-weight: var(--fw-m);
     line-height: 1.4;
   }
   .text-en-body-02 {
-    font-family: var(--font-en);
+    font-family: var(--font-en) !important;
     font-size: 13px;
     font-weight: var(--fw-m);
     line-height: 1.4;
   }
   .text-en-caption-01 {
-    font-family: var(--font-en);
+    font-family: var(--font-en) !important;
     font-size: 12px;
     font-weight: var(--fw-m);
     line-height: 1.4;
   }
   .text-en-caption-02 {
-    font-family: var(--font-en);
+    font-family: var(--font-en) !important;
     font-size: 11px;
     font-weight: var(--fw-m);
     line-height: 1.4;

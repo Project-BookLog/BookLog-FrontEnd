@@ -1,4 +1,3 @@
-// src/components/toast/Toast.tsx
 interface ToastProps {
   message: string;
 }

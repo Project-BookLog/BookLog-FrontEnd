@@ -11,6 +11,7 @@ type NavBarProps = {
   centerSlot?: ReactNode;
   onBack?: () => void;
 };
+
 function NavBarTop({
   title,
   subtitle,
@@ -29,7 +30,7 @@ function NavBarTop({
       <button
         type="button"
         onClick={onBack}
-        className={`shrink-0 ${subtitle ? "-translate-y-1.5" : ""}`}
+        className={subtitle ? "-translate-y-1.5" : ""}
       >
         <BackIcon className="w-6 h-6" />
       </button>
@@ -38,6 +39,7 @@ function NavBarTop({
 
   const renderRight = () => {
     if (rightSlot) return rightSlot;
+
     if (rightText) {
       return (
         <button type="button" className="text-subtitle-02-sb">
@@ -45,32 +47,27 @@ function NavBarTop({
         </button>
       );
     }
-    // 오른쪽이 없을 때도 왼쪽과 균형 맞추기 위한 더미
-    return <div className="w-6" />; 
   };
 
   return (
-    <header className="h-15.5 mt-2 px-4 flex items-center bg-[#F7F5F3]">
+    <header className="pt-2 h-17 px-4 flex items-center bg-bg">
       {/* 왼쪽 영역 */}
       <div className="shrink-0">
         {renderLeft()}
       </div>
 
       {/* 중앙 영역 */}
-      <div className="flex-1 flex justify-center min-w-0">
-        <div className="flex flex-col items-center min-w-0">
+      <div className="flex-1 min-w-0 px-2">
+        <div className="flex flex-col justify-center min-w-0 w-full">
           {centerSlot ? (
-            centerSlot
+            <div className="w-full min-w-0">
+              {centerSlot}
+            </div>
           ) : (
             <>
               {title && (
-                <span className="text-title-01 truncate text-center">
+                <span className="text-title-01 truncate text-center pr-6">
                   {title}
-                </span>
-              )}
-              {subtitle && (
-                <span className="text-subtitle-02 truncate text-center">
-                  {subtitle}
                 </span>
               )}
             </>
@@ -85,6 +82,5 @@ function NavBarTop({
     </header>
   );
 }
-
 
 export default NavBarTop;
