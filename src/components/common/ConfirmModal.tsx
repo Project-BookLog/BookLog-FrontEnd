@@ -51,7 +51,7 @@ export function ConfirmModal({
 
     return (
         <div
-            className="fixed inset-0 z-50 min-h-screen flex items-center justify-center bg-black/15 backdrop-blur-[2px]"
+            className="absolute inset-0 z-50 min-h-screen flex items-center justify-center bg-black/15 backdrop-blur-[2px]"
             onClick={onClose}
         >
             <div

@@ -12,7 +12,8 @@ export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
     const navigate = useNavigate();
     const { libraryName } = useParams<{libraryName: string}>();
     const [selectedBooks, setSelectedBooks] = useState<number[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
+    const [isMoveModalOpen, setIsMoveModalOpen] = useState<boolean>(false);
     const { showToast } = useToast();
 
     const library = useMemo(
@@ -63,11 +64,11 @@ export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
     }
 
     return (
-        <div className="min-h-screen w-full flex flex-col items-center bg-bg">
+        <div className="relative min-h-screen w-full flex flex-col items-center bg-bg">
             <div className="flex h-[62px] px-5 pt-5 pb-2 justify-between items-center self-stretch">
                 <BackIcon
                     className="w-6 h-6 cursor-pointer"
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => setIsConfirmModalOpen(true)}
                 />
                 {library.name === "전체 도서" ? (
                     <p className="text-black text-title-01">도서 목록 편집하기</p>
@@ -78,15 +79,15 @@ export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
                 )}
                 <div className="w-6 h-6 pl-[7px] pr-[8px] py-[3px]"></div>
             </div>
-            {isModalOpen && 
+            {isConfirmModalOpen && 
                 <ConfirmModal
-                    isOpen={isModalOpen}
+                    isOpen={isConfirmModalOpen}
                     title="도서 목록 편집하기를 중단할까요?"
                     description="중단한 내용은 복구할 수 없어요."
                     confirmText="중단"
                     cancelText="취소"
                     onConfirm={handleCancel}
-                    onClose={() => setIsModalOpen(false)}
+                    onClose={() => setIsConfirmModalOpen(false)}
                 />
             }
             {library.books.length === 0 ? (
@@ -147,7 +148,7 @@ export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
                         <button
                             className="flex w-[162px] px-[10px] py-4 justify-center items-center gap-[10px] rounded-[12px] bg-black"
                             disabled={isDisabled}
-                            onClick={handleMoveBboks}
+                            onClick={() => setIsMoveModalOpen(true)}
                         >
                             <p className="text-center text-white text-subtitle-02-sb">서재 이동</p>
                         </button>
