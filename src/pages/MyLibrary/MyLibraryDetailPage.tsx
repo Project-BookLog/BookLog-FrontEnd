@@ -91,7 +91,9 @@ export function MyLibraryDetail({ libraries }: { libraries: Library[] }) {
 
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center bg-bg">
+    <div className="relative min-h-screen w-full flex flex-col items-center bg-bg">
+      {isActionDropDownOpen && ( <div className="absolute inset-0 z-40 bg-b-op15 backdrop-blur-[2px]" /> )}
+      {isSortDropDownOpen && ( <div className="absolute inset-0 z-40 bg-b-op15 backdrop-blur-[2px]" /> )}
         <div className="relative flex h-[62px] px-5 pt-5 pb-2 justify-between items-center self-stretch">
             <BackIcon
                 className="w-6 h-6 cursor-pointer"
@@ -102,12 +104,7 @@ export function MyLibraryDetail({ libraries }: { libraries: Library[] }) {
               className="w-6 h-6 cursor-pointer"
               onClick={() => setIsActionDropDownOpen(!isActionDropDownOpen)}
             />
-            {isActionDropDownOpen && (
-              <div
-                className="fixed inset-0 z-40 bg-b-op15 backdrop-blur-[2px]"
-                onClick={() => setIsActionDropDownOpen(false)}
-              />
-            )}
+            
             {isActionDropDownOpen && (
               <LibraryActionDropDown
                 actions={actions}
@@ -136,12 +133,6 @@ export function MyLibraryDetail({ libraries }: { libraries: Library[] }) {
               <p className="text-gray-600 text-body-03">{currentSortLabel}</p>
               <ArrowDown className="w-[14px] h-[14px]"/>
             </button>
-            {isSortDropDownOpen && (
-              <div
-                className="fixed inset-0 z-40 bg-b-op15 backdrop-blur-[2px]"
-                onClick={() => setIsSortDropDownOpen(false)}
-              />
-            )}
             {isSortDropDownOpen && (
               <SortDropDown
                 currentSort={sortOrder}
