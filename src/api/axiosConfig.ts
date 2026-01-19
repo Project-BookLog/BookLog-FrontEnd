@@ -5,7 +5,7 @@ export const publicApi: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 10000,
   headers: { 
-    'Content-Type': '*/*',
+    'Content-Type': 'application/json',
   },
 });
 
