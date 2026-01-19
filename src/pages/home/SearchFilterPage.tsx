@@ -21,15 +21,20 @@ function SearchFilterPage() {
     const next = new URLSearchParams(searchParams);
     next.set("tab", "book");
     
-    // 필터 상태 URL에 저장 
     if (filter.mood.length > 0) {
       next.set("mood", filter.mood.join(","));
+    } else {
+      next.delete("mood");
     }
     if (filter.style.length > 0) {
       next.set("style", filter.style.join(","));
+    } else {
+      next.delete("style");
     }
     if (filter.immersion.length > 0) {
       next.set("immersion", filter.immersion.join(","));
+    } else {
+      next.delete("immersion");
     }
     
     navigate(`/search?${next.toString()}`);
