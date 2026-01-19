@@ -4,6 +4,7 @@ import type { Book } from "../../../types/book.types";
 import { BackIcon, Reset } from "../../../assets/icons";
 import { SortDropDown } from "../../common/dropdown/SortDropDown";
 import { BOOK_ORDER, sortOptions } from "../../../enum/book";
+import { FilterChips } from "../../common/FilterChips";
 
 type FilterKey = "mood" | "style" | "immersion";
 
@@ -18,31 +19,6 @@ type BookResultsProps = {
   onResetFilters?: () => void;
 };
 
-type FilterChipProps = {
-  label: string;
-  isActive?: boolean;
-  onClick?: () => void;
-};
-
-
-function FilterChip({ label, isActive, onClick }: FilterChipProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={[
-        "inline-flex h-9 items-center gap-1 whitespace-nowrap rounded-full border px-4 py-1",
-        "text-body-01-m",
-        isActive
-          ? "bg-black text-white"
-          : "border-gray-200 bg-bg text-gray-700",
-      ].join(" ")}
-    >
-      <span>{label}</span>
-      <BackIcon className={isActive? "h-3.5 w-3.5 rotate-270 text-white" : "h-3.5 w-3.5 rotate-270 text-gray-700"}/>
-    </button>
-  );
-}
 
 function BookResults({
   keyword,
@@ -95,14 +71,11 @@ function BookResults({
     }
   }, [items, currentSort]);
 
-  // const handleBookClick = (bookId: number) => {
-  //   navigate(`/bookdetail/${bookId}`);
-  // };
+
   const handleBookClick = () => {
     navigate("/bookdetail");
   };
   
-
 
   const renderItems = mode === "full" ? sortedItems : items;
 
@@ -157,20 +130,27 @@ function BookResults({
             </button>
 
             <div className="flex flex-1 gap-2 overflow-x-auto no-scrollbar">
-              <FilterChip
-                label={selectedFilters?.mood || "분위기"}
-                isActive={!!selectedFilters?.mood}
-                onClick={() => goFilter("mood")}
-              />
-              <FilterChip
-                label={selectedFilters?.style || "문체"}
-                isActive={!!selectedFilters?.style}
-                onClick={() => goFilter("style")}
-              />
-              <FilterChip
-                label={selectedFilters?.immersion || "몰입도"}
-                isActive={!!selectedFilters?.immersion}
-                onClick={() => goFilter("immersion")}
+              <FilterChips
+                chips={[
+                  {
+                    key: "mood",
+                    label: selectedFilters?.mood || "분위기",
+                    isActive: !!selectedFilters?.mood,
+                    onClick: () => goFilter("mood"),
+                  },
+                  {
+                    key: "style",
+                    label: selectedFilters?.style || "문체",
+                    isActive: !!selectedFilters?.style,
+                    onClick: () => goFilter("style"),
+                  },
+                  {
+                    key: "immersion",
+                    label: selectedFilters?.immersion || "몰입도",
+                    isActive: !!selectedFilters?.immersion,
+                    onClick: () => goFilter("immersion"),
+                  },
+                ]}
               />
             </div>
           </div>
