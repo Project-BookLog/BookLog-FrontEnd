@@ -2,7 +2,7 @@ import { BackIcon } from "../../assets/icons";
 
 type FilterKey = "mood" | "style" | "immersion";
 
-type FilterChip = {
+export type FilterChip = {
   key: FilterKey;
   label: string;
   isActive: boolean;

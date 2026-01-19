@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import NavBarTop from "../../components/common/navbar/NavBarTop";
@@ -12,15 +12,15 @@ import BookResults from "../../components/home/search/BookResults";
 import { BOOKS } from "../../data/book.mock";
 import { AUTHORS } from "../../data/author.mock";
 import { useFilter } from "../../hooks/useFilter";
-import { initialFilterState } from "../../context/FilterContext";
+import type { Mood, Style, Immersion } from "../../context/FilterContext"
 
 const TABS = ["전체", "작가", "도서"] as const;
 type TabType = (typeof TABS)[number];
 
 type BookWithFilter = (typeof BOOKS)[number] & {
-  mood?: string;
-  style?: string;
-  immersion?: string;
+  mood?: Mood;
+  style?: Style;
+  immersion?: Immersion;
 };
 
 function SearchPage() {
@@ -30,7 +30,7 @@ function SearchPage() {
   const tabFromUrl = searchParams.get("tab");
 
   const [keyword, setKeyword] = useState(qFromUrl);
-  const { filter, setFilter } = useFilter();
+  const { filter, resetFilter } = useFilter();
 
   const [activeTab, setActiveTab] = useState<TabType>(
     tabFromUrl === "book" ? "도서" : "전체"
@@ -55,13 +55,13 @@ function SearchPage() {
       }
       return next;
     });
-    setFilter(initialFilterState);
+    resetFilter();
     setActiveTab("전체");
   };
 
-  const handleResetFilters = () => {
-    setFilter(initialFilterState);
-  };
+  const handleResetFilters = useCallback(() => {
+    resetFilter();
+  }, [resetFilter]);
 
   const handleChangeTab = (tab: TabType) => {
     setActiveTab(tab);
@@ -73,23 +73,31 @@ function SearchPage() {
     });
   };
 
-  const filteredBooks: BookWithFilter[] = useMemo(
-    () =>
-      (BOOKS as BookWithFilter[]).filter((book) => {
-        if (filter.mood && book.mood !== filter.mood) return false;
-        if (filter.style && book.style !== filter.style) return false;
-        if (filter.immersion && book.immersion !== filter.immersion) return false;
-        // 검색어 필터
-        if (keyword.trim().length > 0) {
-          const k = keyword.trim();
-          const inTitle = book.title.includes(k);
-          const inAuthor = book.author.includes(k);
-          if (!inTitle && !inAuthor) return false;
-        }
-        return true;
-      }),
-    [filter.mood, filter.style, filter.immersion, keyword]
-  );
+
+  const filteredBooks: BookWithFilter[] = useMemo(() => {
+    return (BOOKS as BookWithFilter[]).filter((book) => {
+      // 다중 선택 필터링
+      if (filter.mood.length > 0 && !filter.mood.some(m => book.mood === m)) return false;
+      if (filter.style.length > 0 && !filter.style.some(s => book.style === s)) return false;
+      if (filter.immersion.length > 0 && !filter.immersion.some(i => book.immersion === i)) return false;
+      
+      if (keyword.trim().length > 0) {
+        const k = keyword.trim();
+        const inTitle = book.title.includes(k);
+        const inAuthor = book.author.includes(k);
+        if (!inTitle && !inAuthor) return false;
+      }
+      return true;
+    });
+  }, [filter.mood, filter.style, filter.immersion, keyword]);
+
+  // 넘겨줄 선택값
+  const selectedFilters = {
+    mood: filter.mood.length > 0 ? filter.mood.join(", ") : "",
+    style: filter.style.length > 0 ? filter.style.join(", ") : "",
+    immersion: filter.immersion.length > 0 ? filter.immersion.join(", ") : "",
+  };
+
 
   return (
     <div className="min-h-screen bg-bg">
@@ -121,11 +129,11 @@ function SearchPage() {
       <main className="mt-6">
         {!hasKeyword && (
           <>
-            <section className="mb-12 px-6">
+            <section className="mb-12 px-5">
               <RecentSearches items={["궤도", "소년이 온다", "한강"]} />
             </section>
 
-            <section className="px-6">
+            <section className="px-5">
               <RecommendedSearches
                 items={["검색어1", "검색어2", "검색어3", "검색어4", "검색어5"]}
               />
@@ -149,11 +157,8 @@ function SearchPage() {
                   items={filteredBooks.slice(0, 3)}
                   onMoreClick={() => handleChangeTab("도서")}
                   mode="compact"
-                  selectedFilters={{
-                    mood: filter.mood ?? "",
-                    style: filter.style ?? "",
-                    immersion: filter.immersion ?? "",
-                  }}
+                  selectedFilters={selectedFilters}
+                  onResetFilters={handleResetFilters}
                 />
               </div>
             )}
@@ -173,12 +178,8 @@ function SearchPage() {
                 total={filteredBooks.length}
                 items={filteredBooks}
                 mode="full"
+                selectedFilters={selectedFilters}
                 onResetFilters={handleResetFilters}
-                selectedFilters={{
-                  mood: filter.mood ?? "",
-                  style: filter.style ?? "",
-                  immersion: filter.immersion ?? "",
-                }}
               />
             )}
           </>
