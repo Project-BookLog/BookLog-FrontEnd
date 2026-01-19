@@ -4,19 +4,19 @@ import type { Book } from "../../../types/book.types";
 import { BackIcon, Reset } from "../../../assets/icons";
 import { SortDropDown } from "../../common/dropdown/SortDropDown";
 import { BOOK_ORDER, sortOptions } from "../../../enum/book";
-import { FilterChips } from "../../common/FilterChips";
+import { FilterChips, type FilterChip } from "../../common/FilterChips";
 
 type FilterKey = "mood" | "style" | "immersion";
 
-type BookResultsProps = {
+export type BookResultsProps = {
   keyword: string;
   total: number;
   items: Book[];
   mode?: "compact" | "full";
   onMoreClick?: () => void;
-
   selectedFilters?: Partial<Record<FilterKey, string>>;
   onResetFilters?: () => void;
+  onFilterClick?: (key: FilterKey) => void;
 };
 
 
@@ -26,17 +26,16 @@ function BookResults({
   items,
   mode = "compact",
   onMoreClick,
-  selectedFilters,
+  selectedFilters = {},
   onResetFilters,
+  onFilterClick,
 }: BookResultsProps) {
   const navigate = useNavigate();
 
   const isCompact = mode === "compact";
   const showMoreButton = isCompact && total > items.length;
 
-  const [currentSort, setCurrentSort] = useState<BOOK_ORDER>(
-    BOOK_ORDER.NEWEST,
-  );
+  const [currentSort, setCurrentSort] = useState<BOOK_ORDER>(BOOK_ORDER.NEWEST);
   const [isSortOpen, setIsSortOpen] = useState(false);
 
   const currentSortLabel =
@@ -44,38 +43,31 @@ function BookResults({
 
   const sortedItems = useMemo(() => {
     const copied = [...items];
-
     switch (currentSort) {
       case BOOK_ORDER.NEWEST:
-        return copied.sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() -
-            new Date(a.createdAt).getTime(),
+        return copied.sort((a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
       case BOOK_ORDER.OLDEST:
-        return copied.sort(
-          (a, b) =>
-            new Date(a.createdAt).getTime() -
-            new Date(b.createdAt).getTime(),
+        return copied.sort((a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
         );
       case BOOK_ORDER.TITLE:
         return copied.sort((a, b) =>
-          a.title.localeCompare(b.title, "ko", { sensitivity: "base" }),
+          a.title.localeCompare(b.title, "ko", { sensitivity: "base" })
         );
       case BOOK_ORDER.AUTHOR:
         return copied.sort((a, b) =>
-          a.author.localeCompare(b.author, "ko", { sensitivity: "base" }),
+          a.author.localeCompare(b.author, "ko", { sensitivity: "base" })
         );
       default:
         return copied;
     }
   }, [items, currentSort]);
 
-
   const handleBookClick = () => {
     navigate("/bookdetail");
   };
-  
 
   const renderItems = mode === "full" ? sortedItems : items;
 
@@ -87,8 +79,31 @@ function BookResults({
     navigate(`/search/filter?${params.toString()}`);
   };
 
+  const filterChips: FilterChip[] = [
+    {
+      key: "mood",
+      label: selectedFilters.mood || "분위기",
+      isActive: !!selectedFilters.mood,
+      onClick: () => onFilterClick ? onFilterClick("mood") : goFilter("mood"),
+    },
+    {
+      key: "style",
+      label: selectedFilters.style || "문체",
+      isActive: !!selectedFilters.style,
+      onClick: () => onFilterClick ? onFilterClick("style") : goFilter("style"),
+    },
+    {
+      key: "immersion",
+      label: selectedFilters.immersion || "몰입도",
+      isActive: !!selectedFilters.immersion,
+      onClick: () => onFilterClick ? onFilterClick("immersion") : goFilter("immersion"),
+    },
+  ];
+
+  const hasAnyFilter = Object.values(selectedFilters).some(Boolean);
+
   return (
-    <section className="relative px-6">
+    <section className="relative">
       {isSortOpen && (
         <button
           type="button"
@@ -99,18 +114,13 @@ function BookResults({
 
       {/* compact 헤더 */}
       {isCompact && (
-        <header className="mb-3 flex items-center justify-between">
+        <header className="mb-3 flex items-center justify-between px-5">
           <div className="flex items-baseline gap-2">
             <h2 className="text-title-02 text-black">도서</h2>
             <span className="text-caption-01 text-primary">{total}권</span>
           </div>
-
           {showMoreButton && (
-            <button
-              type="button"
-              className="text-xs text-gray-500"
-              onClick={onMoreClick}
-            >
+            <button type="button" className="text-xs text-gray-500" onClick={onMoreClick}>
               <BackIcon className="h-5 w-5 rotate-180" />
             </button>
           )}
@@ -120,42 +130,22 @@ function BookResults({
       {/* full 모드 상단 필터/정렬 */}
       {!isCompact && (
         <>
-          <div className="mb-5 flex items-center gap-3">
+          <div className="mb-5 flex items-center gap-3 pl-5">
             <button
               type="button"
               onClick={onResetFilters}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-gray-100"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-gray-100 disabled:opacity-50"
+              disabled={!hasAnyFilter}
             >
               <Reset className="h-4 w-4" />
             </button>
 
-            <div className="flex flex-1 gap-2 overflow-x-auto no-scrollbar">
-              <FilterChips
-                chips={[
-                  {
-                    key: "mood",
-                    label: selectedFilters?.mood || "분위기",
-                    isActive: !!selectedFilters?.mood,
-                    onClick: () => goFilter("mood"),
-                  },
-                  {
-                    key: "style",
-                    label: selectedFilters?.style || "문체",
-                    isActive: !!selectedFilters?.style,
-                    onClick: () => goFilter("style"),
-                  },
-                  {
-                    key: "immersion",
-                    label: selectedFilters?.immersion || "몰입도",
-                    isActive: !!selectedFilters?.immersion,
-                    onClick: () => goFilter("immersion"),
-                  },
-                ]}
-              />
+            <div className="flex flex-1 gap-2 overflow-x-auto no-scrollbar pr-1">
+              <FilterChips chips={filterChips} />
             </div>
           </div>
 
-          <div className="mb-3 flex items-center justify-between">
+          <div className="mb-3 flex items-center justify-between px-5">
             <p className="text-body-03 text-gray-600">
               총 <span className="text-primary">{total}</span>권
             </p>
@@ -187,18 +177,14 @@ function BookResults({
       )}
 
       {/* 공통 리스트 */}
-      <div className="mb-10 space-y-3">
+      <div className="mb-10 space-y-3 px-5">
         {renderItems.map((book) => {
           const { CoverIcon } = book;
-
-
-
           return (
             <button
               key={book.id}
               type="button"
               className="flex w-full items-center gap-5"
-              // onClick={() => handleBookClick(book.id)} 
               onClick={handleBookClick}
             >
               <div className="flex h-26 w-17 items-center justify-center overflow-hidden rounded">

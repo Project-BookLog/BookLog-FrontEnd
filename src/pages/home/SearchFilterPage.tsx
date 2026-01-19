@@ -1,4 +1,4 @@
-import { useNavigate, useSearchParams  } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useFilter } from "../../hooks/useFilter";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import { useEffect } from "react";
@@ -8,27 +8,41 @@ const styles = ["간결한", "화려한", "담백한", "섬세한", "직설적",
 const immersions = ["기분 전환", "지적인 탐구", "압도적 몰입", "짙은 여운"] as const;
 
 function SearchFilterPage() {
-  const { filter, setFilter } = useFilter();
+  const { filter, toggleFilter } = useFilter();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const hasAnyFilter =
-    !!filter.mood || !!filter.style || !!filter.immersion;
+    filter.mood.length > 0 || 
+    filter.style.length > 0 || 
+    filter.immersion.length > 0;
 
   const handleApply = () => {
     const next = new URLSearchParams(searchParams);
-    next.set("tab", "book"); 
+    next.set("tab", "book");
+    
+    // 필터 상태 URL에 저장 
+    if (filter.mood.length > 0) {
+      next.set("mood", filter.mood.join(","));
+    }
+    if (filter.style.length > 0) {
+      next.set("style", filter.style.join(","));
+    }
+    if (filter.immersion.length > 0) {
+      next.set("immersion", filter.immersion.join(","));
+    }
+    
     navigate(`/search?${next.toString()}`);
   };
 
-    useEffect(() => {
+  useEffect(() => {
     const original = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = original;
     };
   }, []);
-  
+
   return (
     <div className="min-h-screen bg-bg">
       <header>
@@ -44,16 +58,11 @@ function SearchFilterPage() {
           <p className="mb-3 text-title-02 text-[#000000]">분위기</p>
           <div className="flex flex-wrap gap-2">
             {moods.map((m) => {
-              const active = filter.mood === m;
+              const active = filter.mood.includes(m);
               return (
                 <button
                   key={m}
-                  onClick={() =>
-                    setFilter({
-                      ...filter,
-                      mood: active ? null : m,
-                    })
-                  }
+                  onClick={() => toggleFilter("mood", m)}
                   className={
                     "h-9 rounded-full px-3 py-1.5 text-body-01-m " +
                     (active
@@ -69,20 +78,15 @@ function SearchFilterPage() {
         </section>
 
         {/* 문체 */}
-        <section >
+        <section>
           <p className="mb-3 text-title-02 text-[#000000]">문체</p>
           <div className="flex flex-wrap gap-2">
             {styles.map((s) => {
-              const active = filter.style === s;
+              const active = filter.style.includes(s);
               return (
                 <button
                   key={s}
-                  onClick={() =>
-                    setFilter({
-                      ...filter,
-                      style: active ? null : s,
-                    })
-                  }
+                  onClick={() => toggleFilter("style", s)}
                   className={
                     "h-9 rounded-full px-3 py-1.5 text-body-01-m " +
                     (active
@@ -102,16 +106,11 @@ function SearchFilterPage() {
           <p className="mb-3 text-title-02 text-[#000000]">몰입도</p>
           <div className="flex flex-wrap gap-2">
             {immersions.map((i) => {
-              const active = filter.immersion === i;
+              const active = filter.immersion.includes(i);
               return (
                 <button
                   key={i}
-                  onClick={() =>
-                    setFilter({
-                      ...filter,
-                      immersion: active ? null : i,
-                    })
-                  }
+                  onClick={() => toggleFilter("immersion", i)}
                   className={
                     "h-9 rounded-full px-3 py-1.5 text-body-01-m " +
                     (active
