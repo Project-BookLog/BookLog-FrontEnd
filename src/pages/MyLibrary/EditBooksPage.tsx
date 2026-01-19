@@ -24,8 +24,8 @@ export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
 
     const navigate = useNavigate();
     const { libraryName } = useParams<{libraryName: string}>();
-    const [ searchParama ] = useSearchParams();
-    const activeTab = searchParama.get("tab") as LibraryTab | null;
+    const [ searchParams ] = useSearchParams();
+    const activeTab = searchParams.get("tab") as LibraryTab | null;
     const [selectedBooks, setSelectedBooks] = useState<number[]>([]);
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
     const [isMoveModalOpen, setIsMoveModalOpen] = useState<boolean>(false);
@@ -101,7 +101,7 @@ export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
         navigate(`/my-library/${libraryName}`);
     }
 
-    const handleMoveBboks = () => {
+    const handleMoveBooks = () => {
         console.log("이동할 책 ID:", selectedBooks);
         showToast("서재 이동이 완료되었어요.");
         navigate(`/my-library/${libraryName}`);
@@ -283,7 +283,7 @@ export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
                             <button
                                 className="flex w-[120px] px-[10px] py-[14px] justify-center items-center gap-[10px] rounded-[8px] bg-primary text-center text-white text-subtitle-02-sb cursor-pointer"
                                 disabled={targetLibraryName === null}
-                                onClick={handleMoveBboks}
+                                onClick={handleMoveBooks}
                             >
                                 적용
                             </button>
