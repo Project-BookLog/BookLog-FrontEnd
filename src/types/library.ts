@@ -7,3 +7,5 @@ export type Library = {
   books: Book[];
   sort: BOOK_ORDER;
 };
+
+export type LibraryTab = "ALL" | "WISHLIST" | "READING" | "DONE";

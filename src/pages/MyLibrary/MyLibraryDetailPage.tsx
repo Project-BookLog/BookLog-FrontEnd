@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import type { Library } from "../../types/library";
+import type { Library, LibraryTab } from "../../types/library";
 import { ArrowDown, BackIcon, Kebab } from "../../assets/icons";
 import { useMemo, useState } from "react";
 import { BookCard } from "../../components/myLibrary/BookCard";
@@ -7,8 +7,6 @@ import { ReadingBookCard } from "../../components/myLibrary/ReadingBookCard";
 import { BOOK_ORDER, sortOptions } from "../../enum/book";
 import { SortDropDown } from "../../components/common/dropdown/SortDropDown";
 import { LibraryActionDropDown, type LibraryAction } from "../../components/common/dropdown/LibraryActionDropDown";
-
-type LibraryTab = "ALL" | "WISHLIST" | "READING" | "DONE";
 
 const TABS = [
   { key: "ALL", label: "전체" },
@@ -46,7 +44,10 @@ export function MyLibraryDetail({ libraries }: { libraries: Library[] }) {
     },
     {
       label: "도서 목록 편집",
-      onClick: () => navigate("edit-books"),
+      onClick: () => {
+        if (library?.name === "전체 도서") navigate(`edit-books`);
+        else navigate(`edit-books?tab=${activeTab}`);
+        }
     },
     {
       label: "중단한 책 보기",
