@@ -70,4 +70,11 @@ export const libraries: Library[] = [
       },],
     sort: BOOK_ORDER.NEWEST,
   },
+  {
+    name: "서재2",
+    isPublic: true,
+    books: [],
+    sort: BOOK_ORDER.NEWEST,
+  },
+  
 ];
