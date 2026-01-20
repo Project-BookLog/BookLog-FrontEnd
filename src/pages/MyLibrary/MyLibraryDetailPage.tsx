@@ -51,7 +51,7 @@ export function MyLibraryDetail({ libraries }: { libraries: Library[] }) {
     },
     {
       label: "중단한 책 보기",
-      onClick: () => navigate("stopped"),
+      onClick: () => navigate("/my-library/stopped"),
     },
   ];
 

@@ -29,6 +29,8 @@ import { EditBooksPage } from "./pages/MyLibrary/EditBooksPage";
 import AddLibraryPage from "./pages/MyLibrary/AddLibraryPage";
 import EditPage from "./pages/MyLibrary/EditPage";
 import RecordPage from "./pages/MyLibrary/RecordPage";
+import StoppedBooksPage from "./pages/MyLibrary/StoppedBooksPage";
+
 
 // 4. 마이페이지
 import MyPage from "./pages/mypage/MyPage";
@@ -73,6 +75,9 @@ function App() {
         <Route path="/my-library/edit" element={<EditPage />} />
         <Route path="/my-library/:libraryName/edit-library" element={<EditPage />} />
         <Route path="/my-library/record/:bookId" element={<RecordPage />} />
+        <Route path="/my-library/stopped" element={<StoppedBooksPage stoppedBooks={libraries.flatMap((lib) => lib.books)} />}
+/>
+
 
 
 
