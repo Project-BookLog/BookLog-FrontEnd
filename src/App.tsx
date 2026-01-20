@@ -35,6 +35,7 @@ import EditProfile from "./pages/mypage/EditProfile";
 import Setting from "./pages/mypage/Setting";
 import ReadingCalendarPage from "./pages/mypage/ReadingCalenderPage";
 import ReadingRankingPage from "./pages/mypage/ReadingRankingPage";
+import { FinishedBooksPage } from "./pages/mypage/FinishedBooksPage";
 
 
 function GlobalToast() {
@@ -78,6 +79,7 @@ function App() {
         <Route path="/setting" element={<Setting />} />
         <Route path="/mypage/readingcalendar" element={<ReadingCalendarPage />} />
         <Route path="/mypage/readingranking" element={<ReadingRankingPage />} />
+        <Route path="/mypage/finished" element={<FinishedBooksPage libraries={libraries}/>} />
         
       </Routes>
 
