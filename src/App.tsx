@@ -79,7 +79,7 @@ function App() {
         <Route path="/setting" element={<Setting />} />
         <Route path="/mypage/readingcalendar" element={<ReadingCalendarPage />} />
         <Route path="/mypage/readingranking" element={<ReadingRankingPage />} />
-        <Route path="mypage/finished" element={<FinishedBooksPage libraries={libraries}/>} />
+        <Route path="/mypage/finished" element={<FinishedBooksPage libraries={libraries}/>} />
         
       </Routes>
 
