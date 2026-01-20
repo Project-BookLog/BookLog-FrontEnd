@@ -22,12 +22,13 @@ import BooklogDetailPage from "./pages/booklog/BooklogDetailPage";
 import UserProfilePage from "./pages/mypage/UserProfilePage";
 
 // 3. 서재
-import { MyLibraryPage } from "./pages/myLibrary/MyLibraryPage";
+import { MyLibraryPage } from "./pages/MyLibrary/MyLibraryPage";
 import { libraries } from "./data/myLibrary.mock";
-import { MyLibraryDetail } from "./pages/myLibrary/MyLibraryDetailPage";
-import { EditBooksPage } from "./pages/myLibrary/EditBooksPage";
-import AddLibraryPage from "./pages/myLibrary/AddLibraryPage";
-import EditPage from "./pages/myLibrary/EditPage";
+import { MyLibraryDetail } from "./pages/MyLibrary/MyLibraryDetailPage";
+import { EditBooksPage } from "./pages/MyLibrary/EditBooksPage";
+import AddLibraryPage from "./pages/MyLibrary/AddLibraryPage";
+import EditPage from "./pages/MyLibrary/EditPage";
+import RecordPage from "./pages/MyLibrary/RecordPage";
 
 // 4. 마이페이지
 import MyPage from "./pages/mypage/MyPage";
@@ -70,6 +71,10 @@ function App() {
         <Route path="/my-library/:libraryName/edit-books" element={<EditBooksPage libraries={libraries}/>} />
         <Route path="/my-library/add" element={<AddLibraryPage />} />
         <Route path="/my-library/edit" element={<EditPage />} />
+        <Route path="/my-library/:libraryName/edit-library" element={<EditPage />} />
+        <Route path="/my-library/record/:bookId" element={<RecordPage />} />
+
+
 
         {/* 4. 마이페이지 */}
         <Route path="/mypage" element={<MyPage />} />
