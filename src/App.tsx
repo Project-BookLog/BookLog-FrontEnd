@@ -55,7 +55,7 @@ function App() {
         {/* 1. 홈 */}
         <Route path="/" element={<HomePage />} />
 
-        {/* ✅ 검색 필터는 search 라우트들에만 Provider 적용 */}
+        {/* ✅ 필터 사용 라우트들에만 Provider 적용 */}
         <Route
           element={
             <FilterProvider>
@@ -63,16 +63,17 @@ function App() {
             </FilterProvider>
           }
         >
+          {/* 1. 홈 - 검색 */}
           <Route path="/search" element={<SearchPage />} />
           <Route path="/search/filter" element={<SearchFilterPage />} />
+
+          {/* 2. 북로그 */}
+          <Route path="/booklog" element={<BooklogPage />} />
+          <Route path="/booklog/filter" element={<BooklogFilterPage />} />
+          <Route path="/booklog/:booklogId" element={<BooklogDetailPage />} />
         </Route>
 
         <Route path="/bookdetail" element={<BookDetail />} />
-
-        {/* 2. 북로그 */}
-        <Route path="/booklog" element={<BooklogPage />} />
-        <Route path="/booklog/filter" element={<BooklogFilterPage />} />
-        <Route path="/booklog/:booklogId" element={<BooklogDetailPage />} />
 
         {/* 3. 서재 */}
         <Route path="/my-library" element={<MyLibraryPage libraries={libraries} />} />
