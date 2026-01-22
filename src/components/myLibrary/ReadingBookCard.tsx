@@ -33,7 +33,7 @@ export const ReadingBookCard = ({book}: BookCardProps) => {
                         className="h-[12px] shrink-0 rounded-[4px] bg-[rgba(0,0,0,0.08)]"
                         style={{width: `${(71 - ((71 * book.progress) / 100))}px`}}
                     />
-                    <p className="text-black text-right font-en text-caption-02">{book.progress}%</p>
+                    <p className="text-black text-right text-en-caption-02">{book.progress}%</p>
                 </div>
             </div>
         </div>

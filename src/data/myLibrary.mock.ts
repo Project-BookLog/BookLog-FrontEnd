@@ -13,7 +13,7 @@ export const libraries: Library[] = [
         author: "a",
         publisher: "ㄱ",
         createdAt: "2020-01-01",
-        progress: 1,
+        progress: 100,
         CoverIcon: Dummy_book,
       },
       {
@@ -22,7 +22,7 @@ export const libraries: Library[] = [
         author: "b",
         publisher: "ㄴ",
         createdAt: "2021-01-01",
-        progress: 2,
+        progress: 100,
         CoverIcon: Dummy_book,
       },
       {
@@ -31,7 +31,7 @@ export const libraries: Library[] = [
         author: "c",
         publisher: "ㄷ",
         createdAt: "2022-01-01",
-        progress: 3,
+        progress: 100,
         CoverIcon: Dummy_book,
       },
       {
@@ -40,7 +40,7 @@ export const libraries: Library[] = [
         author: "d",
         publisher: "ㄹ",
         createdAt: "2023-01-01",
-        progress: 4,
+        progress: 100,
         CoverIcon: Dummy_book,
       },
 
