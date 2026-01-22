@@ -21,6 +21,14 @@ function getBookTabByProgress(progress: number): Exclude<LibraryTab, "ALL"> {
   return "READING";
 }
 
+/**
+ * Render the detailed view for a specific library with tabbed filtering, sorting, and library actions.
+ *
+ * Renders the header (back and action menu), tab bar, book count and sort control, and a list of books filtered by the active tab and ordered by the selected sort.
+ *
+ * @param libraries - Array of library objects used to locate and display the selected library by route parameter
+ * @returns The library detail view as a JSX element
+ */
 export function MyLibraryDetail({ libraries }: { libraries: Library[] }) {
 
   const { libraryName } = useParams();

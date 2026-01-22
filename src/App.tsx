@@ -37,11 +37,21 @@ import ReadingCalendarPage from "./pages/mypage/ReadingCalenderPage";
 import ReadingRankingPage from "./pages/mypage/ReadingRankingPage";
 import UserProfilePage from "./pages/mypage/UserProfilePage";
 
+/**
+ * Renders a global toast when a toast message is present.
+ *
+ * @returns A Toast element displaying the current message, or `null` if no message is set.
+ */
 function GlobalToast() {
   const { message } = useToast();
   return message ? <Toast message={message} /> : null;
 }
 
+/**
+ * Root application component that provides the mobile layout, route configuration for all pages, and global toast rendering.
+ *
+ * @returns The React element tree containing the app's layout, routes, and global toast.
+ */
 function App() {
   return (
     <MobileLayout>

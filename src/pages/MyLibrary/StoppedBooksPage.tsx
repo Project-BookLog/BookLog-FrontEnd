@@ -10,6 +10,15 @@ type Props = {
   stoppedBooks: Library["books"];
 };
 
+/**
+ * Render the "Stopped Books" page with selectable book cards and a delete action.
+ *
+ * Displays either an empty state or a grid of stopped books with multi-select controls,
+ * a "select all" toggle, and a bottom fixed Delete button that deletes selected books.
+ *
+ * @param stoppedBooks - The list of books recorded as stopped; each book object must include an `id` used for selection.
+ * @returns The React element for the stopped-books management page. 
+ */
 export default function StoppedBooksPage({ stoppedBooks }: Props) {
   const navigate = useNavigate();
   const { showToast } = useToast();

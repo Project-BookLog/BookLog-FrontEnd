@@ -5,23 +5,58 @@ import NavBarTop from "../../components/common/navbar/NavBarTop";
 import PlusIcon from "../../assets/icons/plus.svg";
 
 
-/** ---------- utils ---------- */
+/**
+ * Format a number as a two-digit string, adding a leading zero when needed.
+ *
+ * @param n - The number to format
+ * @returns The number as a two-character string, padded with a leading "0" when `n` is less than 10
+ */
 function pad2(n: number) {
   return String(n).padStart(2, "0");
 }
+/**
+ * Get the number of days in a specific month of a given year.
+ *
+ * @param year - The full year (e.g., 2025).
+ * @param month - The month as a number from 1 (January) to 12 (December).
+ * @returns The number of days in the specified month (28–31).
+ */
 function daysInMonth(year: number, month: number) {
   return new Date(year, month, 0).getDate();
 }
+/**
+ * Gets the Korean weekday name for the given calendar date.
+ *
+ * @param y - The full year (e.g., 2024)
+ * @param m - The month, 1 through 12
+ * @param d - The day of the month, starting at 1
+ * @returns The weekday in Korean: `'일' | '월' | '화' | '수' | '목' | '금' | '토'`
+ */
 function weekdayKo(y: number, m: number, d: number) {
   const dayNames = ["일", "월", "화", "수", "목", "금", "토"] as const;
   const dow = new Date(y, m - 1, d).getDay();
   return dayNames[dow];
 }
+/**
+ * Format a date as a Korean date string that includes the weekday.
+ *
+ * @param y - The full year (e.g., 2025)
+ * @param m - The month, 1 through 12
+ * @param d - The day of the month, starting at 1
+ * @returns A string in the form "YYYY. M. D. 요일", where `요일` is the Korean weekday name (e.g., "2025. 1. 22. 수요일")
+ */
 function formatKoreanDateWithWeekday(y: number, m: number, d: number) {
   return `${y}. ${m}. ${d}. ${weekdayKo(y, m, d)}요일`;
 }
 
-/** ---------- UI parts ---------- */
+/**
+ * Renders a selectable pill-shaped button with optional active styling.
+ *
+ * @param label - The text shown inside the pill
+ * @param active - When true, applies the active (selected) visual style
+ * @param onClick - Callback invoked when the pill is clicked
+ * @returns The button element representing the pill
+ */
 function Pill({
   label,
   active,
@@ -48,6 +83,11 @@ function Pill({
   );
 }
 
+/**
+ * Renders a circular plus button used to add a shelf.
+ *
+ * @param onClick - Optional callback invoked when the button is clicked
+ */
 function PlusPill({ onClick }: { onClick?: () => void }) {
   return (
     <button
@@ -61,6 +101,12 @@ function PlusPill({ onClick }: { onClick?: () => void }) {
   );
 }
 
+/**
+ * Renders a circular "clear" SVG icon (faint filled circle with an "X").
+ *
+ * @param className - Optional CSS class applied to the root <svg> element
+ * @returns A JSX element containing an SVG clear/close icon
+ */
 function ClearIcon({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
@@ -84,6 +130,19 @@ const ITEM_H = 45;
 const VISIBLE_ROWS = 3;
 const PADDING_ITEMS = 1;
 
+/**
+ * Renders a vertically scrollable wheel column for selecting a numeric value.
+ *
+ * The column displays the provided values with padding above and below, keeps the active
+ * value centered, and snaps to the nearest value when the user scrolls. When the selected
+ * value changes due to user interaction, `onChange` is called with the new value.
+ *
+ * @param values - Array of numeric options to display in the column (ordered).
+ * @param value - The currently selected numeric value; the column centers this value.
+ * @param onChange - Called with the newly selected value after the column snaps to it.
+ * @param format - Function that returns the display string for each numeric value.
+ * @returns A React element that renders the wheel-style selectable column.
+ */
 function WheelColumn({
   values,
   value,
@@ -175,6 +234,13 @@ function WheelColumn({
   );
 }
 
+/**
+ * Render an inline three-column wheel picker for selecting year, month, and day.
+ *
+ * @param value - The currently selected date `{ y, m, d }`.
+ * @param onChange - Called with the updated date `{ y, m, d }` when the selection changes.
+ * @returns A React element that displays synchronized year, month, and day wheel columns.
+ */
 function InlineDatePicker({
   value,
   onChange,
@@ -242,6 +308,16 @@ function InlineDatePicker({
 /** ---------- Page ---------- */
 type ReadStatus = "읽을 예정" | "읽는 중" | "완독" | "중단";
 
+/**
+ * Renders the "독서 기록" page UI for creating or updating a reading record.
+ *
+ * The page includes selectable reading status and shelf pills, an inline wheel-style
+ * date picker with Korean weekday formatting, a numeric pages-read input with clear
+ * control and validation, and a bottom "적용" button that becomes enabled when the
+ * form is complete.
+ *
+ * @returns A React element that renders the RecordPage user interface.
+ */
 export default function RecordPage() {
   const navigate = useNavigate();
 
