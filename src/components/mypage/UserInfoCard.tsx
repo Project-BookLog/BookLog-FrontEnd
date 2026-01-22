@@ -44,7 +44,10 @@ function UserInfoCard({ user }: UserInfoCardProps) {
             </div>
             <div className="h-10 w-[1px] bg-gray-100" />
 
-            <div className="flex flex-col items-center gap-2">
+            <div
+              className="flex flex-col items-center gap-2 cursor-pointer"
+              onClick={() => navigate("my-booklog")}
+            >
               <div className="text-caption-02 text-gray-700">나의 북로그</div>
               <div className="text-title-02 text-black">
                 {user.booklogCount}
@@ -52,7 +55,10 @@ function UserInfoCard({ user }: UserInfoCardProps) {
             </div>
             <div className="h-10 w-[1px] bg-gray-100" />
 
-            <div className="flex flex-col items-center gap-2">
+            <div
+              className="flex flex-col items-center gap-2 cursor-pointer"
+              onClick={() => navigate("bookmarked")}
+            >
               <div className="text-caption-02 text-gray-700">북마크</div>
               <div className="text-title-02 text-black">
                 {user.bookmarkCount}
