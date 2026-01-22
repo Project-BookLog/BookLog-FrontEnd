@@ -7,6 +7,7 @@ import NavbarBottom from "../../components/common/navbar/NavBarBottom";
 import resetImg from "../../assets/icons/reset.svg";
 import BookmarkImg from "../../assets/icons/Bookmark.svg";
 import BookmarkcImg from "../../assets/icons/Bookmarkc.svg";
+import { useFilter } from "../../hooks/useFilter";
 
 function TagPill({ children }: { children: React.ReactNode }) {
   return (
@@ -161,6 +162,9 @@ function PostCard({ post }: { post: Post }) {
  *  페이지
  *  ----------------------------- */
 export default function BooklogPage() {
+  const navigate = useNavigate();
+  const { resetFilter } = useFilter();
+
   const posts = useMemo<Post[]>(
     () => [
       {
@@ -193,21 +197,21 @@ export default function BooklogPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F7F5F3] pb-24">
+    <div className="min-h-screen bg-bg pb-24">
       <div className="mx-auto w-full max-w-[420px]">
         {/* 타이틀 */}
         <header className="px-4 pt-8">
-          <h1 className="text-title-02 text-[#0A0A0A]">북로그</h1>
+          <h1 className="text-en-head text-[#0A0A0A]">북로그</h1>
         </header>
 
-        {/* 필터 */}
+        {/* ✅ 필터 (홈 검색 필터 페이지로 연결 + 리셋은 FilterContext) */}
         <div className="mt-4">
           <FilterBar
             resetSrc={resetImg}
-            onReset={() => console.log("reset")}
-            onClickMood={() => console.log("분위기")}
-            onClickStyle={() => console.log("문체")}
-            onClickImmersion={() => console.log("몰입도")}
+            onReset={resetFilter}
+            onClickMood={() => navigate("/booklog/filter")}
+            onClickStyle={() => navigate("/booklog/filter")}
+            onClickImmersion={() => navigate("/booklog/filter")}
           />
         </div>
 

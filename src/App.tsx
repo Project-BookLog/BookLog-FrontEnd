@@ -18,6 +18,7 @@ import BookDetail from "./pages/home/BookDetail";
 // 2. 북로그
 import BooklogPage from "./pages/booklog/BooklogPage";
 import BooklogDetailPage from "./pages/booklog/BooklogDetailPage";
+import BooklogFilterPage from "./pages/booklog/BooklogFilterPage";
 
 // 3. 서재
 import { MyLibraryPage } from "./pages/MyLibrary/MyLibraryPage";
@@ -53,6 +54,8 @@ function App() {
 
         {/* 1. 홈 */}
         <Route path="/" element={<HomePage />} />
+
+        {/* ✅ 검색 필터는 search 라우트들에만 Provider 적용 */}
         <Route
           element={
             <FilterProvider>
@@ -65,10 +68,10 @@ function App() {
         </Route>
 
         <Route path="/bookdetail" element={<BookDetail />} />
-        {/* <Route path="/book/:bookId" element={<BookDetail />} /> */}
 
         {/* 2. 북로그 */}
         <Route path="/booklog" element={<BooklogPage />} />
+        <Route path="/booklog/filter" element={<BooklogFilterPage />} />
         <Route path="/booklog/:booklogId" element={<BooklogDetailPage />} />
 
         {/* 3. 서재 */}

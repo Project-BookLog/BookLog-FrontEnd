@@ -79,8 +79,8 @@ export default function AddLibraryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F5F3]">
-      <div className="mx-auto w-full max-w-[420px] bg-[#F7F5F3] pb-28">
+    <div className="min-h-screen bg-bg">
+      <div className="mx-auto w-full max-w-[420px] bg-bg pb-28">
         {/* 상단 네비 */}
         <NavBarTop title="서재 추가하기" onBack={handleBack} />
 
@@ -126,7 +126,7 @@ export default function AddLibraryPage() {
         </section>
 
         {/* 하단 버튼 */}
-        <div className="fixed bottom-0 left-1/2 z-50 w-full max-w-[375px] -translate-x-1/2 bg-[#F7F5F3] px-4 pb-6 pt-3">
+        <div className="fixed bottom-0 left-1/2 z-50 w-full max-w-[375px] -translate-x-1/2 bg-bg px-4 pb-6 pt-3">
           <button
             type="button"
             disabled={!isValid}
