@@ -26,17 +26,17 @@ export default function BookTag({ title, author }: Props) {
       aria-label="책 태그"
     >
       {open ? (
-        // ✅ 책 제목/저자명 태그 (124x33, hug 가능)
-        <div className="flex items-center gap-[10px] px-[16px]">
+        // ✅ 책 제목/저자명 태그
+        <div className="flex items-center gap-[8px] px-[16px] py-[6px]">
           <span className="text-body-01-sb text-white whitespace-nowrap">
             {title}
           </span>
-          <span className="text-caption-01 text-white/80 whitespace-nowrap">
+          <span className="text-en-caption-02 text-[#E7E5E4] whitespace-nowrap">
             {author}
           </span>
         </div>
       ) : (
-        // ✅ @ 태그 (46x33)
+        // ✅ @ 태그 
         <div className="flex items-center justify-center w-[46px]">
           <span className="text-body-01-sb text-white">@</span>
         </div>

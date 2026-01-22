@@ -20,14 +20,16 @@ import BookDetail from "./pages/home/BookDetail";
 import BooklogPage from "./pages/booklog/BooklogPage";
 import BooklogDetailPage from "./pages/booklog/BooklogDetailPage";
 import UserProfilePage from "./pages/mypage/UserProfilePage";
+import BooklogFilterPage from "./pages/booklog/BooklogFilterPage";
+
 
 // 3. 서재
-import { MyLibraryPage } from "./pages/myLibrary/MyLibraryPage";
+import { MyLibraryPage } from "./pages/MyLibrary/MyLibraryPage";
 import { libraries } from "./data/myLibrary.mock";
-import { MyLibraryDetail } from "./pages/myLibrary/MyLibraryDetailPage";
-import { EditBooksPage } from "./pages/myLibrary/EditBooksPage";
-import AddLibraryPage from "./pages/myLibrary/AddLibraryPage";
-import EditPage from "./pages/myLibrary/EditPage";
+import { MyLibraryDetail } from "./pages/MyLibrary/MyLibraryDetailPage";
+import { EditBooksPage } from "./pages/MyLibrary/EditBooksPage";
+import AddLibraryPage from "./pages/MyLibrary/AddLibraryPage";
+import EditPage from "./pages/MyLibrary/EditPage";
 
 // 4. 마이페이지
 import MyPage from "./pages/mypage/MyPage";
@@ -57,12 +59,13 @@ function App() {
         <Route element={<FilterProvider><Outlet /></FilterProvider>}>
           <Route path="/search" element={<SearchPage />} />
           <Route path="/search/filter" element={<SearchFilterPage />} />
+          <Route path="/booklog" element={<BooklogPage />} />
+          <Route path="/booklog/filter" element={<BooklogFilterPage />} />
         </Route>
         <Route path="/bookdetail" element={<BookDetail />} />
         {/* <Route path="/book/:bookId" element={<BookDetail />} /> */}
 
         {/* 2. 북로그 */}
-        <Route path="/booklog" element={<BooklogPage />} />
         <Route path="/booklog/:booklogId" element={<BooklogDetailPage />} />
 
         {/* 3. 서재 */}

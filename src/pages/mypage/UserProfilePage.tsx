@@ -82,11 +82,11 @@ export default function UserProfilePage() {
   const hasBlog = blogPosts.length > 0;
 
   return (
-    <div className="min-h-screen bg-[#F7F5F3]">
+    <div className="min-h-screen bg-bg">
       <NavBarTop title="유저 프로필" />
 
       {/* ✅ 상단 카드 */}
-      <div className="bg-[#F7F5F3] px-5 py-5">
+      <div className="bg-bg px-5 py-5">
         {/* 상단 프로필 라인 */}
         <div className="flex items-center gap-[10px]">
           <div className="grid h-[73px] w-[73px] place-items-center rounded-full bg-[#CDCCCB]">
@@ -158,7 +158,7 @@ export default function UserProfilePage() {
       <div className="h-[8px] bg-[#EFEDEB]" />
 
       {/* ✅ 탭 */}
-      <div className="bg-[#F7F5F3]">
+      <div className="bg-bg">
         <div className="px-1">
           <div className="flex h-[52px] items-end justify-between border-b border-[#E7E5E4]">
             <TabButton

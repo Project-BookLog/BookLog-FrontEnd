@@ -17,9 +17,6 @@ type Post = {
   bookTitle: string;
   bookAuthor: string;
   publisher?: string;
-
-  // ✅ 나중에 API 붙이면 이거 추가해서 쓰면 제일 깔끔함
-  // userId: string;
 };
 
 function MoreIcon({ className = "" }: { className?: string }) {
@@ -29,6 +26,14 @@ function MoreIcon({ className = "" }: { className?: string }) {
       <path d="M12 10.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z" fill="currentColor" />
       <path d="M12 15.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z" fill="currentColor" />
     </svg>
+  );
+}
+
+function TagPill({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="rounded-[4px] bg-[#E4E5F0] px-[8px] py-[3px] text-caption-02 font-medium text-[#3049C0] whitespace-nowrap">
+      {children}
+    </span>
   );
 }
 
@@ -64,8 +69,7 @@ export default function BooklogDetailPage() {
         timeAgo: "3분 전",
         views: 27,
         bookmarkCount: 20,
-        body:
-          "유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글…",
+        body: "유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글…",
         tags: ["잔잔한, 따뜻한", "사유적", "생각이 필요한"],
         bookTitle: "책 제목",
         bookAuthor: "저자명 저",
@@ -75,7 +79,8 @@ export default function BooklogDetailPage() {
     []
   );
 
-  const post = statePost ?? fallbackPosts.find((p) => p.id === postId) ?? fallbackPosts[0];
+  const post =
+    statePost ?? fallbackPosts.find((p) => p.id === postId) ?? fallbackPosts[0];
 
   const similarBooks = useMemo(
     () => [
@@ -111,30 +116,29 @@ export default function BooklogDetailPage() {
     []
   );
 
-  // ✅ 임시: 지금은 post.id를 userId처럼 사용
-  // 나중에 post.userId가 생기면 이 줄만 post.userId로 바꾸면 됨
+  // 임시: 지금은 post.id를 userId처럼 사용
   const profileUserId = post.id;
 
   return (
-    <div className="min-h-screen bg-[#F7F5F3]">
-      <div className="mx-auto w-full max-w-[420px] bg-[#F7F5F3]">
-        {/* ✅ 상단 네비 */}
+    <div className="min-h-screen bg-bg">
+      <div className="mx-auto w-full max-w-[420px] bg-bg">
+        {/* 상단 네비 */}
         <NavBar
           title="책 정보"
           onBack={() => navigate(-1)}
           rightSlot={
             <button
               type="button"
-              className="grid h-10 w-10 place-items-center"
+              className="grid h-7 w-7 place-items-center"
               aria-label="더보기"
               onClick={() => {}}
             >
-              <MoreIcon className="h-5 w-5 text-[#1F1F1F]" />
+              <MoreIcon className="h-7 w-7 text-[#1F1F1F]" />
             </button>
           }
         />
 
-        {/* ✅ 유저 영역 (클릭 시 다른유저프로필로 이동) */}
+        {/* 유저 영역 */}
         <section className="px-4 pt-4">
           <div className="flex items-center justify-between">
             <button
@@ -145,8 +149,10 @@ export default function BooklogDetailPage() {
             >
               <div className="h-10 w-10 rounded-full bg-[#D9D9D9]" />
               <div className="min-w-0">
-                <div className="text-body-01-sb text-[#1F1F1F] truncate">{post.username}</div>
-                <div className="text-caption-01 text-[#8A8A8A] truncate">
+                <div className="text-body-01-sb text-[#1F1F1F] truncate">
+                  {post.username}
+                </div>
+                <div className="text-en-caption-02 text-[#8A8A8A] truncate">
                   {post.email ?? "email@example.com"}
                 </div>
               </div>
@@ -154,7 +160,7 @@ export default function BooklogDetailPage() {
 
             <button
               type="button"
-              className="h-[27px] rounded bg-[#E7E5E4] px-3 text-caption-01 font-medium text-[#4D4D4C]"
+              className="h-[27px] rounded-[6px] bg-[#E7E5E4] px-3 text-en-caption-01 font-medium text-[#4D4D4C]"
               onClick={(e) => e.stopPropagation()}
             >
               팔로우
@@ -162,37 +168,53 @@ export default function BooklogDetailPage() {
           </div>
         </section>
 
-        {/* ✅ BookContent + 사진 (가로 스크롤) */}
-        <section className="mt-4 px-4">
+        {/* 책 카드 + 사진 카드 */}
+        <section className="mt-6 px-5">
           <div
             className="
               flex gap-4
               overflow-x-auto
-              whitespace-nowrap
               pb-1
               [-ms-overflow-style:none]
               [scrollbar-width:none]
               [&::-webkit-scrollbar]:hidden
             "
           >
-            {/* 왼쪽: BookContent */}
-            <div className="flex-shrink-0 w-[240px]">
+            <div className="shrink-0 h-[220px] w-[240px]">
               <BookContent
                 title={post.bookTitle}
                 author={post.bookAuthor}
                 publisher={post.publisher}
-                tags={post.tags}
               />
             </div>
 
-            {/* 오른쪽: 사진 이미지 칸 */}
-            <div className="flex-shrink-0 h-[250px] w-[240px] rounded-[12px] bg-[#727272] grid place-items-center text-caption-01 text-white/80">
+            {/* 오른쪽: 사진 */}
+            <div className="shrink-0 h-[220px] w-[240px] rounded-[12px] bg-[#6F6F6F] grid place-items-center text-caption-01 text-white/80">
               사진
             </div>
           </div>
 
+          {/* ✅ 태그 줄 (스샷처럼 카드 아래) */}
+          <div
+            className="
+              mt-2
+              flex gap-1
+              overflow-x-auto
+              pb-1
+              [-ms-overflow-style:none]
+              [scrollbar-width:none]
+              [&::-webkit-scrollbar]:hidden
+            "
+          >
+            {post.tags.map((t) => (
+              <TagPill key={t}>{t}</TagPill>
+            ))}
+          </div>
+
           {/* 본문 */}
-          <p className="mt-3 text-body-03 text-[#0A0A0A]">{post.body}</p>
+          <p className="mt-3 text-body-03 leading-relaxed text-[#0A0A0A]">
+            {post.body}
+          </p>
 
           {/* 하단 메타 */}
           <div className="mt-4 flex items-center justify-between text-caption-01 text-[#81807F]">
@@ -200,7 +222,6 @@ export default function BooklogDetailPage() {
               {post.timeAgo} · 조회 {post.views}
             </div>
 
-            {/* ✅ 북마크 버튼 */}
             <button
               type="button"
               onClick={(e) => {
@@ -223,45 +244,62 @@ export default function BooklogDetailPage() {
           </div>
         </section>
 
-        {/* ✅ 구분선 */}
-        <div className="mt-8 mb-3 h-[8px] bg-[#EFEDEB]" />
+        {/* 구분선 (스샷의 두꺼운 영역) */}
+        <div className="mt-8 h-[8px] bg-[#EFEDEB]" />
 
-        {/* ✅ Orbital과 비슷한 도서 */}
-        <section className="px-4 pt-5">
-          <h2 className="text-body-01-sb text-[#000000]">Orbital과 비슷한 도서</h2>
-          <p className="mt-1 text-caption-01 text-[#676665]">게시글에 언급된 도서와 비슷한 도서예요.</p>
+        {/* Orbital과 비슷한 도서 */}
+        <section className="px-5 pt-5">
+          <h2 className="text-en-title-02 text-[#000000]">Orbital과 비슷한 도서</h2>
+          <p className="mt-1 text-en-body-02 text-[#676665]">
+            게시글에 언급된 도서와 비슷한 도서예요.
+          </p>
 
-          <div className="mt-3 -mx-4 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="mt-4 -mx-4 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <div className="flex gap-3 px-4">
               {similarBooks.map((b) => (
-                <div key={b.id} className="shrink-0 w-[260px] rounded-[16px] bg-[#F2F0EE] p-4">
-                  <BookContent title={b.title} author={b.author} publisher={b.publisher} tags={b.tags} />
+                <div key={b.id} className="shrink-0">
+                  <BookContent
+                    title={b.title}
+                    author={b.author}
+                    publisher={b.publisher}
+                    tags={b.tags}
+                  />
                 </div>
               ))}
             </div>
           </div>
         </section>
+        {/* 비슷한 주제의 인기글 */}
+<section className="px-5 pt-8 pb-10">
+  <h2 className="text-en-title-02 text-[#000000]">비슷한 주제의 인기글</h2>
+  <p className="mt-1 text-en-body-02 text-[#676665]">
+    게시글과 비슷한 내용의 게시글을 모아봤어요
+  </p>
 
-        {/* ✅ 비슷한 주제의 인기글 */}
-        <section className="px-4 pt-6 pb-10">
-          <h2 className="text-body-01-sb text-[#000000]">비슷한 주제의 인기글</h2>
-          <p className="mt-1 text-caption-01 text-[#676665]">게시글과 비슷한 내용의 게시글을 모아봤어요</p>
-
-          <div className="mt-4 space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="flex items-center justify-between gap-4">
-                <div className="min-w-0">
-                  <div className="text-body-01-sb text-[#000000]">책 제목</div>
-                  <p className="mt-1 line-clamp-2 text-caption-02 text-[#4D4D4C]">
-                    유저가작성한글을 유저가작성한글을 유저가작성한글을…
-                  </p>
-                  <div className="mt-2 text-caption-02 text-[#81807F]">1일 전 · 조회 65 · 저장 14</div>
-                </div>
-                <div className="h-[80px] w-[80px] shrink-0 rounded-[12px] bg-[#D9D9D9]" />
-              </div>
-            ))}
+  {/* ✅ 구분선 있는 리스트 */}
+  <div className="mt-2">
+    {[1, 2, 3].map((i) => (
+      <div key={i}>
+        <div className="flex items-center justify-between gap-4 py-5">
+          <div className="min-w-0">
+            <div className="text-body-01-sb text-[#000000]">책 제목</div>
+            <p className="mt-1 line-clamp-2 text-caption-02 text-[#4D4D4C]">
+              유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을…
+            </p>
+            <div className="mt-2 text-en-caption-02 text-[#81807F]">
+              1일 전 · 조회 65 · 저장 14
+            </div>
           </div>
-        </section>
+          <div className="h-[80px] w-[80px] shrink-0 rounded-[12px] bg-[#D9D9D9]" />
+        </div>
+
+        {/* ✅ 아이템 사이 구분선 (마지막은 제외) */}
+        {i !== 3 && <div className="h-[1px] w-full bg-[#E7E5E4]" />}
+      </div>
+    ))}
+  </div>
+</section>
+
       </div>
     </div>
   );

@@ -92,8 +92,8 @@ export default function EditPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F5F3]">
-      <div className="mx-auto w-full max-w-[420px] bg-[#F7F5F3] pb-32">
+    <div className="min-h-screen bg-bg">
+      <div className="mx-auto w-full max-w-[420px] bg-bg pb-32">
         <NavBarTop title="서재 편집하기" onBack={handleBack} />
 
         <section className="px-4 pt-4">
@@ -136,7 +136,7 @@ export default function EditPage() {
         </section>
       </div>
 
-      <div className="fixed bottom-0 left-1/2 z-50 w-full max-w-[375px] -translate-x-1/2 bg-[#F7F5F3] px-4 pb-6 pt-3">
+      <div className="fixed bottom-0 left-1/2 z-50 w-full max-w-[375px] -translate-x-1/2 bg-bg px-4 pb-6 pt-3">
         <div className="flex gap-3">
           <button
             type="button"
