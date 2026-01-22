@@ -31,7 +31,12 @@ export const  MyBookLogCard = ({ booklog, isBookMarked }: MyBookCardProps) => {
                 <div className="flex justify-between items-center self-stretch">
                     <div className="flex items-center gap-1">
                         {booklog.tags.map((tag) => (
-                            <p className="flex px-2 py-[3px] justify-center items-center gap-[10px] rounded-[4px] bg-lightblue-3 text-center text-primary text-caption-02">{tag}</p>
+                            <p
+                                key={tag}
+                                className="flex px-2 py-[3px] justify-center items-center gap-[10px] rounded-[4px] bg-lightblue-3 text-center text-primary text-caption-02"
+                            >
+                                {tag}
+                            </p>
                         ))}
                     </div>
                     <div className="flex items-center gap-[2px]">

@@ -15,7 +15,7 @@ export const MyBookLogPage = ({ booklogs }: {booklogs: BookLog[]}) => {
             />
             <div className="flex px-5 flex-col items-start gap-3 self-stretch mt-5">
                 {booklogs.map((booklog) => (
-                    <MyBookLogCard booklog={booklog}/>
+                    <MyBookLogCard key={booklog.id} booklog={booklog}/>
                 ))}
             </div>
         </div>
