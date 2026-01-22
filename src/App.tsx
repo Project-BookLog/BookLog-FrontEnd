@@ -1,6 +1,5 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Outlet } from "react-router-dom";
 import MobileLayout from "./layout/MobileLayout";
-import { Outlet } from "react-router-dom";
 import { FilterProvider } from "./context/FilterContext";
 import { useToast } from "./context/ToastContext";
 import { Toast } from "./components/common/Toast";
@@ -19,7 +18,6 @@ import BookDetail from "./pages/home/BookDetail";
 // 2. 북로그
 import BooklogPage from "./pages/booklog/BooklogPage";
 import BooklogDetailPage from "./pages/booklog/BooklogDetailPage";
-import UserProfilePage from "./pages/mypage/UserProfilePage";
 
 // 3. 서재
 import { MyLibraryPage } from "./pages/MyLibrary/MyLibraryPage";
@@ -29,6 +27,7 @@ import { EditBooksPage } from "./pages/MyLibrary/EditBooksPage";
 import AddLibraryPage from "./pages/MyLibrary/AddLibraryPage";
 import EditPage from "./pages/MyLibrary/EditPage";
 import RecordPage from "./pages/MyLibrary/RecordPage";
+import StoppedBooksPage from "./pages/MyLibrary/StoppedBooksPage";
 
 // 4. 마이페이지
 import MyPage from "./pages/mypage/MyPage";
@@ -36,11 +35,7 @@ import EditProfile from "./pages/mypage/EditProfile";
 import Setting from "./pages/mypage/Setting";
 import ReadingCalendarPage from "./pages/mypage/ReadingCalenderPage";
 import ReadingRankingPage from "./pages/mypage/ReadingRankingPage";
-import { FinishedBooksPage } from "./pages/mypage/FinishedBooksPage";
-import { MyBookLogPage } from "./pages/mypage/MyBookLogPage";
-import { BOOKLOGS } from "./data/booklog.mock";
-import { BookMarkedPage } from "./pages/mypage/BookMarkedPage";
-
+import UserProfilePage from "./pages/mypage/UserProfilePage";
 
 function GlobalToast() {
   const { message } = useToast();
@@ -58,10 +53,17 @@ function App() {
 
         {/* 1. 홈 */}
         <Route path="/" element={<HomePage />} />
-        <Route element={<FilterProvider><Outlet /></FilterProvider>}>
+        <Route
+          element={
+            <FilterProvider>
+              <Outlet />
+            </FilterProvider>
+          }
+        >
           <Route path="/search" element={<SearchPage />} />
           <Route path="/search/filter" element={<SearchFilterPage />} />
         </Route>
+
         <Route path="/bookdetail" element={<BookDetail />} />
         {/* <Route path="/book/:bookId" element={<BookDetail />} /> */}
 
@@ -70,15 +72,23 @@ function App() {
         <Route path="/booklog/:booklogId" element={<BooklogDetailPage />} />
 
         {/* 3. 서재 */}
-        <Route path="/my-library" element={<MyLibraryPage libraries={libraries}/>}/>
-        <Route path="/my-library/:libraryName" element={<MyLibraryDetail libraries={libraries}/>} />
-        <Route path="/my-library/:libraryName/edit-books" element={<EditBooksPage libraries={libraries}/>} />
+        <Route path="/my-library" element={<MyLibraryPage libraries={libraries} />} />
+        <Route
+          path="/my-library/:libraryName"
+          element={<MyLibraryDetail libraries={libraries} />}
+        />
+        <Route
+          path="/my-library/:libraryName/edit-books"
+          element={<EditBooksPage libraries={libraries} />}
+        />
         <Route path="/my-library/add" element={<AddLibraryPage />} />
         <Route path="/my-library/edit" element={<EditPage />} />
         <Route path="/my-library/:libraryName/edit-library" element={<EditPage />} />
         <Route path="/my-library/record/:bookId" element={<RecordPage />} />
-
-
+        <Route
+          path="/my-library/stopped"
+          element={<StoppedBooksPage stoppedBooks={libraries.flatMap((lib) => lib.books)} />}
+        />
 
         {/* 4. 마이페이지 */}
         <Route path="/mypage" element={<MyPage />} />
@@ -87,10 +97,6 @@ function App() {
         <Route path="/setting" element={<Setting />} />
         <Route path="/mypage/readingcalendar" element={<ReadingCalendarPage />} />
         <Route path="/mypage/readingranking" element={<ReadingRankingPage />} />
-        <Route path="/mypage/finished" element={<FinishedBooksPage libraries={libraries}/>} />
-        <Route path="/mypage/my-booklog" element={<MyBookLogPage booklogs={BOOKLOGS}/>}/>
-        <Route path="/mypage/bookmarked" element={<BookMarkedPage booklogs={BOOKLOGS} />} />
-        
       </Routes>
 
       <GlobalToast />
