@@ -36,6 +36,8 @@ import Setting from "./pages/mypage/Setting";
 import ReadingCalendarPage from "./pages/mypage/ReadingCalenderPage";
 import ReadingRankingPage from "./pages/mypage/ReadingRankingPage";
 import { FinishedBooksPage } from "./pages/mypage/FinishedBooksPage";
+import { MyBookLogPage } from "./pages/mypage/MyBookLogPage";
+import { BOOKLOGS } from "./data/booklog.mock";
 
 
 function GlobalToast() {
@@ -80,6 +82,7 @@ function App() {
         <Route path="/mypage/readingcalendar" element={<ReadingCalendarPage />} />
         <Route path="/mypage/readingranking" element={<ReadingRankingPage />} />
         <Route path="/mypage/finished" element={<FinishedBooksPage libraries={libraries}/>} />
+        <Route path="/mypage/my-booklog" element={<MyBookLogPage booklogs={BOOKLOGS}/>}/>
         
       </Routes>
 
