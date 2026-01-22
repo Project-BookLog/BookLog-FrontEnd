@@ -57,7 +57,7 @@ function UserInfoCard({ user }: UserInfoCardProps) {
 
             <div
               className="flex flex-col items-center gap-2 cursor-pointer"
-              onClick={() => navigate("bookmark")}
+              onClick={() => navigate("bookmarked")}
             >
               <div className="text-caption-02 text-gray-700">북마크</div>
               <div className="text-title-02 text-black">
