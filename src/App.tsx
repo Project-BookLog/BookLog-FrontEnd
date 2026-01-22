@@ -63,6 +63,7 @@ function App() {
           <Route path="/search" element={<SearchPage />} />
           <Route path="/search/filter" element={<SearchFilterPage />} />
         </Route>
+
         <Route path="/bookdetail" element={<BookDetail />} />
         {/* <Route path="/book/:bookId" element={<BookDetail />} /> */}
 
