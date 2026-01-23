@@ -7,6 +7,7 @@ import { BOOK_ORDER, sortOptions } from "../../enum/book";
 import { ArrowDown } from "../../assets/icons";
 import { SortDropDown } from "../../components/common/dropdown/SortDropDown";
 import { BookCard } from "../../components/myLibrary/BookCard";
+import { sortBooks } from "../../utils/sortBooks";
 
 export const FinishedBooksPage = ({ libraries }: { libraries: Library[] }) => {
     const { id } = useAuth();
@@ -25,25 +26,8 @@ export const FinishedBooksPage = ({ libraries }: { libraries: Library[] }) => {
 
     const sortedBooks = useMemo(() => {
         if (!finishedBooks) return [];
-    
-        const booksCopy = [...finishedBooks];
-    
-        const getTime = (date: string | Date) =>
-          typeof date === "string" ? new Date(date).getTime() : date.getTime();
-    
-        switch (sortOrder) {
-          case BOOK_ORDER.OLDEST:
-            return booksCopy.sort((a, b) => getTime(a.createdAt) - getTime(b.createdAt));
-          case BOOK_ORDER.LATEST:
-            return booksCopy.sort((a, b) => getTime(b.createdAt) - getTime(a.createdAt));
-          case BOOK_ORDER.TITLE:
-            return booksCopy.sort((a, b) => a.title.localeCompare(b.title));
-          case BOOK_ORDER.AUTHOR:
-            return booksCopy.sort((a, b) => a.author.localeCompare(b.author));
-          default:
-            return booksCopy;
-        }
-      }, [finishedBooks, sortOrder]);
+        return sortBooks(finishedBooks,sortOrder)
+    }, [finishedBooks, sortOrder]);
     
       const currentSortLabel = sortOptions.find(
         (option) => option.value === sortOrder
