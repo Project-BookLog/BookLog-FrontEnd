@@ -6,7 +6,7 @@ import {
   My_page,
   Search,
   Plus,
-} from "../../../assets/icons"
+} from "../../../assets/icons";
 
 function NavbarBottom() {
   const navigate = useNavigate();
@@ -19,18 +19,18 @@ function NavbarBottom() {
   const baseItem =
     "flex items-center justify-center h-12 rounded-full transition-colors flex-none";
 
-
   const showPlus = isBooklogActive || isMyLibraryActive;
 
   const handlePlusClick = () => {
+    // ✅ 서재: + 누르면 서재 추가
     if (location.pathname === "/my-library") {
       navigate("/my-library/add");
       return;
     }
 
-    // (선택) 북로그에서의 + 동작은 여기서 이어서 정의하면 됨
+    // ✅ 북로그: + 누르면 책 고르기 페이지로 이동
     if (isBooklogActive) {
-      console.log("작성하기");
+      navigate("/booklog/pick");
       return;
     }
 

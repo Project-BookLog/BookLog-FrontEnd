@@ -19,6 +19,8 @@ import BookDetail from "./pages/home/BookDetail";
 import BooklogPage from "./pages/booklog/BooklogPage";
 import BooklogDetailPage from "./pages/booklog/BooklogDetailPage";
 import BooklogFilterPage from "./pages/booklog/BooklogFilterPage";
+import BookPickPage from "./pages/booklog/BookPickPage";
+import BookWritePage from "./pages/booklog/BookWritePage";
 
 // 3. 서재
 import { MyLibraryPage } from "./pages/MyLibrary/MyLibraryPage";
@@ -69,10 +71,11 @@ function App() {
 
           {/* 2. 북로그 */}
           <Route path="/booklog" element={<BooklogPage />} />
+          <Route path="/booklog/pick" element={<BookPickPage />} />
+          <Route path="/booklog/write" element={<BookWritePage />} />
           <Route path="/booklog/filter" element={<BooklogFilterPage />} />
           <Route path="/booklog/:booklogId" element={<BooklogDetailPage />} />
         </Route>
-
         <Route path="/bookdetail" element={<BookDetail />} />
 
         {/* 3. 서재 */}
