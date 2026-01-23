@@ -45,7 +45,7 @@ export const libraries: Library[] = [
       },
 
     ],
-    sort: BOOK_ORDER.NEWEST,
+    sort: BOOK_ORDER.LATEST,
   },
   {
     name: "서재1",
@@ -68,13 +68,13 @@ export const libraries: Library[] = [
         progress: 2,
         CoverIcon: Dummy_book,
       },],
-    sort: BOOK_ORDER.NEWEST,
+    sort: BOOK_ORDER.LATEST,
   },
   {
     name: "서재2",
     isPublic: true,
     books: [],
-    sort: BOOK_ORDER.NEWEST,
+    sort: BOOK_ORDER.LATEST,
   },
   
 ];
