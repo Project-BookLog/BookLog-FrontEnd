@@ -19,3 +19,5 @@ export type Author = {
   imageUrl?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   books?: Book[];        
 };
+
+export type BookStatus = "TO_READ" | "READING" | "DONE" | "STOPPED";
