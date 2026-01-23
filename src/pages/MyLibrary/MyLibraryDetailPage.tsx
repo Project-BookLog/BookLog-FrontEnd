@@ -7,6 +7,7 @@ import { ReadingBookCard } from "../../components/myLibrary/ReadingBookCard";
 import { BOOK_ORDER, sortOptions } from "../../enum/book";
 import { SortDropDown } from "../../components/common/dropdown/SortDropDown";
 import { LibraryActionDropDown, type LibraryAction } from "../../components/common/dropdown/LibraryActionDropDown";
+import { sortBooks } from "../../utils/sortBooks";
 
 const TABS = [
   { key: "ALL", label: "전체" },
@@ -66,24 +67,7 @@ export function MyLibraryDetail({ libraries }: { libraries: Library[] }) {
 
   const sortedBooks = useMemo(() => {
     if (!filteredBooks) return [];
-
-    const booksCopy = [...filteredBooks];
-
-    const getTime = (date: string | Date) =>
-      typeof date === "string" ? new Date(date).getTime() : date.getTime();
-
-    switch (sortOrder) {
-      case BOOK_ORDER.OLDEST:
-        return booksCopy.sort((a, b) => getTime(a.createdAt) - getTime(b.createdAt));
-      case BOOK_ORDER.LATEST:
-        return booksCopy.sort((a, b) => getTime(b.createdAt) - getTime(a.createdAt));
-      case BOOK_ORDER.TITLE:
-        return booksCopy.sort((a, b) => a.title.localeCompare(b.title));
-      case BOOK_ORDER.AUTHOR:
-        return booksCopy.sort((a, b) => a.author.localeCompare(b.author));
-      default:
-        return booksCopy;
-    }
+    return sortBooks(filteredBooks, sortOrder);
   }, [filteredBooks, sortOrder]);
 
   const currentSortLabel = sortOptions.find(
