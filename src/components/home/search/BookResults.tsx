@@ -35,7 +35,7 @@ function BookResults({
   const isCompact = mode === "compact";
   const showMoreButton = isCompact && total > items.length;
 
-  const [currentSort, setCurrentSort] = useState<BOOK_ORDER>(BOOK_ORDER.NEWEST);
+  const [currentSort, setCurrentSort] = useState<BOOK_ORDER>(BOOK_ORDER.LATEST);
   const [isSortOpen, setIsSortOpen] = useState(false);
 
   const currentSortLabel =
@@ -44,7 +44,7 @@ function BookResults({
   const sortedItems = useMemo(() => {
     const copied = [...items];
     switch (currentSort) {
-      case BOOK_ORDER.NEWEST:
+      case BOOK_ORDER.LATEST:
         return copied.sort((a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );

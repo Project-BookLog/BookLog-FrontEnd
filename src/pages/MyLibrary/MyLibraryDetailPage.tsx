@@ -32,7 +32,7 @@ export function MyLibraryDetail({ libraries }: { libraries: Library[] }) {
     (lib) => lib.name === libraryName
   );
 
-  const [sortOrder, setSortOrder] = useState<BOOK_ORDER>(library?.sort ?? BOOK_ORDER.NEWEST);
+  const [sortOrder, setSortOrder] = useState<BOOK_ORDER>(library?.sort ?? BOOK_ORDER.LATEST);
   const [isSortDropDownOpen, setIsSortDropDownOpen] = useState(false);
   const [isActionDropDownOpen, setIsActionDropDownOpen] = useState(false);
 
@@ -75,7 +75,7 @@ export function MyLibraryDetail({ libraries }: { libraries: Library[] }) {
     switch (sortOrder) {
       case BOOK_ORDER.OLDEST:
         return booksCopy.sort((a, b) => getTime(a.createdAt) - getTime(b.createdAt));
-      case BOOK_ORDER.NEWEST:
+      case BOOK_ORDER.LATEST:
         return booksCopy.sort((a, b) => getTime(b.createdAt) - getTime(a.createdAt));
       case BOOK_ORDER.TITLE:
         return booksCopy.sort((a, b) => a.title.localeCompare(b.title));
