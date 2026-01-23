@@ -6,19 +6,9 @@ import { ConfirmModal } from "../../components/common/ConfirmModal"
 import { EditCheckBox } from "../../components/myLibrary/EditCheckBox"
 import EditBookCard from "../../components/myLibrary/EditBookCard"
 import { useToast } from "../../context/ToastContext"
-
-const TABS = [
-  { key: "ALL", label: "전체" },
-  { key: "WISHLIST", label: "읽을 예정" },
-  { key: "READING", label: "읽는 중" },
-  { key: "DONE", label: "완독" },
-];
-
-function getBookTabByProgress(progress: number): Exclude<LibraryTab, "ALL"> {
-  if (progress === 0) return "WISHLIST";
-  if (progress === 100) return "DONE";
-  return "READING";
-}
+import { LIBRARY_TABS } from "../../constants/libraryTabs"
+import { getBookStatusByProgress } from "../../domain/BookStatus"
+import { TAB_TO_STATUSES } from "../../domain/Library"
 
 export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
 
@@ -44,19 +34,22 @@ export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
     );
 
     const editableBooks = useMemo(() => {
-        if (library.name === "전체 도서") return library.books;
-        if (!activeTab || activeTab === "ALL") return library.books;
+        if (!library) return [];
 
-        return library.books.filter((book) => {
-            const tab = getBookTabByProgress(book.progress);
-            return tab === activeTab;
-        });
+        if (library.name === "전체 도서") return library.books;
+
+        const statuses = TAB_TO_STATUSES[activeTab ?? "ALL"];
+
+        return library.books.filter((book) =>
+            statuses.includes(getBookStatusByProgress(book.progress))
+        );
     }, [library, activeTab]);
+
 
     const activeTabLabel = useMemo(() => {
         if (!activeTab || activeTab === "ALL") return "전체";
 
-        return TABS.find(tab => tab.key === activeTab)?.label ?? "";
+        return LIBRARY_TABS.find(tab => tab.key === activeTab)?.label ?? "";
     }, [activeTab]);
 
 

@@ -8,4 +8,4 @@ export type Library = {
   sort: BOOK_ORDER;
 };
 
-export type LibraryTab = "ALL" | "WISHLIST" | "READING" | "DONE";
+export type LibraryTab = "ALL" | "TO_READ" | "READING" | "DONE";

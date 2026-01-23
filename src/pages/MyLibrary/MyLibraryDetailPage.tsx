@@ -8,19 +8,9 @@ import { BOOK_ORDER, sortOptions } from "../../enum/book";
 import { SortDropDown } from "../../components/common/dropdown/SortDropDown";
 import { LibraryActionDropDown, type LibraryAction } from "../../components/common/dropdown/LibraryActionDropDown";
 import { sortBooks } from "../../utils/sortBooks";
-
-const TABS = [
-  { key: "ALL", label: "전체" },
-  { key: "WISHLIST", label: "읽을 예정" },
-  { key: "READING", label: "읽는 중" },
-  { key: "DONE", label: "완독" },
-];
-
-function getBookTabByProgress(progress: number): Exclude<LibraryTab, "ALL"> {
-  if (progress === 0) return "WISHLIST";
-  if (progress === 100) return "DONE";
-  return "READING";
-}
+import { LIBRARY_TABS } from "../../constants/libraryTabs";
+import { TAB_TO_STATUSES } from "../../domain/Library";
+import { getBookStatusByProgress } from "../../domain/BookStatus";
 
 export function MyLibraryDetail({ libraries }: { libraries: Library[] }) {
 
@@ -57,13 +47,16 @@ export function MyLibraryDetail({ libraries }: { libraries: Library[] }) {
   ];
 
   const filteredBooks = useMemo(() => {
-    if (activeTab === "ALL") return library?.books;
+    if (!library) return [];
 
-    return library?.books.filter((book) => {
-      const tab = getBookTabByProgress(book.progress);
-      return tab === activeTab;
+    const allowedStatuses = TAB_TO_STATUSES[activeTab];
+
+    return library.books.filter((book) => {
+      const status = getBookStatusByProgress(book.progress);
+      return allowedStatuses.includes(status);
     });
-  }, [activeTab, library?.books]);
+  }, [activeTab, library]);
+
 
   const sortedBooks = useMemo(() => {
     if (!filteredBooks) return [];
@@ -98,7 +91,7 @@ export function MyLibraryDetail({ libraries }: { libraries: Library[] }) {
             )}
         </div>
         <div className="flex px-5 pt-3 items-end gap-3 self-stretch border-b border-gray-200">
-          {TABS.map((tab) => (
+          {LIBRARY_TABS.map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key as LibraryTab)}
