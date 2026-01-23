@@ -34,10 +34,12 @@ function BooklogContentImage({
         {isBook ? "책 img" : label}
       </div>
 
-      {/* 책 이미지일 때만 BookTag */}
       {isBook && (
         <div className="absolute left-[10px] bottom-[10px]">
-          <BookTag title={bookTitle ?? "책 제목"} author={bookAuthor ?? "저자명 저"} />
+          <BookTag
+            title={bookTitle ?? "책 제목"}
+            author={bookAuthor ?? "저자명 저"}
+          />
         </div>
       )}
     </div>
@@ -54,8 +56,6 @@ type Post = {
   tags: string[];
   bookTitle: string;
   bookAuthor: string;
-
-  /** 데모용: 추가 이미지 개수 (추가한만큼 옆으로 스크롤) */
   imageCount?: number;
 };
 
@@ -87,14 +87,16 @@ function PostCard({ post }: { post: Post }) {
           </div>
 
           <div className="min-w-0">
-            <div className="text-body-01-sb text-[#0A0A0A]">{post.username}</div>
+            <div className="text-body-01-sb text-[#0A0A0A]">
+              {post.username}
+            </div>
             <div className="mt-0.5 text-caption-02 text-[#81807F]">
               {post.timeAgo} · 조회 {post.views}
             </div>
           </div>
         </div>
 
-        {/* ✅ 북마크 버튼 (이미지 토글) */}
+        {/* 북마크 */}
         <button
           type="button"
           onClick={(e) => {
@@ -116,34 +118,30 @@ function PostCard({ post }: { post: Post }) {
         </button>
       </div>
 
-      {/* ✅ 이미지 영역: row는 px-4로 유저네임 라인 맞추고, 첫 카드만 +8px 들여쓰기 */}
+      {/* 이미지 영역 */}
       <div className="mt-4">
-        <div
-          className="
-            flex gap-3 overflow-x-auto
-            px-4 pb-1
-            [-ms-overflow-style:none]
-            [scrollbar-width:none]
-            [&::-webkit-scrollbar]:hidden
-          "
-        >
+        <div className="flex gap-3 overflow-x-auto px-4 pb-1">
           <div className="pl-[45px]">
-            <BooklogContentImage isBook bookTitle={post.bookTitle} bookAuthor={post.bookAuthor} />
+            <BooklogContentImage
+              isBook
+              bookTitle={post.bookTitle}
+              bookAuthor={post.bookAuthor}
+            />
           </div>
 
-          {/* 추가 이미지들 */}
           {extraImages.map((_, idx) => (
             <BooklogContentImage key={idx} label="img" />
           ))}
 
-          {/* 오른쪽 끝 여백 */}
           <div className="w-4 shrink-0" />
         </div>
       </div>
 
-      {/* 본문/태그 */}
+      {/* 본문 */}
       <div className="px-4 pl-[60px]">
-        <p className="mt-3 line-clamp-2 text-caption-01 text-[#4D4D4C]">{post.body}</p>
+        <p className="mt-3 line-clamp-2 text-caption-01 text-[#4D4D4C]">
+          {post.body}
+        </p>
 
         <div className="mt-3 flex flex-wrap gap-2">
           {post.tags.map((t) => (
@@ -152,15 +150,14 @@ function PostCard({ post }: { post: Post }) {
         </div>
       </div>
 
-      {/* 구분선 */}
       <div className="mt-6 mb-5 h-[1px] w-full bg-[#E7E5E4]" />
     </article>
   );
 }
 
-/** -----------------------------
- *  페이지
- *  ----------------------------- */
+/* =============================
+ * 페이지
+ * ============================= */
 export default function BooklogPage() {
   const navigate = useNavigate();
   const { resetFilter } = useFilter();
@@ -174,7 +171,7 @@ export default function BooklogPage() {
         views: 27,
         bookmarkCount: 20,
         body:
-          "이 책은 어쩌구 다른 유저의 북로그 내용 다른 유저의 북로그 내용 다른 유저의 북로그 내용 다른 유저의 북로그 내용 다른 유저의 북로그 내용 유저의 북로그 내용 다른 유저의 북로그 내용 다른 유저의 북로그 내용 ",
+          "이 책은 어쩌구 다른 유저의 북로그 내용 다른 유저의 북로그 내용 ...",
         tags: ["잔잔한, 따뜻한", "사유적", "생각이 필요한"],
         bookTitle: "책 제목",
         bookAuthor: "저자명 저",
@@ -186,7 +183,7 @@ export default function BooklogPage() {
         timeAgo: "3분 전",
         views: 27,
         bookmarkCount: 20,
-        body: "이 책은 어쩌구 다른 유저의 북로그 내용 다른 유저의 북로그 내용…",
+        body: "이 책은 어쩌구 다른 유저의 북로그 내용 …",
         tags: ["잔잔한, 따뜻한", "사유적", "생각이 필요한"],
         bookTitle: "책 제목",
         bookAuthor: "저자명 저",
@@ -204,14 +201,20 @@ export default function BooklogPage() {
           <h1 className="text-en-head text-[#0A0A0A]">북로그</h1>
         </header>
 
-        {/* ✅ 필터 (홈 검색 필터 페이지로 연결 + 리셋은 FilterContext) */}
+        {/* ✅ 필터 */}
         <div className="mt-4">
           <FilterBar
             resetSrc={resetImg}
             onReset={resetFilter}
-            onClickMood={() => navigate("/booklog/filter")}
-            onClickStyle={() => navigate("/booklog/filter")}
-            onClickImmersion={() => navigate("/booklog/filter")}
+            onClickMood={() =>
+              navigate("/booklog/filter", { state: { from: "/booklog" } })
+            }
+            onClickStyle={() =>
+              navigate("/booklog/filter", { state: { from: "/booklog" } })
+            }
+            onClickImmersion={() =>
+              navigate("/booklog/filter", { state: { from: "/booklog" } })
+            }
           />
         </div>
 
@@ -224,6 +227,7 @@ export default function BooklogPage() {
 
         <div className="h-10" />
       </div>
+
       <NavbarBottom />
     </div>
   );

@@ -3,12 +3,21 @@ import type { Book } from "../../types/book.types";
 
 type BookCardProps = {
   book: Book;
+
+  /** ✅ 북로그 등 다른 페이지에서 클릭 동작을 덮어쓸 때 사용 */
+  onClick?: (book: Book) => void;
 };
 
-export const BookCard = ({ book }: BookCardProps) => {
+export const BookCard = ({ book, onClick }: BookCardProps) => {
   const navigate = useNavigate();
 
   const goRecord = () => {
+    // ✅ onClick이 있으면 그걸 우선 실행 (북로그/다른 페이지)
+    if (onClick) {
+      onClick(book);
+      return;
+    }
+    // ✅ 기본 동작은 그대로 유지 (서재)
     navigate(`/my-library/record/${book.id}`);
   };
 

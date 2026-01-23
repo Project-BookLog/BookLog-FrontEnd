@@ -1,22 +1,42 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useFilter } from "../../hooks/useFilter";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import type { Book } from "../../types/book.types";
 
 const moods = ["따뜻한", "잔잔한", "유쾌한", "어두운", "서늘한", "몽환적인"] as const;
 const styles = ["간결한", "화려한", "담백한", "섬세한", "직설적", "은유적"] as const;
 const immersions = ["기분 전환", "지적인 탐구", "압도적 몰입", "짙은 여운"] as const;
 
+type FilterPageState = {
+  from?: string; // "/booklog" | "/booklog/write" 등
+  book?: Book;   // 글쓰기에서 넘어올 때 book 복구용
+};
+
 export default function BooklogFilterPage() {
   const { filter, toggleFilter } = useFilter();
   const navigate = useNavigate();
+  const location = useLocation();
+  const navState = (location.state || {}) as FilterPageState;
+
+  const from = useMemo(() => navState.from ?? "/booklog", [navState.from]);
 
   const hasAnyFilter =
     filter.mood.length > 0 || filter.style.length > 0 || filter.immersion.length > 0;
 
+  const goBackToFrom = () => {
+    // ✅ 글쓰기에서 왔다면 book state도 같이 다시 넘겨줌
+    if (from === "/booklog/write") {
+      navigate(from, { state: { book: navState.book } });
+      return;
+    }
+    navigate(from);
+  };
+
   const handleApply = () => {
-    // ✅ 북로그는 URL에 굳이 안 싣고, FilterContext에 저장된 상태 그대로 돌아가면 됨
-    navigate("/booklog"); // 너 북로그 라우트에 맞춰 수정
+    // ✅ 필터 상태는 FilterContext에 이미 저장되어 있으니,
+    //    "어디서 왔는지"로만 돌아가면 됨
+    goBackToFrom();
   };
 
   useEffect(() => {
@@ -30,7 +50,7 @@ export default function BooklogFilterPage() {
   return (
     <div className="min-h-screen bg-bg">
       <header>
-        <NavBarTop title="필터" onBack={() => navigate(-1)} />
+        <NavBarTop title="필터" onBack={goBackToFrom} />
       </header>
 
       <main className="flex-1 px-6 pt-4 pb-4 space-y-10">

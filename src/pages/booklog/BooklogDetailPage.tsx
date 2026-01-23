@@ -125,7 +125,7 @@ export default function BooklogDetailPage() {
         {/* 상단 네비 */}
         <NavBar
           title="책 정보"
-          onBack={() => navigate(-1)}
+          onBack={() => navigate("/booklog")}
           rightSlot={
             <button
               type="button"
