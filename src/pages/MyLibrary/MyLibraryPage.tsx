@@ -38,6 +38,7 @@ export function MyLibraryPage ({ libraries }: { libraries: Library[] }) {
                             </div>
                         )) : (
                             <div className="relative flex w-[375px] px-5 flex-col items-center gap-[10px]">
+                                <div className="h-[168px] self-stretch">
                                 <div className="inline-flex items-center gap-[10px]">
                                     {library.books.slice(0, 3).map((book) => (
                                         <div className="flex w-[104px] h-[156px] items-center rounded-[4px]">
@@ -56,10 +57,11 @@ export function MyLibraryPage ({ libraries }: { libraries: Library[] }) {
                                         </div>
                                     ))}
                                 </div>
+                                </div>
                                 <div className="absolute top-[116px] flex w-[347px] h-[52px] justify-center items-center">
                                     <GradationFrame/>
                                 </div>
-                                <div className="flex items-center gap-[10px]">
+                                <div className="flex items-center gap-[10px] self-stretch">
                                     {library.books.slice(0, 3).map((book) => (
                                         <div className="flex w-[104px] flex-col justify-center items-start gap-[2px]">
                                             <p className="line-clamp-1 self-stretch overflow-hidden text-ellipsis text-black text-subtitle-02-sb">{book.title}</p>
