@@ -107,7 +107,7 @@ export const ONBOARDING_QUESTION: OnboardingQuestion[] = [
           },
           {
             label: "은유적",
-            description: "비유와 상징적인 표현 속에 담긴 깊은 의미의 문장 "
+            description: "비유와 상징으로 의미를 전달하는 문장"
           },
         ],
         question_max: 1,
