@@ -9,8 +9,8 @@ export const SplashPage = () => {
     >
 
         <div className="relative z-10 min-h-screen flex items-center justify-center">
-            <div className="flex flex-col items-center gap-5 w-[313px] -translate-y-[20vh]">
-                <LogoBooklog className="[&_*]:fill-white w-[127px] h-[50px]" />
+            <div className="flex flex-col items-center gap-3 w-[313px] -translate-y-[13vh]">
+                <LogoBooklog className="[&_*]:fill-white w-[171px] h-[45px]" />
                 <div className="self-stretch">
                     <p className="text-white text-center text-[14px] font-normal leading-[19.6px]">
                         기록을 통해 취향을 발견하고, 취향을 통해 연결되는

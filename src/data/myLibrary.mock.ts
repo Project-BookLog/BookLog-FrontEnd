@@ -74,7 +74,17 @@ export const libraries: Library[] = [
   {
     name: "서재2",
     isPublic: true,
-    books: [],
+    books: [
+      {
+        id: 2,
+        title: "2",
+        author: "b",
+        publisher: "ㄴ",
+        createdAt: "2021-01-01",
+        progress: 2,
+        CoverIcon: Dummy_book,
+      },
+    ],
     sort: BOOK_ORDER.LATEST,
   },
   

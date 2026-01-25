@@ -3,7 +3,7 @@ import useForm from "../../hooks/useForm";
 import { validateSignin, type UserSigninInformation } from "../../utils/validate";
 import { useAuth } from "../../context/AuthContext";
 import { useEffect } from "react";
-import { KakaoTalk, LogoBooklog } from "../../assets/icons";
+import { KakaoTalk, LogoBooklog, SymbolLogo } from "../../assets/icons";
 
 export const LoginPage = () => {
     const navigate = useNavigate();
@@ -33,12 +33,12 @@ export const LoginPage = () => {
     Object.values(values).some(value => value === "")
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-bg gap-15">
-            <div className="flex flex-col w-[127px] items-center gap-[18px]">
-                <img className="flex flex-col w-[85.874px] h-[88.231px] px-[30px] py-[34px] items-center justify-center gap-[10px] bg-[#D9D9D9]"/>
-                <LogoBooklog className="[&_*]:fill-primary w-[127px] h-[50px]" />
+        <div className="min-h-screen flex flex-col items-center justify-center bg-bg border border-[#DEDEDE]">
+            <div className="flex flex-col w-[127px] items-center gap-1">
+                <SymbolLogo className="w-20 h-20"/>
+                <LogoBooklog className="[&_*]:fill-primary w-[114px] h-[30px]" />
             </div>
-            <div className="flex flex-col w-[335px] items-center gap-3">
+            <div className="flex flex-col w-[335px] items-center gap-3 mt-[70px]">
                 <div className="flex flex-col items-start gap-4 self-stretch">
                     <div className="flex flex-col items-start gap-2 self-stretch">
                         <input
@@ -69,7 +69,7 @@ export const LoginPage = () => {
                     </p>
                 </div>
             </div>
-            <div className="flex flex-col w-[335px] items-center gap-6">
+            <div className="flex flex-col w-[335px] items-center gap-6 mt-[83px]">
                 <div className="flex flex-row items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="85" height="1" viewBox="0 0 85 1" fill="none">
                         <path d="M0 0.5H84.5893" stroke="#CDCCCB"/>

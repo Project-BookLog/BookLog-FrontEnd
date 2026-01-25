@@ -1,44 +1,30 @@
-import { useNavigate } from "react-router-dom";
 import type { Book } from "../../types/book.types";
 
 type BookCardProps = {
   book: Book;
-
-  /** ✅ 북로그 등 다른 페이지에서 클릭 동작을 덮어쓸 때 사용 */
   onClick?: (book: Book) => void;
 };
 
 export const BookCard = ({ book, onClick }: BookCardProps) => {
-  const navigate = useNavigate();
-
-  const goRecord = () => {
-    // ✅ onClick이 있으면 그걸 우선 실행 (북로그/다른 페이지)
-    if (onClick) {
-      onClick(book);
-      return;
-    }
-    // ✅ 기본 동작은 그대로 유지 (서재)
-    navigate(`/my-library/record/${book.id}`);
-  };
-
   return (
-    <div className="flex w-[104px] flex-col items-start gap-2 shrink-0">
+    <div
+      className="flex w-[104px] flex-col items-start gap-2 shrink-0"
+      onClick={() => onClick?.(book)}
+    >
       {book.coverUrl ? (
         <img
           src={book.coverUrl}
           alt={book.title}
           className="w-[104px] h-[158.476px] aspect-[104.00/158.48] rounded-[4px] bg-gray-300 cursor-pointer"
           draggable={false}
-          onClick={goRecord}
         />
       ) : book.CoverIcon ? (
-        <button type="button" onClick={goRecord} className="cursor-pointer">
+        <button type="button" className="cursor-pointer">
           <book.CoverIcon className="w-[104px] h-[158.476px] aspect-[104.00/158.48] rounded-[4px]" />
         </button>
       ) : (
         <button
           type="button"
-          onClick={goRecord}
           className="w-[104px] h-[158.476px] aspect-[104.00/158.48] rounded-[4px] bg-gray-300 text-xs cursor-pointer"
         >
           No Image

@@ -23,14 +23,14 @@ import BookPickPage from "./pages/booklog/BookPickPage";
 import BookWritePage from "./pages/booklog/BookWritePage";
 
 // 3. 서재
-import { MyLibraryPage } from "./pages/MyLibrary/MyLibraryPage";
+import { MyLibraryPage } from "./pages/myLibrary/MyLibraryPage";
 import { libraries } from "./data/myLibrary.mock";
-import { MyLibraryDetail } from "./pages/MyLibrary/MyLibraryDetailPage";
-import { EditBooksPage } from "./pages/MyLibrary/EditBooksPage";
-import AddLibraryPage from "./pages/MyLibrary/AddLibraryPage";
-import EditPage from "./pages/MyLibrary/EditPage";
-import RecordPage from "./pages/MyLibrary/RecordPage";
-import StoppedBooksPage from "./pages/MyLibrary/StoppedBooksPage";
+import { MyLibraryDetail } from "./pages/myLibrary/MyLibraryDetailPage";
+import { EditBooksPage } from "./pages/myLibrary/EditBooksPage";
+import AddLibraryPage from "./pages/myLibrary/AddLibraryPage";
+import EditPage from "./pages/myLibrary/EditPage";
+import RecordPage from "./pages/myLibrary/RecordPage";
+import StoppedBooksPage from "./pages/myLibrary/StoppedBooksPage";
 
 // 4. 마이페이지
 import MyPage from "./pages/mypage/MyPage";
