@@ -9,7 +9,7 @@ export function MyLibraryPage ({ libraries }: { libraries: Library[] }) {
     const navigate = useNavigate();
     
     return (
-        <div className="min-h-screen w-full flex flex-col items-center bg-bg">
+        <div className="min-h-screen w-full flex flex-col items-center bg-bg pb-32">
             <div className="flex h-[62px] px-5 pt-5 pb-2 items-center self-stretch">
                 <p className="text-black text-head">내 서재</p>
             </div>

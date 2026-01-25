@@ -5,6 +5,7 @@ import Dummy_author from "./icons/dummy_author.svg?react";
 //로고
 import Logo2 from "./icons/Logo2.svg?react";
 import LogoBooklog from "./icons/LogoBooklog.svg?react";
+import SymbolLogo from "./icons/SymbolLogo.svg?react";
 
 //시스템 아이콘
 import HomeIcon from "./icons/HomeIcon.svg?react";
@@ -62,7 +63,7 @@ import Onboarding_dark from "./icons/Onboarding_dark.svg?react";
 export {
   Dummy_book, Dummy_author,
 
-  Logo2,LogoBooklog,
+  Logo2,LogoBooklog, SymbolLogo,
 
   Alarm, HomeIcon, Booklog, My_library, My_page, 
   Share, Search, Quit, Camera, Comment, Archive, 
