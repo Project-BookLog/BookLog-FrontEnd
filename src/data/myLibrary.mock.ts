@@ -67,7 +67,8 @@ export const libraries: Library[] = [
         createdAt: "2021-01-01",
         progress: 2,
         CoverIcon: Dummy_book,
-      },],
+      },
+    ],
     sort: BOOK_ORDER.LATEST,
   },
   {
