@@ -42,7 +42,7 @@ export function MyLibraryPage () {
                                 <div className="h-[168px] self-stretch">
                                 <div className="inline-flex items-center gap-[10px]">
                                     {shelf.previewBooks.slice(0, 3).map((book) => (
-                                        <div className="flex w-[104px] h-[156px] items-center rounded-[4px]">
+                                        <div key={book.bookId} className="flex w-[104px] h-[156px] items-center rounded-[4px]">
                                             {book.thumbnailUrl ? (
                                                 <img
                                                     src={book.thumbnailUrl}
