@@ -10,6 +10,22 @@ export type Library = {
 
 export type LibraryTab = "ALL" | "TO_READ" | "READING" | "DONE";
 
+export type PreviewBook = {
+  bookId: number;
+  title: string;
+  thumbnailUrl: string;
+  authorName: string;
+  publisherName: string;
+};
+
+export type Shelf = {
+  shelfId: number;
+  name: string;
+  isPublic: boolean;
+  setOrder: BOOK_ORDER;
+  previewBooks: PreviewBook[];
+}
+
 export type ResponseUserBooksDto = {
   userBookId: number;
   status: string;

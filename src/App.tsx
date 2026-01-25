@@ -79,7 +79,7 @@ function App() {
         <Route path="/bookdetail" element={<BookDetail />} />
 
         {/* 3. 서재 */}
-        <Route path="/my-library" element={<MyLibraryPage libraries={libraries} />} />
+        <Route path="/my-library" element={<MyLibraryPage/>} />
         <Route
           path="/my-library/:libraryName"
           element={<MyLibraryDetail libraries={libraries} />}
