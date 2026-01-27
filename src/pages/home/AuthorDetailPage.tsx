@@ -1,28 +1,28 @@
 import { useEffect, useRef, useState } from "react";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
-import { Dummy_book } from "../../assets/icons";
 import Tab from "../../components/common/Tab";
-import BookRecommeded from "../../components/home/detail/BookRecommended";
-import BookInfo from "../../components/home/detail/BookInfo";
-import BookLogCarousel from "../../components/home/detail/BookLogCarousel";
+import AuthorProfile from "../../components/home/author/AuthorProfile";
+import AuthorAwards from "../../components/home/author/AuthorAwards";
+import AuthorBooks from "../../components/home/author/AuthorBooks";
 
-const TABS = ["책 추천", "책 정보", "북로그"] as const;
+const TABS = ["프로필", "수상경력", "도서"] as const;
 type TabType = (typeof TABS)[number];
 
-export const BookDetail = () => {
-  const [tab, setTab] = useState<TabType>("책 추천");
+export const AuthorDetailPage = () => {
+  const [tab, setTab] = useState<TabType>("프로필");
 
-  const RecommendedRef = useRef<HTMLElement | null>(null);
-  const InfoRef = useRef<HTMLElement | null>(null);
-  const BookLogRef = useRef<HTMLElement | null>(null);
+  const ProfileRef = useRef<HTMLElement | null>(null);
+  const AwardRef = useRef<HTMLElement | null>(null);
+  const BookRef = useRef<HTMLElement | null>(null);
+
 
   const handleChangeTab = (nextTab: TabType) => {
     setTab(nextTab);
 
     const getTarget = () => {
-      if (nextTab === "책 추천") return RecommendedRef.current;
-      if (nextTab === "책 정보") return InfoRef.current;
-      if (nextTab === "북로그") return BookLogRef.current;
+      if (nextTab === "프로필") return ProfileRef.current;
+      if (nextTab === "수상경력") return AwardRef.current;
+      if (nextTab === "도서") return BookRef.current;
       return null;
     };
 
@@ -42,9 +42,9 @@ export const BookDetail = () => {
   useEffect(() => {
     const handleScroll = () => {
       const sections: { name: TabType; el: HTMLElement | null }[] = [
-        { name: "책 추천", el: RecommendedRef.current },
-        { name: "책 정보", el: InfoRef.current },
-        { name: "북로그", el: BookLogRef.current },
+        { name: "프로필", el: ProfileRef.current },
+        { name: "수상경력", el: AwardRef.current },
+        { name: "도서", el: BookRef.current },
       ];
 
       const viewportMiddle = window.scrollY + window.innerHeight / 2 - 40;
@@ -80,28 +80,28 @@ export const BookDetail = () => {
       <NavBarTop
         back={true}
         onBack={() => history.back()}
-        title="책 정보"
+        title="작가 이름"
       />
 
       <main className="pb-6 pt-4 space-y-5 mb-10">
         {/* 상단 책 썸네일 + 정보 */}
         <div className="px-6">
           <div className="flex justify-center">
-            <Dummy_book className="w-37.5 h-57.5 flex-shrink-0 rounded-md" />
+            <div className="rounded-full bg-[#d9d9d9] w-[170px] h-[170px] flex items-center justify-center">작가 이미지</div>
           </div>
           <div className="mt-6 space-y-4">
             <div>
               <button className="px-2 py-1 h-6 rounded-sm bg-lightblue-1 text-caption-02 text-primary">
-                도서
+                소설가
               </button>
             </div>
             <div>
-              <p className="text-title-01">물고기는 존재하지 않는다</p>
+              <p className="text-title-01">작가 이름</p>
               <p className="text-caption-01 text-gray-500 mb-2 mt-1">
-                상실, 사랑 그리고 숨어있는 삶의 질서에 관한 이야기
+                작가에 대한 한 줄 소개 내용
               </p>
               <p className="text-caption-02 text-gray-500">
-                룰루밀러 저<span> | </span>정지인 역
+                소설가<span> | </span>한국
               </p>
             </div>
           </div>
@@ -119,31 +119,27 @@ export const BookDetail = () => {
           </div>
         </div>
 
-        {/* 책 추천 섹션 */}
-        <section ref={RecommendedRef}>
-          <BookRecommeded />
+        {/* 기본정보 섹션 */}
+        <section ref={ProfileRef}>
+          <AuthorProfile />
           <hr className="mt-5 h-2 bg-gray-100 border-none" />
         </section>
 
-        {/* 책 정보 섹션 */}
-        <section ref={InfoRef}>
-          <BookInfo />
+        {/* 수상경력 섹션 */}
+        <section ref={AwardRef}>
+          <AuthorAwards />
           <hr className="mt-5 h-2 bg-gray-100 border-none" />
         </section>
 
-        {/* 북로그 섹션 */}
-        <section ref={BookLogRef}>
-          <BookLogCarousel />
+        {/* 책 섹션 */}
+        <section ref={BookRef}>
+          <AuthorBooks />
         </section>
       </main>
 
-      <div className="px-6 mb-4">
-        <button className="w-full h-13 rounded-lg bg-black text-white text-subtitle-02-sb">
-          서재에 저장
-        </button>
-      </div>
+
     </div>
   );
 };
 
-export default BookDetail;
+export default AuthorDetailPage;
