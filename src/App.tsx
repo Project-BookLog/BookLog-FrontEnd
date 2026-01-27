@@ -13,7 +13,6 @@ import FilterPage from "./components/common/FilterPage";
 // 1. 홈
 import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/home/SearchPage";
-// import SearchFilterPage from "./pages/home/SearchFilterPage";
 import BookDetailPage from "./pages/home/BookDetailPage";
 import AuthorDetailPage from "./pages/home/AuthorDetailPage";
 
@@ -60,7 +59,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/book/:bookid" element={<BookDetailPage />} />
 
-        {/* ✅ 필터 사용 라우트들에만 Provider 적용 */}
+        {/* 필터 사용 라우트들에만 Provider 적용 */}
         <Route
           element={
             <FilterProvider>
@@ -70,9 +69,8 @@ function App() {
         >
           {/* 1. 홈 */}
           <Route path="/search" element={<SearchPage />} />
-          {/* <Route path="/search/filter" element={<SearchFilterPage />} /> */}
           <Route path="/search/filter" element={<FilterPage />} />
-          <Route path="/authordetail/filter" element={<FilterPage />} />
+          <Route path="/author/:authorid/filter" element={<FilterPage />} />
           <Route path="/author/:authorid" element={<AuthorDetailPage />} />
 
           {/* 2. 북로그 */}
