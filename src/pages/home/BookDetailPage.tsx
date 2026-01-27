@@ -5,6 +5,7 @@ import Tab from "../../components/common/Tab";
 import BookRecommeded from "../../components/home/book/BookRecommended";
 import BookInfo from "../../components/home/book/BookInfo";
 import BookLogCarousel from "../../components/home/book/BookLogCarousel";
+import { useParams } from "react-router-dom";
 
 const TABS = ["책 추천", "책 정보", "북로그"] as const;
 type TabType = (typeof TABS)[number];
@@ -15,6 +16,9 @@ export const BookDetailPage = () => {
   const RecommendedRef = useRef<HTMLElement | null>(null);
   const InfoRef = useRef<HTMLElement | null>(null);
   const BookLogRef = useRef<HTMLElement | null>(null);
+  
+  const { bookid } = useParams<{ bookid: string }>(); 
+  console.log("bookid:", bookid);
 
   const handleChangeTab = (nextTab: TabType) => {
     setTab(nextTab);

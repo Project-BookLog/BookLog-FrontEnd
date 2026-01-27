@@ -76,8 +76,10 @@ function BookResults({
     if (keyword.trim()) params.set("q", keyword.trim());
     params.set("from", from);
     params.set("tab", "book");
-    navigate(`/search/filter?${params.toString()}`);
+    params.set("returnUrl", encodeURIComponent("/search"));
+    navigate(`/search/filter?${params.toString()}`); 
   };
+
 
   const filterChips: FilterChip[] = [
     {

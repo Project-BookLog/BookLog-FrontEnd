@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useMemo, useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { BackIcon, Reset } from "../../../assets/icons";
 import { SortDropDown } from "../../common/dropdown/SortDropDown";
 import { BOOK_ORDER, sortOptions } from "../../../enum/book";
 import { FilterChips, type FilterChip } from "../../common/FilterChips";
+import { useFilter } from "../../../hooks/useFilter";
 
 const DUMMY_BOOKS = [
   {
@@ -11,9 +12,9 @@ const DUMMY_BOOKS = [
     title: "책 제목",
     thumbnailUrl: "https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/9791194530817.jpg",
     authors: "저자명",
-    author: "저자명", // author 추가
+    author: "저자명", 
     publisherName: "출판사",
-    publisher: "출판사", // publisher 추가
+    publisher: "출판사",
     createdAt: "2021-01-01",
     mood: "잔잔한",
   },
@@ -91,12 +92,30 @@ interface Book {
 
 function AuthorBooks() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { setPageInfo } = useFilter();
 
   const [currentSort, setCurrentSort] = useState<BOOK_ORDER>(BOOK_ORDER.LATEST);
   const [isSortOpen, setIsSortOpen] = useState(false);
+  
+  // 🔧 URL params 기반 필터 상태
   const [selectedFilters, setSelectedFilters] = useState<
     Partial<Record<FilterKey, string>>
   >({});
+
+  // 🔧 URL 변경 시 필터 상태 자동 업데이트
+  useEffect(() => {
+    const mood = searchParams.get("mood");
+    const style = searchParams.get("style");
+    const immersion = searchParams.get("immersion");
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSelectedFilters({
+      mood: mood || undefined,
+      style: style || undefined,
+      immersion: immersion || undefined,
+    });
+  }, [searchParams]);
 
   const currentSortLabel =
     sortOptions.find((o) => o.value === currentSort)?.label ?? "정렬";
@@ -104,38 +123,23 @@ function AuthorBooks() {
   const sortedItems = useMemo(() => {
     let filtered = [...DUMMY_BOOKS];
 
-    // 필터 적용 (optional chaining 사용)
     if (selectedFilters.mood) {
-      filtered = filtered.filter(
-        (book) => book.mood === selectedFilters.mood
-      );
+      filtered = filtered.filter((book) => book.mood === selectedFilters.mood);
     }
     if (selectedFilters.style) {
-      filtered = filtered.filter(
-        (book) => book.style === selectedFilters.style
-      );
+      filtered = filtered.filter((book) => book.style === selectedFilters.style);
     }
     if (selectedFilters.immersion) {
-      filtered = filtered.filter(
-        (book) => book.immersion === selectedFilters.immersion
-      );
+      filtered = filtered.filter((book) => book.immersion === selectedFilters.immersion);
     }
 
     switch (currentSort) {
       case BOOK_ORDER.LATEST:
-        return filtered.sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
+        return filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       case BOOK_ORDER.OLDEST:
-        return filtered.sort(
-          (a, b) =>
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        );
+        return filtered.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
       case BOOK_ORDER.TITLE:
-        return filtered.sort((a, b) =>
-          a.title.localeCompare(b.title, "ko", { sensitivity: "base" })
-        );
+        return filtered.sort((a, b) => a.title.localeCompare(b.title, "ko", { sensitivity: "base" }));
       default:
         return filtered;
     }
@@ -146,11 +150,22 @@ function AuthorBooks() {
   };
 
   const handleResetFilters = () => {
-    setSelectedFilters({});
+    const params = new URLSearchParams(searchParams);
+    params.delete("mood");
+    params.delete("style");
+    params.delete("immersion");
+    window.location.href = `${window.location.pathname}?${params.toString()}`;
   };
 
+
   const goFilter = (from: FilterKey) => {
-    navigate(`/search/filter?from=${from}&tab=book`);
+    setPageInfo({ 
+      returnUrl: window.location.pathname, 
+      preserveQuery: [] 
+    });
+    const params = new URLSearchParams();
+    params.set("from", from);
+    navigate(`/authordetail/filter?${params.toString()}`);
   };
 
   const filterChips: FilterChip[] = [

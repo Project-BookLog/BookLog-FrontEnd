@@ -4,6 +4,7 @@ import Tab from "../../components/common/Tab";
 import AuthorProfile from "../../components/home/author/AuthorProfile";
 import AuthorAwards from "../../components/home/author/AuthorAwards";
 import AuthorBooks from "../../components/home/author/AuthorBooks";
+import { useParams } from "react-router-dom";
 
 const TABS = ["프로필", "수상경력", "도서"] as const;
 type TabType = (typeof TABS)[number];
@@ -15,6 +16,8 @@ export const AuthorDetailPage = () => {
   const AwardRef = useRef<HTMLElement | null>(null);
   const BookRef = useRef<HTMLElement | null>(null);
 
+  const { authorid } = useParams<{ authorid: string }>();
+  console.log(authorid);
 
   const handleChangeTab = (nextTab: TabType) => {
     setTab(nextTab);
@@ -80,7 +83,6 @@ export const AuthorDetailPage = () => {
       <NavBarTop
         back={true}
         onBack={() => history.back()}
-        title="작가 이름"
       />
 
       <main className="pb-6 pt-4 space-y-5 mb-10">

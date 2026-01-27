@@ -4,15 +4,16 @@ import { FilterProvider } from "./context/FilterContext";
 import { useToast } from "./context/ToastContext";
 import { Toast } from "./components/common/Toast";
 
-// 0. 온보딩
+// 0. 온보딩 & common
 import { LoginPage } from "./pages/onboarding/LoginPage";
 import { SplashPage } from "./pages/onboarding/SplashPage";
 import OnboardingPage from "./pages/onboarding/OnBoardingPage";
+import FilterPage from "./components/common/FilterPage";
 
 // 1. 홈
 import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/home/SearchPage";
-import SearchFilterPage from "./pages/home/SearchFilterPage";
+// import SearchFilterPage from "./pages/home/SearchFilterPage";
 import BookDetailPage from "./pages/home/BookDetailPage";
 import AuthorDetailPage from "./pages/home/AuthorDetailPage";
 
@@ -69,7 +70,9 @@ function App() {
         >
           {/* 1. 홈 */}
           <Route path="/search" element={<SearchPage />} />
-          <Route path="/search/filter" element={<SearchFilterPage />} />
+          {/* <Route path="/search/filter" element={<SearchFilterPage />} /> */}
+          <Route path="/search/filter" element={<FilterPage />} />
+          <Route path="/authordetail/filter" element={<FilterPage />} />
           <Route path="/authordetail" element={<AuthorDetailPage />} />
 
           {/* 2. 북로그 */}

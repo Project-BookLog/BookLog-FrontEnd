@@ -10,11 +10,13 @@ export type FilterState = {
   immersion: Immersion[];
 };
 
-type FilterContextValue = {
+export type FilterContextValue = {
   filter: FilterState;
   setFilter: (next: FilterState) => void;
   toggleFilter: (key: keyof FilterState, value: Mood | Style | Immersion) => void;
-  resetFilter: () => void;
+  resetFilter: () => void;  
+  setPageInfo: (info: { returnUrl: string; preserveQuery?: string[] }) => void;
+  pageInfo: { returnUrl: string; preserveQuery?: string[] } | null;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -29,6 +31,7 @@ export const FilterContext = createContext<FilterContextValue | null>(null);
 
 export function FilterProvider({ children }: { children: React.ReactNode }) {
   const [filter, setFilter] = useState<FilterState>(initialFilterState);
+  const [pageInfo, setPageInfo] = useState<{ returnUrl: string; preserveQuery?: string[] } | null>(null);
 
   const toggleFilter = (
     key: keyof FilterState,
@@ -49,7 +52,7 @@ export function FilterProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <FilterContext.Provider value={{ filter, setFilter, toggleFilter, resetFilter }}>
+    <FilterContext.Provider value={{ filter, setFilter, toggleFilter, resetFilter, pageInfo, setPageInfo }}>
       {children}
     </FilterContext.Provider>
   );
