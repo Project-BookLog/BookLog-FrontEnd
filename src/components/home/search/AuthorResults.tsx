@@ -1,5 +1,6 @@
 import type { Author } from "../../../types/book.types";
 import { BackIcon } from "../../../assets/icons";
+import { useNavigate } from "react-router-dom";
 
 type AuthorResultsProps = {
   keyword: string;
@@ -16,6 +17,12 @@ function AuthorResults({
   onMoreClick,
 }: AuthorResultsProps) {
   const isCompact = mode === "compact";
+
+  const navigate = useNavigate();
+
+  const handleAuthorClick = (authorId: string | number) => {
+    navigate(`/author/${authorId}`);
+  };
 
   return (
     <section>
@@ -66,6 +73,7 @@ function AuthorResults({
                 key={author.id}
                 type="button"
                 className="flex-shrink-0"
+                onClick={() => handleAuthorClick(author.id)}
               >
                 <div className="h-16 flex items-center gap-3 pl-2 pr-4 py-2 rounded-full bg-gray-100">
                   <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center">
@@ -91,6 +99,7 @@ function AuthorResults({
               key={author.id}
               type="button"
               className="w-full text-left mb-4"
+              onClick={() => handleAuthorClick(author.id)}
             >
               <div className="w-full rounded-2xl bg-gray-100 px-4 py-3">
                 <div className="flex items-center gap-3 h-14 py-3 mb-2">
