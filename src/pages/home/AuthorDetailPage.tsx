@@ -16,8 +16,9 @@ export const AuthorDetailPage = () => {
   const AwardRef = useRef<HTMLElement | null>(null);
   const BookRef = useRef<HTMLElement | null>(null);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { authorid } = useParams<{ authorid: string }>();
-  console.log(authorid);
+  // console.log(authorid);
 
   const handleChangeTab = (nextTab: TabType) => {
     setTab(nextTab);

@@ -19,19 +19,7 @@ export default function FilterPage() {
 
   const handleApply = useCallback(() => {
     const preserveKeys = pageInfo?.preserveQuery || ['q'];
-    let returnUrl = pageInfo?.returnUrl || '/search';
-
-    const previousState = window.history.state;
-    if (previousState?.pathname && !returnUrl.includes('/filter')) {
-      returnUrl = previousState.pathname;
-    }
-
-    if (!returnUrl || returnUrl.includes('/filter')) {
-      const referrer = document.referrer;
-      if (referrer && !referrer.includes('/filter')) {
-        returnUrl = new URL(referrer, window.location.origin).pathname;
-      }
-    }
+    const returnUrl = pageInfo?.returnUrl || '/search';
 
     const params = new URLSearchParams();
     

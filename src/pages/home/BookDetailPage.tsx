@@ -17,8 +17,9 @@ export const BookDetailPage = () => {
   const InfoRef = useRef<HTMLElement | null>(null);
   const BookLogRef = useRef<HTMLElement | null>(null);
   
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { bookid } = useParams<{ bookid: string }>(); 
-  console.log("bookid:", bookid);
+  // console.log("bookid:", bookid);
 
   const handleChangeTab = (nextTab: TabType) => {
     setTab(nextTab);

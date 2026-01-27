@@ -98,12 +98,11 @@ function AuthorBooks() {
   const [currentSort, setCurrentSort] = useState<BOOK_ORDER>(BOOK_ORDER.LATEST);
   const [isSortOpen, setIsSortOpen] = useState(false);
   
-  // 🔧 URL params 기반 필터 상태
   const [selectedFilters, setSelectedFilters] = useState<
     Partial<Record<FilterKey, string>>
   >({});
 
-  // 🔧 URL 변경 시 필터 상태 자동 업데이트
+  
   useEffect(() => {
     const mood = searchParams.get("mood");
     const style = searchParams.get("style");
@@ -145,8 +144,9 @@ function AuthorBooks() {
     }
   }, [currentSort, selectedFilters]);
 
-  const handleBookClick = (bookId: number) => {
-    navigate(`/book/${bookId}`);
+  const handleBookClick = () => {
+    // navigate(`/book/${bookId}`);
+    navigate("/bookdetail");
   };
 
   const handleResetFilters = () => {
@@ -154,7 +154,7 @@ function AuthorBooks() {
     params.delete("mood");
     params.delete("style");
     params.delete("immersion");
-    window.location.href = `${window.location.pathname}?${params.toString()}`;
+    navigate(`${window.location.pathname}?${params.toString()}`, { replace: true });
   };
 
 
@@ -253,7 +253,7 @@ function AuthorBooks() {
             key={book.bookId}
             type="button"
             className="text-left"
-            onClick={() => handleBookClick(book.bookId)}
+            onClick={() => handleBookClick()}
           >
             <div className="h-36 w-full overflow-hidden rounded">
               <img

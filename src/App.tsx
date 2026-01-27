@@ -58,7 +58,7 @@ function App() {
 
         {/* 1. 홈 */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/bookdetail" element={<BookDetailPage />} />
+        <Route path="/book/:bookid" element={<BookDetailPage />} />
 
         {/* ✅ 필터 사용 라우트들에만 Provider 적용 */}
         <Route
@@ -73,7 +73,7 @@ function App() {
           {/* <Route path="/search/filter" element={<SearchFilterPage />} /> */}
           <Route path="/search/filter" element={<FilterPage />} />
           <Route path="/authordetail/filter" element={<FilterPage />} />
-          <Route path="/authordetail" element={<AuthorDetailPage />} />
+          <Route path="/author/:authorid" element={<AuthorDetailPage />} />
 
           {/* 2. 북로그 */}
           <Route path="/booklog" element={<BooklogPage />} />

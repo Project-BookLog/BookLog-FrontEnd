@@ -65,9 +65,10 @@ function BookResults({
     }
   }, [items, currentSort]);
 
-  const handleBookClick = () => {
-    navigate("/bookdetail");
+  const handleBookClick = (bookId: string | number) => {
+    navigate(`/book/${bookId}`);
   };
+
 
   const renderItems = mode === "full" ? sortedItems : items;
 
@@ -76,7 +77,7 @@ function BookResults({
     if (keyword.trim()) params.set("q", keyword.trim());
     params.set("from", from);
     params.set("tab", "book");
-    params.set("returnUrl", encodeURIComponent("/search"));
+    params.set("returnUrl", "/search");
     navigate(`/search/filter?${params.toString()}`); 
   };
 
@@ -187,7 +188,7 @@ function BookResults({
               key={book.id}
               type="button"
               className="flex w-full items-center gap-5"
-              onClick={handleBookClick}
+              onClick={() => handleBookClick(book.id)}
             >
               <div className="flex h-26 w-17 items-center justify-center overflow-hidden rounded">
                 <CoverIcon className="h-full w-full" />
