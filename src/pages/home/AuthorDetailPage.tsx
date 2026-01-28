@@ -110,7 +110,7 @@ export const AuthorDetailPage = () => {
             </div>
           </div>
 
-          <div className="with-full mt-4">
+          <div className="mt-4">
             <AuthorBookBrief />
           </div>
         </section>
