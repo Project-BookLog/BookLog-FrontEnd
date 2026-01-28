@@ -4,6 +4,7 @@ import Tab from "../../components/common/Tab";
 import AuthorProfile from "../../components/home/author/AuthorProfile";
 import AuthorAwards from "../../components/home/author/AuthorAwards";
 import AuthorBooks from "../../components/home/author/AuthorBooks";
+import AuthorBookBrief from "../../components/home/author/AuthorBookBrief";
 import { useParams } from "react-router-dom";
 
 const TABS = ["프로필", "수상경력", "도서"] as const;
@@ -86,9 +87,9 @@ export const AuthorDetailPage = () => {
         onBack={() => history.back()}
       />
 
-      <main className="pb-6 pt-4 space-y-5 mb-10">
+      <main className="pb-6 pt-4 space-y-5 mb-10 bg-bg">
         {/* 상단 책 썸네일 + 정보 */}
-        <div className="px-6">
+        <section className="px-5">
           <div className="flex justify-center">
             <div className="rounded-full bg-[#d9d9d9] w-[170px] h-[170px] flex items-center justify-center">작가 이미지</div>
           </div>
@@ -108,11 +109,15 @@ export const AuthorDetailPage = () => {
               </p>
             </div>
           </div>
-        </div>
+
+          <div className="mt-4">
+            <AuthorBookBrief />
+          </div>
+        </section>
 
         {/* 탭 */}
         <div className="sticky top-0 z-10 bg-bg">
-          <div className="px-6 border-b border-gray-200 bg-white">
+          <div className="px-6 border-b border-gray-200 bg-bgs">
             <Tab
               tabs={TABS}
               active={tab}
