@@ -9,14 +9,14 @@ function LikeCard({ title, description }: LikeCardProps) {
   return (
     <div className="relative rounded-2xl bg-slate-900 text-white px-6 py-5 mt-2 mx-1 overflow-hidden">
       {/* 배경 */}
-      <div className="absolute inset-0 opacity-90 blur-sm pointer-events-none">
+      <div className="absolute inset-0 opacity-90 blur-[80px] pointer-events-none">
         <div className="w-full h-full flex items-center justify-center">
           <Dummy_book className="w-[170%] h-[170%]" />
         </div>
       </div>
 
       {/* 오버레이 */}
-      <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+      <div className="absolute inset-0 bg-[#000000]/50 pointer-events-none" />
 
       {/* 이동 버튼 */}
       <button
@@ -44,7 +44,7 @@ function LikeCard({ title, description }: LikeCardProps) {
           <div className="w-full">
             <div className="text-center mb-2">
               <div className="text-subtitle-02-sb">소년이 온다</div>
-              <div className="text-caption-02 text-gray-600">
+              <div className="text-caption-02 text-gray-200">
                 한강 저<span className="text-gray-400"> | </span>출판사
               </div>
             </div>

@@ -22,7 +22,7 @@ function BestSeller({ type, title, subtitle }: BestSellerSectionProps) {
   const books = BOOKS;
   
   return (
-    <section className="space-y-3 mb-12">
+    <section className="space-y-3">
       <div className="px-5">
         <h2 className="text-title-02 text-[#000000]">{title}</h2>
         <p className="text-body-03 text-gray-700">{subtitle}</p>

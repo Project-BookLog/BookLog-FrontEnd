@@ -1,5 +1,5 @@
-import { useEffect, useState, useRef } from "react"; // useEffect 추가
-import { Alarm, Logo2, LogoBooklog } from "../assets/icons";
+import { useEffect, useState, useRef } from "react"; 
+import { Alarm, LogoBooklog } from "../assets/icons";
 import NavBarTop from "../components/common/navbar/NavBarTop";
 import Tab from "../components/common/Tab";
 import LikeCarousel from "../components/home/LikeCarousel";
@@ -99,17 +99,15 @@ function HomePage() {
   }, [activeTab]); 
 
   return (
-    <div className="min-h-screen bg-bg overflow-x-hidden">
+    <div className="min-h-screen bg-bg">
       {/* navbar */}
       <NavBarTop
-        back={false}
         leftContent={
-          <div className="flex items-center gap-1">
-            <Logo2 className="w-7 h-7" />
-            <LogoBooklog className="h-6 mt-1.5" />
+          <div className="flex gap-x-[10px]">
+            <LogoBooklog className="h-[30px]" />
+            <Alarm className="w-6 h-6 mt-1" />
           </div>
         }
-        rightSlot={<Alarm className="w-5 h-5" />}
       />
 
       {/* tab*/}
@@ -125,8 +123,8 @@ function HomePage() {
       </div>
 
       {/* 내용 */}
-      <main className="pb-6 pt-4 space-y-12 mb-10">
-        <section ref={likeSectionRef} className="scroll-mt-15">
+      <main className="pb-6 pt-4 mb-10 overflow-x-hidden">
+        <section ref={likeSectionRef} className="scroll-mt-15 mb-10">
           <LikeCarousel />
         </section>
 
@@ -134,11 +132,11 @@ function HomePage() {
           <CurrentReading />
         </section>
 
-        <section ref={rankingRef} className="scroll-mt-15">
+        <section ref={rankingRef} className="scroll-mt-15 mb-12">
           <Ranking />
         </section>
 
-        <section ref={moodRef} className="scroll-mt-15">
+        <section ref={moodRef} className="scroll-mt-15 mb-12">
           <BestSeller
             type="mood"
             title="분위기별 베스트셀러"
@@ -146,7 +144,7 @@ function HomePage() {
           />
         </section>
 
-        <section ref={writingStyleRef} className="scroll-mt-15">
+        <section ref={writingStyleRef} className="scroll-mt-15 mb-12">
           <BestSeller
             type="writingStyle"
             title="문체별 베스트셀러"
@@ -154,7 +152,7 @@ function HomePage() {
           />
         </section>
 
-        <section ref={immersionRef} className="scroll-mt-15">
+        <section ref={immersionRef} className="scroll-mt-15 mb-12">
           <BestSeller
             type="immersion"
             title="몰입도별 베스트셀러"
