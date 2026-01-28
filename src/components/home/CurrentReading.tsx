@@ -3,6 +3,7 @@ import Carousel from "react-multi-carousel";
 import type { CarouselInternalState } from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { BOOKS } from "../../data/book.mock";
+import { Frame } from "../../assets/icons";
 
 const CurrentReading: React.FC = () => {
   const length = BOOKS.length;
@@ -92,23 +93,34 @@ const CurrentReading: React.FC = () => {
               >
                 <div
                   className={[
-                    "w-30 h-45 rounded-sm overflow-hidden",
+                    "relative w-30 h-45", 
                     "flex items-center justify-center",
                   ].join(" ")}
                 >
-                  {book.coverUrl ? (
-                    <img
-                      src={book.coverUrl}
-                      alt={book.title}
-                      className="h-full w-full object-cover"
-                      draggable={false}
-                    />
-                  ) : CoverIcon ? (
-                    <CoverIcon className="h-full w-full" />
-                  ) : (
-                    <span className="text-xs">No Image</span>
-                  )}
+                  <div className="w-full h-full rounded-sm overflow-hidden">
+                    {book.coverUrl ? (
+                      <img
+                        src={book.coverUrl}
+                        alt={book.title}
+                        className="w-full h-full object-cover"
+                        draggable={false}
+                      />
+                    ) : CoverIcon ? (
+                      <CoverIcon className="w-full h-full" />
+                    ) : (
+                      <span className="text-xs">No Image</span>
+                    )}
+                  </div>
+
+                  <Frame 
+                    className="pointer-events-none absolute bottom-0 right-0" 
+                    style={{ 
+                      transform: 'translateY(35px) translateX(31px)'
+                    }}
+                  />
                 </div>
+
+
 
                 {/* 책 정보 */}
                 {isCenter && (
