@@ -20,29 +20,24 @@ function Tab<T extends string>({
     between: "justify-between",
   };
 
-  const variantClass = "bg-bg gap-5"
-  const activeClass = "text-subtitle-01-sb text-primary"
+  const variantClass = "bg-bg gap-5";
+  const activeClass = "text-subtitle-01-sb text-primary";
   const inactiveClass = "text-subtitle-01-m border-transparent text-gray-500";
 
   return (
     <nav className={`${baseNav} ${alignClass[align]} ${variantClass}`}>
-      {tabs.map((tab) => {
-        const isActive = tab === active;
-
-        return (
-          <button
-            key={tab}
-            type="button"
-            onClick={() => onChange(tab)}
-            className={[
-              "border-b-2",
-              isActive ? activeClass : inactiveClass,
-            ].join(" ")}
-          >
-            {tab}
-          </button>
-        );
-      })}
+      {tabs.map((tab) => (
+        <button
+          key={tab}
+          type="button"
+          onClick={() => onChange(tab)}
+          className={`border-b-2 ${
+            tab === active ? activeClass : inactiveClass
+          }`}
+        >
+          {tab}
+        </button>
+      ))}
     </nav>
   );
 }
