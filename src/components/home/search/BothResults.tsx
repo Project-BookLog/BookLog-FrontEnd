@@ -94,11 +94,13 @@ export default function BothResults({
               onClick={() => navigate(`/book/${book.bookId}`)}
             >
               <div className="h-26 w-17 rounded bg-gray-100 overflow-hidden">
+                {book.thumbnailUrl ? (
                 <img
                   src={book.thumbnailUrl}
                   alt={book.title}
                   className="w-full h-full object-cover"
                 />
+                ): null}
               </div>
 
               <div className="min-w-0 flex-1 text-left">

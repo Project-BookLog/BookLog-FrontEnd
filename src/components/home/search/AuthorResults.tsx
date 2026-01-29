@@ -54,6 +54,7 @@ export default function AuthorResults({
                       <div key={book.bookId} className="flex gap-[10px] w-35">
                         <img
                           src={book.thumbnailUrl}
+                          alt="책 표지"
                           className="w-[30px] h-[45px] rounded-md object-cover"
                         />
                         <div className="min-w-0">

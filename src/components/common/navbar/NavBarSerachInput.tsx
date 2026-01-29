@@ -18,12 +18,6 @@ function NavBarSearchInput({
     onSearch?.(); 
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      onSearch?.();
-    }
-  };
-
   return (
     <form onSubmit={handleSubmit} className="w-full flex items-center">
       <div className="flex h-12 items-center rounded-full bg-gray-100 px-3 py-2 w-full relative">
@@ -39,7 +33,6 @@ function NavBarSearchInput({
           placeholder={placeholder ?? "도서 검색하기"}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          onKeyDown={handleKeyDown} 
         />
       </div>
     </form>
