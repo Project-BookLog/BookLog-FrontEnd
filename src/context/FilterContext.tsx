@@ -10,13 +10,24 @@ export type FilterState = {
   immersion: Immersion[];
 };
 
+export type FilterScope = "search" | "author" | "booklog" | "booklogWrite";
+
+export type PageInfo = {
+  returnUrl: string;
+  preserveQuery?: string[];
+};
+
 export type FilterContextValue = {
-  filter: FilterState;
-  setFilter: (next: FilterState) => void;
-  toggleFilter: (key: keyof FilterState, value: Mood | Style | Immersion) => void;
-  resetFilter: () => void;  
-  setPageInfo: (info: { returnUrl: string; preserveQuery?: string[] }) => void;
-  pageInfo: { returnUrl: string; preserveQuery?: string[] } | null;
+  getFilter: (scope: FilterScope) => FilterState;
+  setFilter: (scope: FilterScope, next: FilterState) => void;
+  toggleFilter: (
+    scope: FilterScope,
+    key: keyof FilterState,
+    value: Mood | Style | Immersion
+  ) => void;
+  resetFilter: (scope: FilterScope) => void;
+  getPageInfo: (scope: FilterScope) => PageInfo | null;
+  setPageInfo: (scope: FilterScope, info: PageInfo | null) => void;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -26,33 +37,70 @@ export const initialFilterState: FilterState = {
   immersion: [],
 };
 
+const createEmptyFilterState = (): FilterState => ({
+  mood: [],
+  style: [],
+  immersion: [],
+});
+
 // eslint-disable-next-line react-refresh/only-export-components
 export const FilterContext = createContext<FilterContextValue | null>(null);
 
 export function FilterProvider({ children }: { children: React.ReactNode }) {
-  const [filter, setFilter] = useState<FilterState>(initialFilterState);
-  const [pageInfo, setPageInfo] = useState<{ returnUrl: string; preserveQuery?: string[] } | null>(null);
+  const [filters, setFilters] = useState<Record<FilterScope, FilterState>>({
+    search: createEmptyFilterState(),
+    author: createEmptyFilterState(),
+    booklog: createEmptyFilterState(),
+    booklogWrite: createEmptyFilterState(),
+  });
+  const [pageInfos, setPageInfos] = useState<Record<FilterScope, PageInfo | null>>({
+    search: null,
+    author: null,
+    booklog: null,
+    booklogWrite: null,
+  });
+
+  const getFilter = (scope: FilterScope) => filters[scope];
+
+  const setFilter = (scope: FilterScope, next: FilterState) => {
+    setFilters((prev) => ({ ...prev, [scope]: next }));
+  };
 
   const toggleFilter = (
+    scope: FilterScope,
     key: keyof FilterState,
     value: Mood | Style | Immersion
   ) => {
-    setFilter(prev => {
-      const current = prev[key] as string[];
+    setFilters((prev) => {
+      const current = prev[scope][key] as string[];
       const newValue = current.includes(value)
-        ? current.filter(item => item !== value)
+        ? current.filter((item) => item !== value)
         : [...current, value];
-      return { ...prev, [key]: newValue };
+      return { ...prev, [scope]: { ...prev[scope], [key]: newValue } };
     });
   };
 
+  const resetFilter = (scope: FilterScope) => {
+    setFilters((prev) => ({ ...prev, [scope]: createEmptyFilterState() }));
+  };
 
-  const resetFilter = () => {
-    setFilter(initialFilterState);
+  const getPageInfo = (scope: FilterScope) => pageInfos[scope];
+
+  const setPageInfo = (scope: FilterScope, info: PageInfo | null) => {
+    setPageInfos((prev) => ({ ...prev, [scope]: info }));
   };
 
   return (
-    <FilterContext.Provider value={{ filter, setFilter, toggleFilter, resetFilter, pageInfo, setPageInfo }}>
+    <FilterContext.Provider
+      value={{
+        getFilter,
+        setFilter,
+        toggleFilter,
+        resetFilter,
+        getPageInfo,
+        setPageInfo,
+      }}
+    >
       {children}
     </FilterContext.Provider>
   );

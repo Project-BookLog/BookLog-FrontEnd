@@ -160,7 +160,7 @@ function PostCard({ post }: { post: Post }) {
  * ============================= */
 export default function BooklogPage() {
   const navigate = useNavigate();
-  const { resetFilter } = useFilter();
+  const { resetFilter } = useFilter("booklog");
 
   const posts = useMemo<Post[]>(
     () => [
@@ -204,6 +204,7 @@ export default function BooklogPage() {
         {/* ✅ 필터 */}
         <div className="mt-4">
           <FilterBar
+            scope="booklog"
             resetSrc={resetImg}
             onReset={resetFilter}
             onClickMood={() =>

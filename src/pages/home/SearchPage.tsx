@@ -30,7 +30,7 @@ function SearchPage() {
   const tabFromUrl = searchParams.get("tab");
 
   const [keyword, setKeyword] = useState(qFromUrl);
-  const { filter, resetFilter } = useFilter();
+  const { filter, resetFilter } = useFilter("search");
 
   const [activeTab, setActiveTab] = useState<TabType>(
     tabFromUrl === "book" ? "도서" : "전체"

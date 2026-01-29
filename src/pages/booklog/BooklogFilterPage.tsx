@@ -3,6 +3,7 @@ import { useFilter } from "../../hooks/useFilter";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import { useEffect, useMemo } from "react";
 import type { Book } from "../../types/book.types";
+import type { FilterScope } from "../../context/FilterContext";
 
 const moods = ["따뜻한", "잔잔한", "유쾌한", "어두운", "서늘한", "몽환적인"] as const;
 const styles = ["간결한", "화려한", "담백한", "섬세한", "직설적", "은유적"] as const;
@@ -14,10 +15,13 @@ type FilterPageState = {
 };
 
 export default function BooklogFilterPage() {
-  const { filter, toggleFilter } = useFilter();
   const navigate = useNavigate();
   const location = useLocation();
   const navState = (location.state || {}) as FilterPageState;
+  const scope: FilterScope = location.pathname.startsWith("/booklog/write")
+    ? "booklogWrite"
+    : "booklog";
+  const { filter, toggleFilter } = useFilter(scope);
 
   const from = useMemo(() => navState.from ?? "/booklog", [navState.from]);
 

@@ -24,14 +24,14 @@ import BookPickPage from "./pages/booklog/BookPickPage";
 import BookWritePage from "./pages/booklog/BookWritePage";
 
 // 3. 서재
-import { MyLibraryPage } from "./pages/myLibrary/MyLibraryPage";
+import { MyLibraryPage } from "./pages/MyLibrary/MyLibraryPage";
 import { libraries } from "./data/myLibrary.mock";
-import { MyLibraryDetail } from "./pages/myLibrary/MyLibraryDetailPage";
-import { EditBooksPage } from "./pages/myLibrary/EditBooksPage";
-import AddLibraryPage from "./pages/myLibrary/AddLibraryPage";
-import EditPage from "./pages/myLibrary/EditPage";
-import RecordPage from "./pages/myLibrary/RecordPage";
-import StoppedBooksPage from "./pages/myLibrary/StoppedBooksPage";
+import { MyLibraryDetail } from "./pages/MyLibrary/MyLibraryDetailPage";
+import { EditBooksPage } from "./pages/MyLibrary/EditBooksPage";
+import AddLibraryPage from "./pages/MyLibrary/AddLibraryPage";
+import EditPage from "./pages/MyLibrary/EditPage";
+import RecordPage from "./pages/MyLibrary/RecordPage";
+import StoppedBooksPage from "./pages/MyLibrary/StoppedBooksPage";
 
 // 4. 마이페이지
 import MyPage from "./pages/mypage/MyPage";
@@ -69,16 +69,27 @@ function App() {
         >
           {/* 1. 홈 */}
           <Route path="/search" element={<SearchPage />} />
-          <Route path="/search/filter" element={<FilterPage />} />
-          <Route path="/author/:authorid/filter" element={<FilterPage />} />
+          <Route path="/search/filter" element={<FilterPage scope="search" />} />
+          <Route path="/author/:authorid/filter" element={<FilterPage scope="author" />} />
           <Route path="/author/:authorid" element={<AuthorDetailPage />} />
 
           {/* 2. 북로그 */}
           <Route path="/booklog" element={<BooklogPage />} />
           <Route path="/booklog/pick" element={<BookPickPage />} />
-          <Route path="/booklog/write" element={<BookWritePage />} />
           <Route path="/booklog/filter" element={<BooklogFilterPage />} />
           <Route path="/booklog/:booklogId" element={<BooklogDetailPage />} />
+        </Route>
+
+        {/* 북로그 글쓰기 전용 필터 Provider */}
+        <Route
+          element={
+            <FilterProvider>
+              <Outlet />
+            </FilterProvider>
+          }
+        >
+          <Route path="/booklog/write" element={<BookWritePage />} />
+          <Route path="/booklog/write/filter" element={<BooklogFilterPage />} />
         </Route>
 
         {/* 3. 서재 */}
