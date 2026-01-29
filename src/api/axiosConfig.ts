@@ -1,5 +1,4 @@
 import axios, { type AxiosInstance, type AxiosError, type AxiosResponse } from 'axios';
-import { useLocalStorage } from '../hooks/useLocalStorage';
 import { LOCAL_STORAGE_KEY } from '../constants/key';
 
 // public Instance
@@ -21,7 +20,6 @@ export const privateApi: AxiosInstance = axios.create({
 privateApi.interceptors.request.use((config)=>{
     const accessToken = localStorage.getItem(LOCAL_STORAGE_KEY.accessToken);
     const parsedToken = accessToken ? JSON.parse(accessToken) : null;
-
 
     if(parsedToken) {
         config.headers = config.headers || {};
