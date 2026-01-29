@@ -8,7 +8,7 @@ export type Library = {
   sort: BOOK_ORDER;
 };
 
-export type LibraryTab = "ALL" | "TO_READ" | "READING" | "DONE";
+export type LibraryTab = "ALL" | "TO_READ" | "READING" | "COMPLETED";
 
 export type PreviewBook = {
   bookId: number;

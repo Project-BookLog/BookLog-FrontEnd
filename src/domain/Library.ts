@@ -5,5 +5,5 @@ export const TAB_TO_STATUSES: Record<LibraryTab, BookStatus[]> = {
   ALL: ["TO_READ", "READING", "COMPLETED"],
   TO_READ: ["TO_READ"],
   READING: ["READING"],
-  DONE: ["COMPLETED"],
+  COMPLETED: ["COMPLETED"],
 };

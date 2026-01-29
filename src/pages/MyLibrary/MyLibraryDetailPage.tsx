@@ -14,7 +14,8 @@ export function MyLibraryDetail() {
 
   const { shelfId } = useParams();
   const parsedShelfId = shelfId === "-1" ? undefined : Number(shelfId);
-  const shelfName = useLocation().state.shelfName;
+  const location  = useLocation();
+  const shelfName = location.state?.shelfName ?? "전체 서재";
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<LibraryTab>("ALL")
