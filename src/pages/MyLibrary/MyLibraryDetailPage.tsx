@@ -1,42 +1,42 @@
-import { useNavigate, useParams } from "react-router-dom";
-import type { Library, LibraryTab } from "../../types/library";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import type { LibraryTab } from "../../types/library";
 import { ArrowDown, BackIcon, Kebab } from "../../assets/icons";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { BookCard } from "../../components/myLibrary/BookCard";
 import { ReadingBookCard } from "../../components/myLibrary/ReadingBookCard";
 import { BOOK_ORDER, sortOptions } from "../../enum/book";
 import { SortDropDown } from "../../components/common/dropdown/SortDropDown";
 import { LibraryActionDropDown, type LibraryAction } from "../../components/common/dropdown/LibraryActionDropDown";
-import { sortBooks } from "../../utils/sortBooks";
 import { LIBRARY_TABS } from "../../constants/libraryTabs";
-import { TAB_TO_STATUSES } from "../../domain/Library";
-import { getBookStatusByProgress } from "../../domain/BookStatus";
+import { useGetBookList } from "../../hooks/queries/useGetBookList";
 
-export function MyLibraryDetail({ libraries }: { libraries: Library[] }) {
+export function MyLibraryDetail() {
 
-  const { libraryName } = useParams();
+  const { shelfId } = useParams();
+  const parsedShelfId = shelfId === "-1" ? undefined : Number(shelfId);
+  const shelfName = useLocation().state.shelfName;
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<LibraryTab>("ALL")
-
-  const library = libraries.find(
-    (lib) => lib.name === libraryName
-  );
-
-  const [sortOrder, setSortOrder] = useState<BOOK_ORDER>(library?.sort ?? BOOK_ORDER.LATEST);
+  const [sortOrder, setSortOrder] = useState<BOOK_ORDER>(BOOK_ORDER.LATEST);
   const [isSortDropDownOpen, setIsSortDropDownOpen] = useState(false);
   const [isActionDropDownOpen, setIsActionDropDownOpen] = useState(false);
+
+  const status = activeTab === "ALL" ? undefined : (activeTab as "TO_READ" | "READING" | "COMPLETED");
+
+  const { data: books, isLoading } = useGetBookList( parsedShelfId, status, sortOrder);
+  const bookItems = books?.items ?? [];
 
   const actions: LibraryAction[] = [
     {
       label: "서재 편집",
       onClick: () => navigate("edit-library"),
-      visible: library?.name !== "전체 도서",
+      visible: parsedShelfId !== undefined,
     },
     {
       label: "도서 목록 편집",
       onClick: () => {
-        if (library?.name === "전체 도서") navigate(`edit-books`);
+        if (parsedShelfId === undefined) navigate(`edit-books`);
         else navigate(`edit-books?tab=${activeTab}`);
         }
     },
@@ -45,23 +45,6 @@ export function MyLibraryDetail({ libraries }: { libraries: Library[] }) {
       onClick: () => navigate("/my-library/stopped"),
     },
   ];
-
-  const filteredBooks = useMemo(() => {
-    if (!library) return [];
-
-    const allowedStatuses = TAB_TO_STATUSES[activeTab];
-
-    return library.books.filter((book) => {
-      const status = getBookStatusByProgress(book.progress);
-      return allowedStatuses.includes(status);
-    });
-  }, [activeTab, library]);
-
-
-  const sortedBooks = useMemo(() => {
-    if (!filteredBooks) return [];
-    return sortBooks(filteredBooks, sortOrder);
-  }, [filteredBooks, sortOrder]);
 
   const currentSortLabel = sortOptions.find(
     (option) => option.value === sortOrder
@@ -77,7 +60,7 @@ export function MyLibraryDetail({ libraries }: { libraries: Library[] }) {
                 className="w-6 h-6 cursor-pointer"
                 onClick={() => navigate("/my-library")}
             />
-            <p className="text-black text-title-01">{library?.name}</p>
+            <p className="text-black text-title-01">{shelfName}</p>
             <Kebab
               className="w-6 h-6 cursor-pointer"
               onClick={() => setIsActionDropDownOpen(!isActionDropDownOpen)}
@@ -103,7 +86,7 @@ export function MyLibraryDetail({ libraries }: { libraries: Library[] }) {
         </div>
         <div className="flex flex-1 w-[375px] flex-col items-center gap-4 mt-5">
           <div className="relative flex px-5 justify-between items-center self-stretch">
-            <p className="text-gray-600 text-body-03">총 {filteredBooks?.length ?? 0}권</p>
+            <p className="text-gray-600 text-body-03">총 {bookItems.length ?? 0}권</p>
             <button
               className="flex items-center gap-[2px] cursor-pointer"
               onClick={() => setIsSortDropDownOpen(!isSortDropDownOpen)}
@@ -122,8 +105,8 @@ export function MyLibraryDetail({ libraries }: { libraries: Library[] }) {
               />
             )}
           </div>
-          {filteredBooks?.length === 0 ? (
-            library?.name === "전체 도서" ? (
+          {bookItems.length === 0 ? (
+            parsedShelfId === undefined ? (
               <div className="flex flex-1 flex-col items-center gap-[10px] justify-center">
                 <p className="text-center text-gray-900 text-title-02">저장된 책이 없습니다.</p>
                 <p className="text-center text-gray-600 text-body-03">먼저 읽고 있거나 읽고 싶은 책을 담아보세요.</p>
@@ -137,14 +120,14 @@ export function MyLibraryDetail({ libraries }: { libraries: Library[] }) {
           ) : (
             activeTab !== "READING" ? (
               <div className="flex w-[335px] items-end content-end gap-x-[11.5px] gap-y-6 flex-wrap">
-                {sortedBooks.map((book) => (
-                  <BookCard key={book.id} book={book} />
+                {bookItems.map((book) => (
+                  <BookCard key={book.bookId} book={book} />
                 ))}
               </div>
             ) : (
               <div className="flex w-[335px] items-end content-end gap-x-[11.5px] gap-y-[32px] flex-wrap">
-                {sortedBooks.map((book) => (
-                  <ReadingBookCard key={book.id} book={book} />
+                {bookItems.map((book) => (
+                  <ReadingBookCard key={book.bookId} book={book} />
                 ))}
               </div>
             )

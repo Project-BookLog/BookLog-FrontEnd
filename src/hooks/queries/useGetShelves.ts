@@ -4,10 +4,10 @@ import { getShelves } from "../../api/shelf";
 import type { Shelf } from "../../types/library";
 import { BOOK_ORDER } from "../../enum/book";
 
-export function useGetShelves (userId: number) {
+export function useGetShelves () {
     return useQuery({
-        queryKey: [QUERY_KEY.shelves, userId],
-        queryFn: () => getShelves(userId),
+        queryKey: [QUERY_KEY.shelves],
+        queryFn: () => getShelves(),
         select: (shelves) => {
             const allBooksShelf: Shelf = {
                 shelfId: -1,
