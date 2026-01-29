@@ -24,7 +24,7 @@ export function MyLibraryDetail() {
 
   const status = activeTab === "ALL" ? undefined : (activeTab as "TO_READ" | "READING" | "COMPLETED");
 
-  const { data: books, isLoading } = useGetBookList( parsedShelfId, status, sortOrder);
+  const { data: books } = useGetBookList( parsedShelfId, status, sortOrder);
   const bookItems = books?.items ?? [];
 
   const actions: LibraryAction[] = [
