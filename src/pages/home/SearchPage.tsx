@@ -1,122 +1,144 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import NavBarSearchInput from "../../components/common/navbar/NavBarSerachInput";
+import Tab from "../../components/common/Tab";
+
 import RecentSearches from "../../components/home/search/RecentSearches";
 import RecommendedSearches from "../../components/home/search/RecommendedSearches";
-import Tab from "../../components/common/Tab";
-import AuthorResults from "../../components/home/search/AuthorResults";
-import BookResults from "../../components/home/search/BookResults";
 import BothResults from "../../components/home/search/BothResults";
+import BookResults from "../../components/home/search/BookResults";
+import AuthorResults from "../../components/home/search/AuthorResults";
 
-import { BOOKS } from "../../data/book.mock";
-import { AUTHORS } from "../../data/author.mock";
-import { useFilter } from "../../hooks/useFilter";
-import type { Mood, Style, Immersion } from "../../context/FilterContext"
+import { useSearchBothStore } from "../../store/home/search/searchBoth.store";
+import { useSearchBooksStore } from "../../store/home/search/searchBooks.store";
+import { useSearchAuthorsStore } from "../../store/home/search/searchAuthors.store";
+
+import { LoadingPage } from "../onboarding/LoadingPage";
+import { ErrorPage } from "../onboarding/ErrorPage";
 
 const TABS = ["전체", "작가", "도서"] as const;
 type TabType = (typeof TABS)[number];
 
-type BookWithFilter = (typeof BOOKS)[number] & {
-  mood?: Mood;
-  style?: Style;
-  immersion?: Immersion;
-};
-
-function SearchPage() {
+export default function SearchPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams(); 
-  const qFromUrl = searchParams.get("q") ?? "";
-
-  const [keyword, setKeyword] = useState(qFromUrl);
-  const { filter, resetFilter } = useFilter("search");
+  const [searchParams] = useSearchParams();
 
 
-  const [activeTab, setActiveTab] = useState<TabType>("전체");
+  const q = searchParams.get("q") ?? "";
+  const tabParam = searchParams.get("tab");
+
+  const activeTab: TabType =
+    tabParam === "book"
+      ? "도서"
+      : tabParam === "author"
+      ? "작가"
+      : "전체";
+
+
+  const both = useSearchBothStore();
+  const books = useSearchBooksStore();
+  const authors = useSearchAuthorsStore();
+
+
+  const inputKeyword = both.keyword;
+  const [searchKeyword, setSearchKeyword] = useState("");
+
+  const hasSearched = Boolean(searchKeyword);
 
 
   useEffect(() => {
-    const tabFromUrl = searchParams.get("tab");
-    if (tabFromUrl === "book") {
-      setActiveTab("도서");
-    } else if (tabFromUrl === "author") {
-      setActiveTab("작가");
-    } else {
-      setActiveTab("전체");
-    }
-  }, [searchParams]);
+    if (!q) return;
 
-  // URL q가 바뀔 때 keyword 동기화
+    // input 값 동기화
+    if (q !== inputKeyword) {
+      both.setKeyword(q);
+    }
+
+    // 검색 기준 값 동기화
+    if (q !== searchKeyword) {
+      setSearchKeyword(q);
+    }
+  }, [q]);
+
+
+  
+  const [isPending, startTransition] = useTransition();
+
   useEffect(() => {
-    setKeyword(qFromUrl);
-  }, [qFromUrl]);
+    if (!searchKeyword.trim()) return;
 
-  const hasKeyword = keyword.trim().length > 0;
+    startTransition(() => {
+      if (activeTab === "전체") {
+        both.searchBoth();
+      } else if (activeTab === "도서") {
+        books.searchBooks(searchKeyword);
+      } else if (activeTab === "작가") {
+        authors.searchAuthors(searchKeyword);
+      }
+    });
+  }, [activeTab, searchKeyword]);
 
 
-  const handleChangeKeyword = (value: string) => {
-    const trimmed = value.trim();
-    setKeyword(value);
-    
-    const params = new URLSearchParams(searchParams);
-    if (trimmed) {
-      params.set("q", trimmed);
-    } else {
-      params.delete("q");
-      params.delete("tab");
+  const showLoadingRef = useRef(false);
+  const [, forceRender] = useState(0);
+
+  useEffect(() => {
+    if (!isPending) {
+      showLoadingRef.current = false;
+      forceRender((v) => v + 1);
+      return;
     }
-    params.delete("mood");
-    params.delete("style");
-    params.delete("immersion");
-    navigate(`/search?${params.toString()}`, { replace: true });
-    resetFilter();
-    setActiveTab("전체");
-  };
 
-  const handleResetFilters = useCallback(() => {
-    resetFilter();
-    // 필터 리셋 시 URL 필터도 제거
+    const timer = setTimeout(() => {
+      showLoadingRef.current = true;
+      forceRender((v) => v + 1);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [isPending]);
+
+
+  const handleSearch = useCallback(() => {
+    if (!inputKeyword.trim()) return;
+
+    const keyword = inputKeyword.trim();
+
+    // 검색 확정
+    setSearchKeyword(keyword);
+
+    // URL 반영
     const params = new URLSearchParams(searchParams);
-    params.delete("mood");
-    params.delete("style");
-    params.delete("immersion");
+    params.set("q", keyword);
+
     navigate(`/search?${params.toString()}`, { replace: true });
-  }, [resetFilter, searchParams, navigate]);
+  }, [inputKeyword, searchParams, navigate]);
 
   const handleChangeTab = (tab: TabType) => {
+    if (!hasSearched) return;
+
     const params = new URLSearchParams(searchParams);
-    if (tab === "도서") {
-      params.set("tab", "book");
-    } else if (tab === "작가") {
-      params.set("tab", "author");
-    } else {
-      params.delete("tab");
-    }
+    if (tab === "도서") params.set("tab", "book");
+    else if (tab === "작가") params.set("tab", "author");
+    else params.delete("tab");
+
     navigate(`/search?${params.toString()}`, { replace: true });
   };
 
-  const filteredBooks: BookWithFilter[] = useMemo(() => {
-    return (BOOKS as BookWithFilter[]).filter((book) => {
-      if (filter.mood.length > 0 && !filter.mood.some(m => book.mood === m)) return false;
-      if (filter.style.length > 0 && !filter.style.some(s => book.style === s)) return false;
-      if (filter.immersion.length > 0 && !filter.immersion.some(i => book.immersion === i)) return false;
-      
-      if (keyword.trim().length > 0) {
-        const k = keyword.trim();
-        const inTitle = book.title.includes(k);
-        const inAuthor = book.author.includes(k);
-        if (!inTitle && !inAuthor) return false;
-      }
-      return true;
-    });
-  }, [filter.mood, filter.style, filter.immersion, keyword]);
 
-  const selectedFilters = {
-    mood: filter.mood.length > 0 ? filter.mood.join(", ") : "",
-    style: filter.style.length > 0 ? filter.style.join(", ") : "",
-    immersion: filter.immersion.length > 0 ? filter.immersion.join(", ") : "",
-  };
+  const error = both.error || books.error || authors.error;
+
+  // eslint-disable-next-line react-hooks/refs
+  if (showLoadingRef.current) return <LoadingPage />;
+  if (error) return <ErrorPage />;
+
 
   return (
     <div className="min-h-screen bg-bg">
@@ -124,17 +146,16 @@ function SearchPage() {
         back
         onBack={() => navigate("/")}
         centerSlot={
-          <div className="w-full flex-1">
-            <NavBarSearchInput
-              value={keyword}
-              onChange={handleChangeKeyword}
-              placeholder="도서 검색하기"
-            />
-          </div>
+          <NavBarSearchInput
+            value={inputKeyword}
+            onChange={both.setKeyword}
+            onSearch={handleSearch}
+            placeholder="도서 검색하기"
+          />
         }
       />
 
-      {hasKeyword && (
+      {hasSearched && (
         <div className="mt-2 px-4">
           <Tab
             tabs={TABS}
@@ -146,48 +167,35 @@ function SearchPage() {
       )}
 
       <main className="mt-6">
-        {!hasKeyword && (
+        {!hasSearched ? (
           <>
             <section className="mb-12 px-5">
               <RecentSearches items={["궤도", "소년이 온다", "한강"]} />
             </section>
-
             <section className="px-5">
-              <RecommendedSearches
-                items={["검색어1", "검색어2", "검색어3", "검색어4", "검색어5"]}
-              />
+              <RecommendedSearches items={["검색어1", "검색어2"]} />
             </section>
           </>
-        )}
-
-        {hasKeyword && (
+        ) : (
           <>
             {activeTab === "전체" && (
               <BothResults
-                keyword={keyword}
-                bookTotal={filteredBooks.length}
-                bookItems={filteredBooks.slice(0, 3)}
-                authorTotal={AUTHORS.length}
-                authorItems={AUTHORS.slice(0, 5)}
+                keyword={searchKeyword}
+                bookTotal={both.bookTotal}
+                bookItems={both.bookItems}
+                authorTotal={both.authorTotal}
+                authorItems={both.authorItems}
                 onBookMoreClick={() => handleChangeTab("도서")}
                 onAuthorMoreClick={() => handleChangeTab("작가")}
               />
             )}
 
-            {activeTab === "작가" && (
-              <AuthorResults
-                total={AUTHORS.length}
-                items={AUTHORS}
-              />
-            )}
             {activeTab === "도서" && (
-              <BookResults
-                keyword={keyword}
-                total={filteredBooks.length}
-                items={filteredBooks}
-                selectedFilters={selectedFilters}
-                onResetFilters={handleResetFilters}
-              />
+              <BookResults total={books.total} items={books.items} />
+            )}
+
+            {activeTab === "작가" && (
+              <AuthorResults total={authors.total} items={authors.items} />
             )}
           </>
         )}
@@ -195,5 +203,3 @@ function SearchPage() {
     </div>
   );
 }
-
-export default SearchPage;

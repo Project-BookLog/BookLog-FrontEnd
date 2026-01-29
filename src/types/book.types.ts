@@ -1,23 +1,49 @@
-import type React from "react";
-
-export type Book = {
-  id: number;
+export interface Book {
+  bookId: number;
   title: string;
-  author: string;
-  publisher: string;
-  createdAt: string | Date;
-  progress: number;
-  coverUrl?: never;
-  CoverIcon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-};
+  thumbnailUrl: string;
+  publisherName: string;
+  isbn13?: string;
+  authors: string[];
+  translators?: string[];
+  publishedDate?: string;
+}
 
-export type Author = {
-  id: number;
+export interface Author {
+  authorId: number;
   name: string;
-  role: string;
-  country: string;
-  imageUrl?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-  books?: Book[];        
-};
+  profileImageUrl: string | null;
+  occupation: string;
+  nationality: string | null;
+  biography?: string | null;
+  books?: AuthorBook[]; 
+}
+export interface AuthorBook { 
+  bookId: number;
+  title: string;
+  thumbnailUrl: string;
+  authors: string; 
+  publisherName: string;
+}
+
+
+
+export interface BookSearchResponse {
+  page: number;
+  size: number;
+  isEnd: boolean;
+  totalCount: number;
+  items: Book[];
+}
+
+
+export interface AuthorSearchResponse {
+  page: number;
+  size: number;
+  isEnd: boolean;
+  totalCount: number;
+  items: Author[];
+}
+
 
 export type BookStatus = "TO_READ" | "READING" | "DONE" | "STOPPED";
