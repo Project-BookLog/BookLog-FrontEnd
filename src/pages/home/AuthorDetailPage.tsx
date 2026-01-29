@@ -85,6 +85,7 @@ export const AuthorDetailPage = () => {
       <NavBarTop
         back={true}
         onBack={() => history.back()}
+        title="작가 정보"
       />
 
       <main className="pb-6 pt-4 space-y-5 mb-10 bg-bg">

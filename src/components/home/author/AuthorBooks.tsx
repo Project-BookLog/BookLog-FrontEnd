@@ -5,6 +5,7 @@ import { SortDropDown } from "../../common/dropdown/SortDropDown";
 import { BOOK_ORDER, sortOptions } from "../../../enum/book";
 import { FilterChips, type FilterChip } from "../../common/FilterChips";
 import { useFilter } from "../../../hooks/useFilter";
+import { useParams } from "react-router-dom";
 
 const DUMMY_BOOKS = [
   {
@@ -94,6 +95,7 @@ function AuthorBooks() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { setPageInfo } = useFilter("author");
+  const { authorid } = useParams<{ authorid: string }>();
 
   const [currentSort, setCurrentSort] = useState<BOOK_ORDER>(BOOK_ORDER.LATEST);
   const [isSortOpen, setIsSortOpen] = useState(false);
@@ -165,8 +167,10 @@ function AuthorBooks() {
     });
     const params = new URLSearchParams();
     params.set("from", from);
-    navigate(`/authordetail/filter?${params.toString()}`);
+    navigate(`/author/${authorid}/filter?${params.toString()}`);
   };
+
+
 
   const filterChips: FilterChip[] = [
     {
