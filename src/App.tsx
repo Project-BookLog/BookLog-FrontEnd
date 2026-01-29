@@ -26,7 +26,7 @@ import BookWritePage from "./pages/booklog/BookWritePage";
 // 3. 서재
 import { MyLibraryPage } from "./pages/myLibrary/MyLibraryPage";
 import { libraries } from "./data/myLibrary.mock";
-import { MyLibraryDetail } from "./pages/myLibrary/MyLibraryDetailPage";
+import { MyLibraryDetailPage } from "./pages/myLibrary/MyLibraryDetailPage";
 import { EditBooksPage } from "./pages/myLibrary/EditBooksPage";
 import AddLibraryPage from "./pages/myLibrary/AddLibraryPage";
 import EditPage from "./pages/myLibrary/EditPage";
@@ -94,10 +94,10 @@ function App() {
 
         {/* 3. 서재 */}
         <Route path="/my-library" element={<MyLibraryPage/>} />
-        <Route path="/my-library/:shelfId" element={<MyLibraryDetail />} />
+        <Route path="/my-library/:shelfId" element={<MyLibraryDetailPage />} />
         <Route
-          path="/my-library/:libraryName/edit-books"
-          element={<EditBooksPage libraries={libraries} />}
+          path="/my-library/:shelfId/edit-books"
+          element={<EditBooksPage />}
         />
         <Route path="/my-library/add" element={<AddLibraryPage />} />
         <Route path="/my-library/edit" element={<EditPage />} />
