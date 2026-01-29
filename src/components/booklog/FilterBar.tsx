@@ -4,7 +4,10 @@ import type { FilterScope } from "../../context/FilterContext";
 
 type Props = {
   scope: FilterScope;
-  resetSrc: string;
+
+  // ✅ src 문자열 제거 → React SVG 컴포넌트로 받기
+  ResetIcon: React.ComponentType<{ className?: string }>;
+
   onReset?: () => void;
 
   onClickMood?: () => void;
@@ -20,7 +23,7 @@ function toChipLabel(base: string, selected: string[]) {
 
 export default function FilterBar({
   scope,
-  resetSrc,
+  ResetIcon,
   onReset,
   onClickMood,
   onClickStyle,
@@ -46,13 +49,10 @@ export default function FilterBar({
             className="shrink-0 grid h-[36px] w-[36px] place-items-center rounded-full bg-[#EFEDEB]"
             aria-label="필터 초기화"
           >
-            <img
-              src={resetSrc}
-              alt=""
-              className="h-[18px] w-[18px]"
-              draggable={false}
-            />
+            {/* ✅ img/src 제거 */}
+            <ResetIcon className="h-[18px] w-[18px] text-[#0A0A0A]" />
           </button>
+
           <div
             className="
               flex-1
@@ -64,8 +64,16 @@ export default function FilterBar({
             "
           >
             <div className="inline-flex items-center gap-2 pr-2">
-              <FilterChip label={moodLabel} active={moodActive} onClick={onClickMood} />
-              <FilterChip label={styleLabel} active={styleActive} onClick={onClickStyle} />
+              <FilterChip
+                label={moodLabel}
+                active={moodActive}
+                onClick={onClickMood}
+              />
+              <FilterChip
+                label={styleLabel}
+                active={styleActive}
+                onClick={onClickStyle}
+              />
               <FilterChip
                 label={immersionLabel}
                 active={immersionActive}

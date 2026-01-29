@@ -2,8 +2,8 @@ import { useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import NavBar from "../../components/common/navbar/NavBarTop";
 import BookContent from "../../components/booklog/BookContent";
-import BookmarkImg from "../../assets/icons/Bookmark.svg";
-import BookmarkcImg from "../../assets/icons/Bookmarkc.svg";
+import { Bookmark } from "../../assets/icons"; 
+import { useFilter } from "../../hooks/useFilter"; 
 
 type Post = {
   id: string;
@@ -222,6 +222,7 @@ export default function BooklogDetailPage() {
               {post.timeAgo} · 조회 {post.views}
             </div>
 
+            {/* ✅ 북마크 */}
             <button
               type="button"
               onClick={(e) => {
@@ -231,12 +232,15 @@ export default function BooklogDetailPage() {
               className="flex items-center gap-1"
               aria-label="북마크"
             >
-              <img
-                src={bookmarked ? BookmarkcImg : BookmarkImg}
-                alt=""
-                className="h-5 w-5"
-                draggable={false}
-              />
+              <Bookmark
+  className="h-5 w-5"
+  style={{
+    color: bookmarked ? "#3049C0" : "#9B9A97",
+    fill: bookmarked ? "currentColor" : "none",
+    stroke: bookmarked ? "#3049C0" : "#9B9A97",
+  }}
+/>
+
               <span className="text-caption-01 text-[#9B9A97]">
                 {post.bookmarkCount + (bookmarked ? 1 : 0)}
               </span>
@@ -269,37 +273,37 @@ export default function BooklogDetailPage() {
             </div>
           </div>
         </section>
+
         {/* 비슷한 주제의 인기글 */}
-<section className="px-5 pt-8 pb-10">
-  <h2 className="text-en-title-02 text-[#000000]">비슷한 주제의 인기글</h2>
-  <p className="mt-1 text-en-body-02 text-[#676665]">
-    게시글과 비슷한 내용의 게시글을 모아봤어요
-  </p>
+        <section className="px-5 pt-8 pb-10">
+          <h2 className="text-en-title-02 text-[#000000]">비슷한 주제의 인기글</h2>
+          <p className="mt-1 text-en-body-02 text-[#676665]">
+            게시글과 비슷한 내용의 게시글을 모아봤어요
+          </p>
 
-  {/* ✅ 구분선 있는 리스트 */}
-  <div className="mt-2">
-    {[1, 2, 3].map((i) => (
-      <div key={i}>
-        <div className="flex items-center justify-between gap-4 py-5">
-          <div className="min-w-0">
-            <div className="text-body-01-sb text-[#000000]">책 제목</div>
-            <p className="mt-1 line-clamp-2 text-caption-02 text-[#4D4D4C]">
-              유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을…
-            </p>
-            <div className="mt-2 text-en-caption-02 text-[#81807F]">
-              1일 전 · 조회 65 · 저장 14
-            </div>
+          {/* ✅ 구분선 있는 리스트 */}
+          <div className="mt-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i}>
+                <div className="flex items-center justify-between gap-4 py-5">
+                  <div className="min-w-0">
+                    <div className="text-body-01-sb text-[#000000]">책 제목</div>
+                    <p className="mt-1 line-clamp-2 text-caption-02 text-[#4D4D4C]">
+                      유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을…
+                    </p>
+                    <div className="mt-2 text-en-caption-02 text-[#81807F]">
+                      1일 전 · 조회 65 · 저장 14
+                    </div>
+                  </div>
+                  <div className="h-[80px] w-[80px] shrink-0 rounded-[12px] bg-[#D9D9D9]" />
+                </div>
+
+                {/* ✅ 아이템 사이 구분선 (마지막은 제외) */}
+                {i !== 3 && <div className="h-[1px] w-full bg-[#E7E5E4]" />}
+              </div>
+            ))}
           </div>
-          <div className="h-[80px] w-[80px] shrink-0 rounded-[12px] bg-[#D9D9D9]" />
-        </div>
-
-        {/* ✅ 아이템 사이 구분선 (마지막은 제외) */}
-        {i !== 3 && <div className="h-[1px] w-full bg-[#E7E5E4]" />}
-      </div>
-    ))}
-  </div>
-</section>
-
+        </section>
       </div>
     </div>
   );

@@ -275,12 +275,13 @@ function ShelfRow<
               key={book.id}
               className="flex w-[104px] h-[156px] items-center rounded-[4px] overflow-hidden bg-[#CDCCCB]"
             >
+              {/* ✅ img/src 제거: background-image로 커버 표시 */}
               {book.coverUrl ? (
-                <img
-                  src={book.coverUrl}
-                  alt={book.title}
-                  className="h-full w-full object-cover"
-                  draggable={false}
+                <div
+                  className="h-full w-full bg-center bg-cover"
+                  role="img"
+                  aria-label={book.title}
+                  style={{ backgroundImage: `url(${book.coverUrl})` }}
                 />
               ) : book.CoverIcon ? (
                 <book.CoverIcon className="h-full w-full" />

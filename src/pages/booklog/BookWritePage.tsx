@@ -10,14 +10,13 @@ import { useFilter } from "../../hooks/useFilter";
 import { ConfirmModal } from "../../components/common/ConfirmModal";
 import { useToast } from "../../context/ToastContext";
 
-import resetImg from "../../assets/icons/reset.svg";
-import CameraImg from "../../assets/icons/Camera.svg";
+import { Camera, Reset } from "../../assets/icons"; 
 
 import type { Book } from "../../types/book.types";
 
 type LocationState = {
   book?: Book;
-  fresh?: boolean; // ✅ 새 글쓰기 여부
+  fresh?: boolean;
 };
 
 const MAX_IMAGE_COUNT = 8;
@@ -173,7 +172,7 @@ export default function BookWritePage() {
           <div className="mt-2 -ml-3.5">
             <FilterBar
               scope="booklogWrite"
-              resetSrc={resetImg}
+              ResetIcon={Reset}
               onReset={resetFilter}
               onClickMood={() =>
                 navigate("/booklog/write/filter", {
@@ -211,24 +210,30 @@ export default function BookWritePage() {
             type="button"
             onClick={openFilePicker}
             className="mt-3 flex h-[60px] w-[64px] flex-col items-center justify-center rounded border border-[#CDCCCB]"
-          >
-            <img src={CameraImg} alt="" className="h-6 w-6" />
-            <span className="text-xs">
-              {imageCount} / {MAX_IMAGE_COUNT}
+            >
+            {/* 카메라 아이콘 */}
+            <Camera className="h-6 w-6 text-[#676665] -translate-y-[3px]" />
+
+            {/* 숫자 */}
+            <span className="text-text-en-body-01 leading-none">
+            <span className="text-[#676665]">{imageCount}</span>
+            <span className="text-[#9B9A97]"> / {MAX_IMAGE_COUNT}</span>
             </span>
           </button>
 
+
           {images.length > 0 && (
-            <div className="mt-4 flex gap-2 overflow-x-auto">
+            <div className="mt-4 flex gap- overflow-x-auto">
               {images.map((img) => (
                 <div
                   key={img.id}
                   className="h-[140px] w-[140px] shrink-0 rounded bg-[#CDCCCB] overflow-hidden"
                 >
-                  <img
-                    src={img.previewUrl}
-                    alt=""
-                    className="h-full w-full object-cover"
+                  <div
+                    className="h-full w-full bg-center bg-cover"
+                    style={{ backgroundImage: `url(${img.previewUrl})` }}
+                    role="img"
+                    aria-label="선택한 이미지"
                   />
                 </div>
               ))}
