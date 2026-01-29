@@ -34,6 +34,11 @@ export default function FilterPage({ scope }: Props) {
       }
     });
 
+    
+    if (searchParams.has('tab')) {
+      params.set('tab', searchParams.get('tab')!);
+    }
+
     if (filter.mood.length > 0) {
       params.set("mood", filter.mood.join(","));
     }

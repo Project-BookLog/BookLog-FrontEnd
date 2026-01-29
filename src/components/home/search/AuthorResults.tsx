@@ -1,23 +1,15 @@
 import type { Author } from "../../../types/book.types";
-import { BackIcon } from "../../../assets/icons";
 import { useNavigate } from "react-router-dom";
 
 type AuthorResultsProps = {
-  keyword: string;
   total: number;
   items: Author[];
-  mode?: "compact" | "full";
-  onMoreClick?: () => void;
 };
 
-function AuthorResults({
+export default function AuthorResults({
   total,
   items,
-  mode = "compact",
-  onMoreClick,
 }: AuthorResultsProps) {
-  const isCompact = mode === "compact";
-
   const navigate = useNavigate();
 
   const handleAuthorClick = (authorId: string | number) => {
@@ -26,74 +18,18 @@ function AuthorResults({
 
   return (
     <section>
-      {/* compact 헤더 */}
-      {isCompact && (
-        <header className="flex items-center justify-between mb-3">
-          <div className="flex items-baseline gap-2 pl-6">
-            <h2 className="text-title-02 text-black">작가</h2>
-            <span className="text-caption-01 text-primary">{total}명</span>
-          </div>
-
-          {onMoreClick && (
-            <button
-              type="button"
-              className="pr-6 text-gray-500"
-              onClick={onMoreClick}
-            >
-              <BackIcon className="w-5 h-5 rotate-180" />
-            </button>
-          )}
-        </header>
-      )}
-
-
       {/* full 헤더 */}
-      {!isCompact && (
-        <div className="flex items-center justify-between px-6 mb-3">
-          <p className="text-body-03 text-gray-600">
-            총 <span className="text-primary">{total}</span>명
-          </p>
-        </div>
-      )}
+      <div className="flex items-center justify-between px-6 mb-3">
+        <p className="text-body-03 text-gray-600">
+          총 <span className="text-primary">{total}</span>명
+        </p>
+      </div>
 
-      <div
-        className={
-          isCompact
-            ? "flex gap-3 overflow-x-auto pb-1 pl-6 no-scrollbar"
-            : "space-y-3 px-4 pb-2"
-        }
-      >
+      {/* full 리스트 */}
+      <div className="space-y-3 px-4 pb-2">
         {items.map((author) => {
           const AvatarIcon = author.imageUrl;
 
-          // compact
-          if (isCompact) {
-            return (
-              <button
-                key={author.id}
-                type="button"
-                className="flex-shrink-0"
-                onClick={() => handleAuthorClick(author.id)}
-              >
-                <div className="h-16 flex items-center gap-3 pl-2 pr-4 py-2 rounded-full bg-gray-100">
-                  <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center">
-                    {AvatarIcon && <AvatarIcon className="w-full h-full" />}
-                  </div>
-
-                  <div className="flex flex-col text-black items-start min-w-0">
-                    <p className="text-subtitle-02-sb truncate">
-                      {author.name}
-                    </p>
-                    <p className="text-caption-01 text-gray-600 truncate">
-                      {author.role} │ {author.country}
-                    </p>
-                  </div>
-                </div>
-              </button>
-            );
-          }
-
-          // full
           return (
             <button
               key={author.id}
@@ -120,7 +56,6 @@ function AuthorResults({
                 <hr className="border-t border-gray-200" />
 
                 {author.books && author.books.length > 0 && (
-                  
                   <div className="mt-3 h-14 flex justify-start gap-5">
                     {author.books.slice(0, 2).map((book) => (
                       <div
@@ -153,5 +88,3 @@ function AuthorResults({
     </section>
   );
 }
-
-export default AuthorResults;

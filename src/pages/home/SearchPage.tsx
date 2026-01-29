@@ -8,6 +8,7 @@ import RecommendedSearches from "../../components/home/search/RecommendedSearche
 import Tab from "../../components/common/Tab";
 import AuthorResults from "../../components/home/search/AuthorResults";
 import BookResults from "../../components/home/search/BookResults";
+import BothResults from "../../components/home/search/BothResults";
 
 import { BOOKS } from "../../data/book.mock";
 import { AUTHORS } from "../../data/author.mock";
@@ -25,16 +26,26 @@ type BookWithFilter = (typeof BOOKS)[number] & {
 
 function SearchPage() {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams(); 
   const qFromUrl = searchParams.get("q") ?? "";
-  const tabFromUrl = searchParams.get("tab");
 
   const [keyword, setKeyword] = useState(qFromUrl);
   const { filter, resetFilter } = useFilter("search");
 
-  const [activeTab, setActiveTab] = useState<TabType>(
-    tabFromUrl === "book" ? "도서" : "전체"
-  );
+
+  const [activeTab, setActiveTab] = useState<TabType>("전체");
+
+
+  useEffect(() => {
+    const tabFromUrl = searchParams.get("tab");
+    if (tabFromUrl === "book") {
+      setActiveTab("도서");
+    } else if (tabFromUrl === "author") {
+      setActiveTab("작가");
+    } else {
+      setActiveTab("전체");
+    }
+  }, [searchParams]);
 
   // URL q가 바뀔 때 keyword 동기화
   useEffect(() => {
@@ -43,40 +54,50 @@ function SearchPage() {
 
   const hasKeyword = keyword.trim().length > 0;
 
+
   const handleChangeKeyword = (value: string) => {
     const trimmed = value.trim();
     setKeyword(value);
-    setSearchParams((prev) => {
-      const next = new URLSearchParams(prev);
-      if (trimmed) next.set("q", trimmed);
-      else {
-        next.delete("q");
-        next.delete("tab");
-      }
-      return next;
-    });
+    
+    const params = new URLSearchParams(searchParams);
+    if (trimmed) {
+      params.set("q", trimmed);
+    } else {
+      params.delete("q");
+      params.delete("tab");
+    }
+    params.delete("mood");
+    params.delete("style");
+    params.delete("immersion");
+    navigate(`/search?${params.toString()}`, { replace: true });
     resetFilter();
     setActiveTab("전체");
   };
 
   const handleResetFilters = useCallback(() => {
     resetFilter();
-  }, [resetFilter]);
+    // 필터 리셋 시 URL 필터도 제거
+    const params = new URLSearchParams(searchParams);
+    params.delete("mood");
+    params.delete("style");
+    params.delete("immersion");
+    navigate(`/search?${params.toString()}`, { replace: true });
+  }, [resetFilter, searchParams, navigate]);
 
   const handleChangeTab = (tab: TabType) => {
-    setActiveTab(tab);
-    setSearchParams((prev) => {
-      const next = new URLSearchParams(prev);
-      if (tab === "도서") next.set("tab", "book");
-      else next.delete("tab");
-      return next;
-    });
+    const params = new URLSearchParams(searchParams);
+    if (tab === "도서") {
+      params.set("tab", "book");
+    } else if (tab === "작가") {
+      params.set("tab", "author");
+    } else {
+      params.delete("tab");
+    }
+    navigate(`/search?${params.toString()}`, { replace: true });
   };
-
 
   const filteredBooks: BookWithFilter[] = useMemo(() => {
     return (BOOKS as BookWithFilter[]).filter((book) => {
-      // 다중 선택 필터링
       if (filter.mood.length > 0 && !filter.mood.some(m => book.mood === m)) return false;
       if (filter.style.length > 0 && !filter.style.some(s => book.style === s)) return false;
       if (filter.immersion.length > 0 && !filter.immersion.some(i => book.immersion === i)) return false;
@@ -91,13 +112,11 @@ function SearchPage() {
     });
   }, [filter.mood, filter.style, filter.immersion, keyword]);
 
-  // 넘겨줄 선택값
   const selectedFilters = {
     mood: filter.mood.length > 0 ? filter.mood.join(", ") : "",
     style: filter.style.length > 0 ? filter.style.join(", ") : "",
     immersion: filter.immersion.length > 0 ? filter.immersion.join(", ") : "",
   };
-
 
   return (
     <div className="min-h-screen bg-bg">
@@ -144,40 +163,28 @@ function SearchPage() {
         {hasKeyword && (
           <>
             {activeTab === "전체" && (
-              <div className="no-scrollbar space-y-10">
-                <AuthorResults
-                  keyword={keyword}
-                  total={AUTHORS.length}
-                  items={AUTHORS.slice(0, 3)}
-                  onMoreClick={() => setActiveTab("작가")}
-                />
-                <BookResults
-                  keyword={keyword}
-                  total={filteredBooks.length}
-                  items={filteredBooks.slice(0, 3)}
-                  onMoreClick={() => handleChangeTab("도서")}
-                  mode="compact"
-                  selectedFilters={selectedFilters}
-                  onResetFilters={handleResetFilters}
-                />
-              </div>
+              <BothResults
+                keyword={keyword}
+                bookTotal={filteredBooks.length}
+                bookItems={filteredBooks.slice(0, 3)}
+                authorTotal={AUTHORS.length}
+                authorItems={AUTHORS.slice(0, 5)}
+                onBookMoreClick={() => handleChangeTab("도서")}
+                onAuthorMoreClick={() => handleChangeTab("작가")}
+              />
             )}
 
             {activeTab === "작가" && (
               <AuthorResults
-                keyword={keyword}
                 total={AUTHORS.length}
                 items={AUTHORS}
-                mode="full"
               />
             )}
-
             {activeTab === "도서" && (
               <BookResults
                 keyword={keyword}
                 total={filteredBooks.length}
                 items={filteredBooks}
-                mode="full"
                 selectedFilters={selectedFilters}
                 onResetFilters={handleResetFilters}
               />
