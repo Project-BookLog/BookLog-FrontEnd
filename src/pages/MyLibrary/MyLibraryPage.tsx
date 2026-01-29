@@ -5,7 +5,7 @@ import { useGetShelves } from "../../hooks/queries/useGetShelves"
 
 export function MyLibraryPage () {
 
-    const { data: shelves = [] } = useGetShelves(1);
+    const { data: shelves = [] } = useGetShelves();
     const navigate = useNavigate();
     const GradationFrame = "w-[347px] shrink-0 self-stretch rounded-b-[6px] border-[1.2px] border-[rgba(255,255,255,0.7)] bg-[linear-gradient(153deg,rgba(48,73,192,0.28)_18%,rgba(120,138,222,0.28)_44.99%,rgba(120,138,222,0.31)_58.48%,rgba(48,73,192,0.35)_85.47%)] shadow-[0_6px_16px_rgba(48,73,192,0.15)] backdrop-blur-[2px]"
     
@@ -21,7 +21,9 @@ export function MyLibraryPage () {
                             <p className="text-black text-title-02">{shelf.name}</p>
                             <button
                                 className="flex items-center gap-[2px]"
-                                onClick={() => navigate(`/my-library/${shelf.name}`)}
+                                onClick={() => navigate(`/my-library/${shelf.shelfId}`,{
+                                    state: { shelfName: shelf.name},
+                                })}
                             >
                                 <p className="text-body-03 text-gray-500 cursor-pointer">전체보기</p>
                                 <BackIcon className="w-[14px] h-[14px] rotate-180"/>

@@ -1,5 +1,5 @@
 import type { BOOK_ORDER } from "../enum/book";
-import type { Book } from "./book.types";
+import type { Book, BookStatus } from "./book.types";
 
 export type Library = {
   name: string;
@@ -8,7 +8,7 @@ export type Library = {
   sort: BOOK_ORDER;
 };
 
-export type LibraryTab = "ALL" | "TO_READ" | "READING" | "DONE";
+export type LibraryTab = "ALL" | "TO_READ" | "READING" | "COMPLETED";
 
 export type PreviewBook = {
   bookId: number;
@@ -26,13 +26,19 @@ export type Shelf = {
   previewBooks: PreviewBook[];
 }
 
-export type ResponseUserBooksDto = {
+export type UserBook = {
   userBookId: number;
-  status: string;
+  status: BookStatus;
   progressPercent: number;
   currentPage: number;
   bookId: number;
   title: string;
   thumbnailUrl: string;
   publisherName: string;
+  authorName: string;
 }
+
+export type ResponseUserBooksDto = {
+  totalCount: number;
+  items: UserBook[];
+};

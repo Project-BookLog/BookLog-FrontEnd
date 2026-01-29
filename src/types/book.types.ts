@@ -20,4 +20,4 @@ export type Author = {
   books?: Book[];        
 };
 
-export type BookStatus = "TO_READ" | "READING" | "DONE" | "STOPPED";
+export type BookStatus = "TO_READ" | "READING" | "COMPLETED" | "STOPPED";
