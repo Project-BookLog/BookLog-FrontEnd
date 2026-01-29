@@ -94,7 +94,7 @@ export default function UserProfilePage() {
       <div className="bg-bg px-5 py-5">
         <div className="flex items-center gap-[10px]">
           <div className="grid h-[73px] w-[73px] place-items-center rounded-full bg-[#CDCCCB]">
-            <span className="text-caption-01 text-[#0A0A0A]">img</span>
+            <span className="text-caption-01 text-black">img</span>
           </div>
 
           <div className="flex-1">
@@ -119,17 +119,17 @@ export default function UserProfilePage() {
         <div className="mt-5 grid grid-cols-3 text-center">
           <div className="px-3">
             <div className="text-caption-02 text-[#676665]">독서 완독</div>
-            <div className="mt-2 text-title-02 text-[#0A0A0A]">28</div>
+            <div className="mt-2 text-title-02 text-black">28</div>
           </div>
 
-          <div className="px-6 border-x border-[#EFEDEB]">
+          <div className="px-6 border-x border-gray-100">
             <div className="text-caption-02 text-[#676665]">저장된 책</div>
-            <div className="mt-2 text-title-02 text-[#0A0A0A]">107</div>
+            <div className="mt-2 text-title-02 text-black">107</div>
           </div>
 
           <div className="px-3">
             <div className="text-caption-02 text-[#676665]">작성한 북로그</div>
-            <div className="mt-2 text-title-02 text-[#0A0A0A]">15</div>
+            <div className="mt-2 text-title-02 text-black">15</div>
           </div>
         </div>
 
@@ -141,7 +141,7 @@ export default function UserProfilePage() {
             className={[
               "h-[45px] flex-1 rounded-[12px] text-subtitle-02-sb transition-colors",
               isFollowing
-                ? "bg-[#E7E5E4] text-[#0A0A0A]"
+                ? "bg-[#E7E5E4] text-black"
                 : "bg-[#3049C0] text-[#FFFFFF]",
             ].join(" ")}
           >
@@ -158,7 +158,7 @@ export default function UserProfilePage() {
         </div>
       </div>
 
-      <div className="h-[8px] bg-[#EFEDEB]" />
+      <div className="h-[8px] bg-gray-100" />
 
       {/* 탭 */}
       <div className="bg-bg">
@@ -275,12 +275,13 @@ function ShelfRow<
               key={book.id}
               className="flex w-[104px] h-[156px] items-center rounded-[4px] overflow-hidden bg-[#CDCCCB]"
             >
+              {/* ✅ img/src 제거: background-image로 커버 표시 */}
               {book.coverUrl ? (
-                <img
-                  src={book.coverUrl}
-                  alt={book.title}
-                  className="h-full w-full object-cover"
-                  draggable={false}
+                <div
+                  className="h-full w-full bg-center bg-cover"
+                  role="img"
+                  aria-label={book.title}
+                  style={{ backgroundImage: `url(${book.coverUrl})` }}
                 />
               ) : book.CoverIcon ? (
                 <book.CoverIcon className="h-full w-full" />
@@ -318,7 +319,7 @@ function ShelfRow<
 /* ===== 북로그 카드 ===== */
 function BlogCard({ post }: { post: BlogPost }) {
   return (
-    <div className="rounded-[12px] bg-[#EFEDEB] px-[20px] py-[14px]">
+    <div className="rounded-[12px] bg-gray-100 px-[20px] py-[14px]">
       <div className="flex gap-2">
         <div className="grid h-[94px] w-[94px] place-items-center rounded-[8px] bg-[#CDCCCB]">
           <span className="text-body-03 text-[#000000]">북 img</span>

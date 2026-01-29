@@ -97,15 +97,15 @@ export default function EditPage() {
         <NavBarTop title="서재 편집하기" onBack={handleBack} />
 
         <section className="px-4 pt-4">
-          <div className="rounded-[4px] border border-[#E7E5E4] bg-[#F2F0EE] px-3 py-2">
-            <div className="text-caption-02 text-[#9B9A97]">작성한 서재 명칭</div>
+          <div className="rounded-[4px] border border-gray-200 bg-[#F2F0EE] px-3 py-2">
+            <div className="text-caption-02 text-gray-500">작성한 서재 명칭</div>
 
             <div className="mt-1 flex items-center gap-2">
               <input
                 value={shelfName}
                 onChange={(e) => setShelfName(e.target.value)}
                 placeholder="서재의 명칭을 작성해 주세요."
-                className="flex-1 bg-transparent text-subtitle-02-sb text-[#262626] placeholder:text-[#CDCCCB] outline-none"
+                className="flex-1 bg-transparent text-subtitle-02-sb text-gray-900 placeholder:text-gray-900 outline-none"
               />
 
               {shelfName.length > 0 && (
@@ -126,7 +126,7 @@ export default function EditPage() {
           <div className="flex items-center justify-between">
             <div>
               <div className="text-subtitle-01-sb text-[#000000]">공개 설정</div>
-              <div className="mt-2 text-body-01-m text-[#B4B3B1]">
+              <div className="mt-2 text-body-01-m text-gray-400">
                 다른 유저들에게 서재를 공개합니다.
               </div>
             </div>
@@ -141,7 +141,7 @@ export default function EditPage() {
           <button
             type="button"
             onClick={handleDelete}
-            className="h-[53px] flex-1 rounded-[12px] bg-[#E7E5E4] text-subtitle-02-sb text-[#FF6E73]"
+            className="h-[53px] flex-1 rounded-[12px] bg-gray-200 text-subtitle-02-sb text-warning"
           >
             삭제
           </button>
@@ -154,7 +154,7 @@ export default function EditPage() {
               "h-[53px] flex-1 rounded-[12px] text-subtitle-02-sb transition-colors",
               isValid
                 ? "bg-[#3049C0] text-[#FFFFFF]"
-                : "bg-[#E7E5E4] text-[#81807F]",
+                : "bg-gray-200 text-gray-600",
             ].join(" ")}
           >
             적용

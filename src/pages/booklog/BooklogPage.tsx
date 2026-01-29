@@ -1,12 +1,10 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import BookTag from "../../components/booklog/BookTag";
 import FilterBar from "../../components/booklog/FilterBar";
 import NavbarBottom from "../../components/common/navbar/NavBarBottom";
-import resetImg from "../../assets/icons/reset.svg";
-import BookmarkImg from "../../assets/icons/Bookmark.svg";
-import BookmarkcImg from "../../assets/icons/Bookmarkc.svg";
+import { Bookmark, Reset } from "../../assets/icons"; 
 import { useFilter } from "../../hooks/useFilter";
 
 function TagPill({ children }: { children: React.ReactNode }) {
@@ -87,16 +85,14 @@ function PostCard({ post }: { post: Post }) {
           </div>
 
           <div className="min-w-0">
-            <div className="text-body-01-sb text-[#0A0A0A]">
-              {post.username}
-            </div>
+            <div className="text-body-01-sb text-black">{post.username}</div>
             <div className="mt-0.5 text-caption-02 text-[#81807F]">
               {post.timeAgo} · 조회 {post.views}
             </div>
           </div>
         </div>
 
-        {/* 북마크 */}
+        {/* ✅ 북마크 */}
         <button
           type="button"
           onClick={(e) => {
@@ -106,12 +102,15 @@ function PostCard({ post }: { post: Post }) {
           className="flex items-center gap-1 pt-1"
           aria-label="북마크"
         >
-          <img
-            src={bookmarked ? BookmarkcImg : BookmarkImg}
-            alt=""
+          <Bookmark
             className="h-5 w-5"
-            draggable={false}
+            style={{
+              color: bookmarked ? "#3049C0" : "#9B9A97",
+              fill: bookmarked ? "currentColor" : "none",
+              stroke: bookmarked ? "#3049C0" : "#9B9A97",
+            }}
           />
+
           <span className="text-caption-01 text-[#9B9A97]">
             {post.bookmarkCount + (bookmarked ? 1 : 0)}
           </span>
@@ -120,7 +119,7 @@ function PostCard({ post }: { post: Post }) {
 
       {/* 이미지 영역 */}
       <div className="mt-4">
-        <div className="flex gap-3 overflow-x-auto px-4 pb-1">
+        <div className="flex gap-3 overflow-x-auto px-4 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div className="pl-[45px]">
             <BooklogContentImage
               isBook
@@ -162,7 +161,9 @@ export default function BooklogPage() {
   const navigate = useNavigate();
   const { resetFilter } = useFilter("booklog");
 
-  const posts = useMemo<Post[]>(
+  const [posts, setPosts] = useState<Post[]>([]);
+
+  const mockPosts = useMemo<Post[]>(
     () => [
       {
         id: "1",
@@ -170,8 +171,7 @@ export default function BooklogPage() {
         timeAgo: "3분 전",
         views: 27,
         bookmarkCount: 20,
-        body:
-          "이 책은 어쩌구 다른 유저의 북로그 내용 다른 유저의 북로그 내용 ...",
+        body: "이 책은 어쩌구 다른 유저의 북로그 내용 ...",
         tags: ["잔잔한, 따뜻한", "사유적", "생각이 필요한"],
         bookTitle: "책 제목",
         bookAuthor: "저자명 저",
@@ -193,19 +193,21 @@ export default function BooklogPage() {
     []
   );
 
+  useEffect(() => {
+    setPosts(mockPosts);
+  }, [mockPosts]);
+
   return (
     <div className="min-h-screen bg-bg pb-24">
       <div className="mx-auto w-full max-w-[420px]">
-        {/* 타이틀 */}
         <header className="px-4 pt-8">
-          <h1 className="text-en-head text-[#0A0A0A]">북로그</h1>
+          <h1 className="text-en-head text-black">북로그</h1>
         </header>
 
-        {/* ✅ 필터 */}
         <div className="mt-4">
           <FilterBar
             scope="booklog"
-            resetSrc={resetImg}
+            ResetIcon={Reset}
             onReset={resetFilter}
             onClickMood={() =>
               navigate("/booklog/filter", { state: { from: "/booklog" } })
@@ -219,7 +221,6 @@ export default function BooklogPage() {
           />
         </div>
 
-        {/* 리스트 */}
         <main className="mt-6">
           {posts.map((p) => (
             <PostCard key={p.id} post={p} />
