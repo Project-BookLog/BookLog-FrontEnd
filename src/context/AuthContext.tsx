@@ -64,14 +64,14 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
             const data = await loginMutateAsync(loginData);
 
             if (data) {
-                const newAccessToken = data.data.accessToken
-                const newRefreshToken = data.data.refreshToken;
+                const newAccessToken = data.data?.accessToken
+                const newRefreshToken = data.data?.refreshToken;
 
                 setAccessTokenInStorage(newAccessToken);
                 setRefreshTokenInStorage(newRefreshToken);
 
-                setAccessToken(newAccessToken);
-                setRefreshToken(newRefreshToken);
+                setAccessToken(newAccessToken!);
+                setRefreshToken(newRefreshToken!);
 
                 const myInfo = await getMyInfo();
                 setUserId(myInfo?.userId);
@@ -81,6 +81,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
             } 
         } catch (error) {
             console.error("로그인 오류", error);
+            throw error;
         }
     };
 

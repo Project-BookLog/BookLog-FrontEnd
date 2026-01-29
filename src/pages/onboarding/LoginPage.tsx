@@ -28,10 +28,8 @@ export const LoginPage = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         try {
-            const result = await login(values);
-            if (result!) {
-                navigate(from, { replace: true });
-            }
+            await login(values);
++           navigate(from, { replace: true });
         } catch (err) {
             console.error("로그인 실패:", err);
         }

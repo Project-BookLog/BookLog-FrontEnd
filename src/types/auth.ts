@@ -14,7 +14,7 @@ export type ResponseLoginDto = {
   success: boolean;
   code: string;
   message: string;
-  data: ResponseLoginData;
+  data?: ResponseLoginData | null;
 };
 
 export type ResponseMyInfoDto = {
