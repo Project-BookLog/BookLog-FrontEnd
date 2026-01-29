@@ -50,7 +50,7 @@ export default function Step_1_Page() {
                 {!selected.includes(opt.label) && opt.img && (
                   <opt.img className="absolute inset-0 w-full h-full rounded-[12px]" />
                 )}
-                <p className={`text-center text-subtitle-01-sb ${selected.includes(opt.label) && "text-primary"}`}>{opt.label}</p>
+                <p className={`z-10 text-center text-subtitle-01-sb ${selected.includes(opt.label) ? "text-primary" : "text-white"}`}>{opt.label}</p>
               </button>
             ))}
           </div>

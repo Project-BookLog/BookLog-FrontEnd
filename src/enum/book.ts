@@ -1,8 +1,8 @@
 export enum BOOK_ORDER {
-  LATEST = "desc",
-  OLDEST = "asc",
-  TITLE = "title",
-  AUTHOR = "author",
+  LATEST = "LATEST",
+  OLDEST = "OLDEST",
+  TITLE = "TITLE",
+  AUTHOR = "AUTHOR",
 }
 
 export const sortOptions = [

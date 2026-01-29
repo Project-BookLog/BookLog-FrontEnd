@@ -24,7 +24,7 @@ import Album from "./icons/Album.svg?react";
 import Pencil from "./icons/Pencil.svg?react";
 import Menu from "./icons/Menu.svg?react";
 import CheckIcon from "./icons/CheckIcon.svg?react";
-import CheckIconWhite from "./icons/CheckIconWhite.svg?react";
+import ThickCheckIcon from "./icons/ThickCheckIcon.svg?react";
 import Reset from "./icons/Reset.svg?react";
 import Arrow from "./icons/Arrow.svg?react";
 import Setting from "./icons/Setting.svg?react";
@@ -68,7 +68,7 @@ export {
 
   Alarm, HomeIcon, Booklog, My_library, My_page, 
   Share, Search, Quit, Camera, Comment, Archive, 
-  Report, Album, Pencil, Menu, CheckIcon, CheckIconWhite, Reset,
+  Report, Album, Pencil, Menu, CheckIcon, ThickCheckIcon, Reset,
   Arrow, Setting, Kebab, ArrowDown, ArrowRight, Vector, Plus,
   Bookmark, Frame,
 
