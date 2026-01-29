@@ -67,11 +67,15 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
                 const newAccessToken = data.data?.accessToken
                 const newRefreshToken = data.data?.refreshToken;
 
+                if (!newAccessToken || !newRefreshToken) {
+                    throw new Error("토큰이 응답에 포함되지 않았습니다.");
+                }
+
                 setAccessTokenInStorage(newAccessToken);
                 setRefreshTokenInStorage(newRefreshToken);
 
-                setAccessToken(newAccessToken!);
-                setRefreshToken(newRefreshToken!);
+                setAccessToken(newAccessToken);
+                setRefreshToken(newRefreshToken);
 
                 const myInfo = await getMyInfo();
                 setUserId(myInfo?.userId);

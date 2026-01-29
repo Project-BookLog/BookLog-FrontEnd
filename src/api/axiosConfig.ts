@@ -19,12 +19,13 @@ export const privateApi: AxiosInstance = axios.create({
 });
 
 privateApi.interceptors.request.use((config)=>{
-    const {getItem} = useLocalStorage(LOCAL_STORAGE_KEY.accessToken);
-    const accessToken = getItem(); 
+    const accessToken = localStorage.getItem(LOCAL_STORAGE_KEY.accessToken);
+    const parsedToken = accessToken ? JSON.parse(accessToken) : null;
 
-    if(accessToken) {
+
+    if(parsedToken) {
         config.headers = config.headers || {};
-        config.headers.Authorization = `Bearer ${accessToken}`;
+        config.headers.Authorization = `Bearer ${parsedToken}`;
     }
 
     return config;

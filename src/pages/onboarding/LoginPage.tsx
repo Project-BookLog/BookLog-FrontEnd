@@ -29,7 +29,7 @@ export const LoginPage = () => {
         e.preventDefault()
         try {
             await login(values);
-+           navigate(from, { replace: true });
+            navigate(from, { replace: true });
         } catch (err) {
             console.error("로그인 실패:", err);
         }
