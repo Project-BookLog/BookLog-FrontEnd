@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import { Share, Bookmark, BackIcon } from "../../assets/icons";
-import { GradationFrame } from "../../components/myLibrary/GradationFrame";
 
 type Tab = "library" | "blog";
 
@@ -37,7 +36,7 @@ export default function UserProfilePage() {
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("library");
   const [isFollowing, setIsFollowing] = useState(false);
-
+  
   const librarySections = useMemo<ShelfSection[]>(
     () => [
       {
@@ -252,6 +251,7 @@ function ShelfRow<
   items: T[];
 }) {
   const top3 = items.slice(0, 3);
+  const GradationFrame = "w-[347px] shrink-0 self-stretch rounded-b-[6px] border-[1.2px] border-[rgba(255,255,255,0.7)] bg-[linear-gradient(153deg,rgba(48,73,192,0.28)_18%,rgba(120,138,222,0.28)_44.99%,rgba(120,138,222,0.31)_58.48%,rgba(48,73,192,0.35)_85.47%)] shadow-[0_6px_16px_rgba(48,73,192,0.15)] backdrop-blur-[2px]"
 
   return (
     <section className="flex flex-col items-center gap-8 self-stretch">
@@ -292,7 +292,7 @@ function ShelfRow<
         </div>
 
         <div className="absolute top-[116px] flex w-[347px] h-[52px] justify-center items-center">
-          <GradationFrame />
+          <span className={`${GradationFrame}`}/>
         </div>
 
         <div className="flex items-center gap-[10px]">

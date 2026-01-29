@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom"
 import { BackIcon } from "../../assets/icons"
-import { GradationFrame } from "../../components/myLibrary/GradationFrame"
 import NavbarBottom from "../../components/common/navbar/NavBarBottom"
 import { useGetShelves } from "../../hooks/queries/useGetShelves"
 
@@ -8,6 +7,7 @@ export function MyLibraryPage () {
 
     const { data: shelves = [] } = useGetShelves(1);
     const navigate = useNavigate();
+    const GradationFrame = "w-[347px] shrink-0 self-stretch rounded-b-[6px] border-[1.2px] border-[rgba(255,255,255,0.7)] bg-[linear-gradient(153deg,rgba(48,73,192,0.28)_18%,rgba(120,138,222,0.28)_44.99%,rgba(120,138,222,0.31)_58.48%,rgba(48,73,192,0.35)_85.47%)] shadow-[0_6px_16px_rgba(48,73,192,0.15)] backdrop-blur-[2px]"
     
     return (
         <div className="min-h-screen w-full flex flex-col items-center bg-bg pb-32">
@@ -40,25 +40,25 @@ export function MyLibraryPage () {
                         )) : (
                             <div className="relative flex w-[375px] px-5 flex-col items-center gap-[10px]">
                                 <div className="h-[168px] self-stretch">
-                                <div className="inline-flex items-center gap-[10px]">
-                                    {shelf.previewBooks.slice(0, 3).map((book) => (
-                                        <div key={book.bookId} className="flex w-[104px] h-[156px] items-center rounded-[4px]">
-                                            {book.thumbnailUrl ? (
-                                                <img
-                                                    src={book.thumbnailUrl}
-                                                    alt={book.title}
-                                                    className="h-full w-full object-cover"
-                                                    draggable={false}
-                                                />
-                                            ) : (
-                                                <span className="text-xs">No Image</span>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
+                                    <div className="inline-flex items-center gap-[10px]">
+                                        {shelf.previewBooks.slice(0, 3).map((book) => (
+                                            <div key={book.bookId} className="flex w-[104px] h-[156px] items-center rounded-[4px]">
+                                                {book.thumbnailUrl ? (
+                                                    <img
+                                                        src={book.thumbnailUrl}
+                                                        alt={book.title}
+                                                        className="h-full w-full object-cover"
+                                                        draggable={false}
+                                                    />
+                                                ) : (
+                                                    <span className="text-xs">No Image</span>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                                 <div className="absolute top-[116px] flex w-[347px] h-[52px] justify-center items-center">
-                                    <GradationFrame/>
+                                    <span className={`${GradationFrame}`}/>
                                 </div>
                                 <div className="flex items-center gap-[10px] self-stretch">
                                     {shelf.previewBooks.slice(0, 3).map((book) => (
