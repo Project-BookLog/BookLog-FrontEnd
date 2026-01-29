@@ -1,4 +1,6 @@
 import axios, { type AxiosInstance, type AxiosError, type AxiosResponse } from 'axios';
+import { useLocalStorage } from '../hooks/useLocalStorage';
+import { LOCAL_STORAGE_KEY } from '../constants/key';
 
 const accessToken = import.meta.env.VITE_ACCESS_TOKEN;
 
@@ -15,9 +17,22 @@ export const privateApi: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: { 
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${accessToken}`,
   },
 });
+
+privateApi.interceptors.request.use((config)=>{
+    const {getItem} = useLocalStorage(LOCAL_STORAGE_KEY.accessToken);
+    const accessToken = getItem(); 
+
+    if(accessToken) {
+        config.headers = config.headers || {};
+        config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+
+    return config;
+},
+(error) => Promise.reject(error),
+);
 
 // 공통 에러 인터셉터
 [publicApi, privateApi].forEach((api) => {
