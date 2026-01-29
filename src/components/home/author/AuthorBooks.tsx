@@ -93,7 +93,7 @@ interface Book {
 function AuthorBooks() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { setPageInfo } = useFilter();
+  const { setPageInfo } = useFilter("author");
 
   const [currentSort, setCurrentSort] = useState<BOOK_ORDER>(BOOK_ORDER.LATEST);
   const [isSortOpen, setIsSortOpen] = useState(false);

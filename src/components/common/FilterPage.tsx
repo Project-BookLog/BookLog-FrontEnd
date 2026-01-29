@@ -2,13 +2,18 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useFilter } from "../../hooks/useFilter";
 import NavBarTop from "../common/navbar/NavBarTop";
 import { useCallback, useEffect } from "react";
+import type { FilterScope } from "../../context/FilterContext";
 
 const moods = ["따뜻한", "잔잔한", "유쾌한", "어두운", "서늘한", "몽환적인"] as const;
 const styles = ["간결한", "화려한", "담백한", "섬세한", "직설적", "은유적"] as const;
 const immersions = ["기분 전환", "지적인 탐구", "압도적 몰입", "짙은 여운"] as const;
 
-export default function FilterPage() {
-  const { filter, toggleFilter, pageInfo } = useFilter(); 
+type Props = {
+  scope: FilterScope;
+};
+
+export default function FilterPage({ scope }: Props) {
+  const { filter, toggleFilter, pageInfo } = useFilter(scope);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 

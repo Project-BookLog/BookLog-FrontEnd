@@ -1,7 +1,9 @@
 import FilterChip from "./FilterChip";
-import { useFilter } from "../../hooks/useFilter"; // 경로 맞춰줘
+import { useFilter } from "../../hooks/useFilter";
+import type { FilterScope } from "../../context/FilterContext";
 
 type Props = {
+  scope: FilterScope;
   resetSrc: string;
   onReset?: () => void;
 
@@ -17,13 +19,14 @@ function toChipLabel(base: string, selected: string[]) {
 }
 
 export default function FilterBar({
+  scope,
   resetSrc,
   onReset,
   onClickMood,
   onClickStyle,
   onClickImmersion,
 }: Props) {
-  const { filter } = useFilter();
+  const { filter } = useFilter(scope);
 
   const moodLabel = toChipLabel("분위기", filter.mood);
   const styleLabel = toChipLabel("문체", filter.style);

@@ -1,11 +1,14 @@
 // src/pages/booklog/BookWritePage.tsx
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import BookContent from "../../components/booklog/BookContent";
 import FilterBar from "../../components/booklog/FilterBar";
 import { useFilter } from "../../hooks/useFilter";
+
+import { ConfirmModal } from "../../components/common/ConfirmModal";
+import { useToast } from "../../context/ToastContext";
 
 import resetImg from "../../assets/icons/reset.svg";
 import CameraImg from "../../assets/icons/Camera.svg";
@@ -14,9 +17,16 @@ import type { Book } from "../../types/book.types";
 
 type LocationState = {
   book?: Book;
+  fresh?: boolean; // ✅ 새 글쓰기 여부
 };
 
 const MAX_IMAGE_COUNT = 8;
+
+type PickedImage = {
+  id: string;
+  file: File;
+  previewUrl: string;
+};
 
 export default function BookWritePage() {
   const navigate = useNavigate();
@@ -25,38 +35,114 @@ export default function BookWritePage() {
 
   const book = state.book;
 
-  const { filter, resetFilter } = useFilter();
+  const { filter, resetFilter } = useFilter("booklogWrite");
+  const { showToast } = useToast();
+
   const [content, setContent] = useState("");
 
-  // ✅ 이미지 개수 state
-  const [imageCount, setImageCount] = useState(0);
+  /** ---------------- 이미지 ---------------- */
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [images, setImages] = useState<PickedImage[]>([]);
+  const imageCount = images.length;
 
-  // ✅ 태그 선택 여부
+  /** ---------------- 뒤로가기 모달 ---------------- */
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+
+  /** ---------------- 필터 초기화 로직 ---------------- */
+  // ✅ "새 글쓰기 시작"일 때만 초기화
+  useEffect(() => {
+    if (state.fresh) {
+      resetFilter();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /** ---------------- 발행 가능 여부 ---------------- */
   const hasTag = useMemo(() => {
     return (
-      (filter.mood?.length ?? 0) > 0 ||
-      (filter.style?.length ?? 0) > 0 ||
-      (filter.immersion?.length ?? 0) > 0
+      filter.mood.length > 0 ||
+      filter.style.length > 0 ||
+      filter.immersion.length > 0
     );
   }, [filter]);
 
-  // ✅ 내용 + 태그 선택 시 발행 활성화
   const canPublish = content.trim().length > 0 && hasTag;
 
+  /** ---------------- 발행 ---------------- */
   const onPublish = () => {
     if (!canPublish) return;
-    console.log("publish", { book, content, filter, imageCount });
+
+    console.log("publish", { book, content, filter, images });
+
+    showToast("북로그가 발행되었어요.");
+    resetFilter(); // ✅ 다음 글쓰기 대비
+    navigate("/booklog");
+  };
+
+  /** ---------------- 이미지 ---------------- */
+  const openFilePicker = () => {
+    if (imageCount >= MAX_IMAGE_COUNT) return;
+    fileInputRef.current?.click();
+  };
+
+  const onPickImages = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+
+    setImages((prev) => {
+      const remain = MAX_IMAGE_COUNT - prev.length;
+      const picked = files.slice(0, remain);
+
+      const next = picked.map((file) => ({
+        id: `${file.name}-${file.size}-${file.lastModified}-${Math.random()}`,
+        file,
+        previewUrl: URL.createObjectURL(file),
+      }));
+
+      return [...prev, ...next];
+    });
+
+    e.target.value = "";
+  };
+
+  // blob 정리
+  useEffect(() => {
+    return () => {
+      images.forEach((img) => URL.revokeObjectURL(img.previewUrl));
+    };
+  }, [images]);
+
+  /** ---------------- 뒤로가기 ---------------- */
+  const onClickBack = () => {
+    setIsConfirmOpen(true);
+  };
+
+  const deleteDraftAndGoBack = () => {
+    setIsConfirmOpen(false);
+    resetFilter(); // ✅ 필터 초기화
+    navigate("/booklog/pick");
   };
 
   return (
-    <div className="min-h-dvh bg-bg pb-28">
+    <div className="relative min-h-dvh bg-bg pb-28">
+      {/* Confirm Modal */}
+      <ConfirmModal
+        isOpen={isConfirmOpen}
+        title="작성 중인 내용을 삭제할까요?"
+        description="삭제한 작업은 복구할 수 없어요."
+        confirmText="삭제"
+        cancelText="취소"
+        onConfirm={deleteDraftAndGoBack}
+        onClose={() => setIsConfirmOpen(false)}
+      />
+
       <header className="sticky top-0 z-10 bg-bg">
-        <NavBarTop title="글쓰기" onBack={() => navigate("/booklog/pick")} />
+        <NavBarTop title="글쓰기" onBack={onClickBack} />
         <div className="h-[1px] w-full bg-divider" />
       </header>
 
       <main className="px-4">
-        {/* ✅ 책 카드 영역 */}
+        {/* 책 카드 */}
         <section className="mt-4 flex justify-center">
           <div className="h-[220px] w-[240px] rounded-[12px] bg-[#EFEDEB]">
             <BookContent
@@ -68,45 +154,39 @@ export default function BookWritePage() {
           </div>
         </section>
 
-        {/* ✅ 내용 작성 */}
+        {/* 내용 */}
         <section className="mt-6">
-          <h2 className="px-0.5 text-subtitle-02-sb text-[#0A0A0A]">
-            내용 작성
-          </h2>
-
-          <div className="mt-3 rounded-[4px] border border-[#E7E5E4] bg-bg px-4 py-3">
+          <h2 className="text-subtitle-02-sb text-[#0A0A0A]">내용 작성</h2>
+          <div className="mt-3 rounded border border-[#E7E5E4] bg-bg px-4 py-3">
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="책을 읽으면서 좋았던 부분을 공유해 보세요."
-              className="h-[60px] w-full resize-none text-en-body-01 text-[#0A0A0A] outline-none placeholder:text-[#CDCCCB]"
+              className="h-[60px] w-full resize-none outline-none"
             />
           </div>
         </section>
 
-        {/* ✅ 태그 고르기 */}
+        {/* 태그 */}
         <section className="mt-5">
-          <h2 className="px-0.5 text-subtitle-02-sb text-[#0A0A0A]">
-            태그 고르기
-          </h2>
-
+          <h2 className="text-subtitle-02-sb text-[#0A0A0A]">태그 고르기</h2>
           <div className="mt-2 -ml-3.5">
             <FilterBar
+              scope="booklogWrite"
               resetSrc={resetImg}
               onReset={resetFilter}
-              // ✅ 글쓰기에서 필터로 갈 때: from + book 같이 넘김
               onClickMood={() =>
-                navigate("/booklog/filter", {
+                navigate("/booklog/write/filter", {
                   state: { from: "/booklog/write", book },
                 })
               }
               onClickStyle={() =>
-                navigate("/booklog/filter", {
+                navigate("/booklog/write/filter", {
                   state: { from: "/booklog/write", book },
                 })
               }
               onClickImmersion={() =>
-                navigate("/booklog/filter", {
+                navigate("/booklog/write/filter", {
                   state: { from: "/booklog/write", book },
                 })
               }
@@ -114,58 +194,59 @@ export default function BookWritePage() {
           </div>
         </section>
 
-        {/* ✅ 이미지 추가 */}
+        {/* 이미지 */}
         <section className="mt-5">
           <h2 className="text-subtitle-02-sb text-[#0A0A0A]">이미지 추가</h2>
 
-          <div className="mt-3">
-            <button
-              type="button"
-              className="flex h-[60px] w-[64px] flex-col items-center justify-center rounded-[4px] border border-[#CDCCCB] bg-bg"
-              aria-label="이미지 추가"
-              onClick={() => {
-                setImageCount((prev) =>
-                  prev < MAX_IMAGE_COUNT ? prev + 1 : prev
-                );
-              }}
-            >
-              <img
-                src={CameraImg}
-                alt=""
-                className="h-6 w-6"
-                draggable={false}
-                style={{ color: "#676665", fill: "#676665" }}
-              />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={onPickImages}
+            className="hidden"
+          />
 
-              <div className="mt-1 text-en-body-01">
-                <span style={{ color: "#676665" }}>{imageCount}</span>
-                <span style={{ color: "#9B9A97" }}>
-                  {" "}
-                  / {MAX_IMAGE_COUNT}
-                </span>
-              </div>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={openFilePicker}
+            className="mt-3 flex h-[60px] w-[64px] flex-col items-center justify-center rounded border border-[#CDCCCB]"
+          >
+            <img src={CameraImg} alt="" className="h-6 w-6" />
+            <span className="text-xs">
+              {imageCount} / {MAX_IMAGE_COUNT}
+            </span>
+          </button>
+
+          {images.length > 0 && (
+            <div className="mt-4 flex gap-2 overflow-x-auto">
+              {images.map((img) => (
+                <div
+                  key={img.id}
+                  className="h-[140px] w-[140px] shrink-0 rounded bg-[#CDCCCB] overflow-hidden"
+                >
+                  <img
+                    src={img.previewUrl}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       </main>
 
-      {/* ✅ 하단 발행 버튼 */}
-      <div className="fixed bottom-0 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-4 pb-6">
+      {/* 발행 버튼 */}
+      <div className="fixed bottom-0 left-1/2 w-full max-w-sm -translate-x-1/2 px-4 pb-6">
         <button
-          type="button"
           onClick={onPublish}
           disabled={!canPublish}
-          className={`h-[53px] w-full rounded-[12px] ${
-            canPublish ? "bg-[#3049C0]" : "bg-[#E7E5E4]"
+          className={`h-[53px] w-full rounded ${
+            canPublish ? "bg-primary text-white" : "bg-gray-200 text-gray-500"
           }`}
         >
-          <span
-            className={`text-body-01-sb ${
-              canPublish ? "text-white" : "text-[#81807F]"
-            }`}
-          >
-            {canPublish ? "발행" : "발행하기"}
-          </span>
+          {canPublish ? "발행" : "발행하기"}
         </button>
       </div>
     </div>

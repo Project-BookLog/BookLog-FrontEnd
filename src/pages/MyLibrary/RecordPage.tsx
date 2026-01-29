@@ -4,7 +4,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import PlusIcon from "../../assets/icons/plus.svg";
 
-
 /** ---------- utils ---------- */
 function pad2(n: number) {
   return String(n).padStart(2, "0");
@@ -138,10 +137,9 @@ function WheelColumn({
         className="overflow-y-auto no-scrollbar scroll-smooth"
         style={{
           scrollSnapType: "y mandatory",
-          height: ITEM_H * VISIBLE_ROWS, 
+          height: ITEM_H * VISIBLE_ROWS,
         }}
       >
-        {/* ✅ 위 패딩 1줄 */}
         {Array.from({ length: PADDING_ITEMS }).map((_, i) => (
           <div key={`pt-${i}`} style={{ height: ITEM_H }} />
         ))}
@@ -166,7 +164,6 @@ function WheelColumn({
           );
         })}
 
-        {/* ✅ 아래 패딩 1줄 */}
         {Array.from({ length: PADDING_ITEMS }).map((_, i) => (
           <div key={`pb-${i}`} style={{ height: ITEM_H }} />
         ))}
@@ -199,11 +196,12 @@ function InlineDatePicker({
 
   useEffect(() => {
     onChange({ y, m, d });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [y, m, d]);
 
   const years = useMemo(() => {
     const current = new Date().getFullYear();
-    const start = 1900; 
+    const start = 1900;
     const end = current + 1;
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   }, []);
@@ -216,39 +214,29 @@ function InlineDatePicker({
   return (
     <div className="mt-6 px-6">
       <div className="grid grid-cols-3 gap-3 px-1">
-        <WheelColumn
-          values={years}
-          value={y}
-          onChange={setY}
-          format={(v) => `${v}년`}
-        />
-        <WheelColumn
-          values={months}
-          value={m}
-          onChange={setM}
-          format={(v) => `${pad2(v)}월`}
-        />
-        <WheelColumn
-          values={days}
-          value={d}
-          onChange={setD}
-          format={(v) => `${v}일`}
-        />
+        <WheelColumn values={years} value={y} onChange={setY} format={(v) => `${v}년`} />
+        <WheelColumn values={months} value={m} onChange={setM} format={(v) => `${pad2(v)}월`} />
+        <WheelColumn values={days} value={d} onChange={setD} format={(v) => `${v}일`} />
       </div>
     </div>
   );
 }
 
 /** ---------- Page ---------- */
+type BookType = "종이책" | "전자책" | "오디오책";
 type ReadStatus = "읽을 예정" | "읽는 중" | "완독" | "중단";
 
 export default function RecordPage() {
   const navigate = useNavigate();
-
   const { bookId } = useParams<{ bookId: string }>();
 
+  // ✅ 추가: 책종류 옵션
+  const bookTypeOptions: BookType[] = ["종이책", "전자책", "오디오책"];
   const statusOptions: ReadStatus[] = ["읽을 예정", "읽는 중", "완독", "중단"];
   const shelfOptions = ["서재 1", "서재 2", "서재 3"];
+
+  // ✅ 추가: 책종류 state
+  const [bookType, setBookType] = useState<BookType | null>(null);
 
   const [status, setStatus] = useState<ReadStatus | null>(null);
   const [shelf, setShelf] = useState<string | null>(null);
@@ -269,7 +257,8 @@ export default function RecordPage() {
     return Number.isFinite(n) && n > 0;
   }, [pages]);
 
-  const canApply = Boolean(status && shelf && isValidPages);
+  // ✅ bookType도 있어야 적용 가능
+  const canApply = Boolean(bookType && status && shelf && isValidPages);
 
   const dateLabel = useMemo(() => {
     return formatKoreanDateWithWeekday(date.y, date.m, date.d);
@@ -285,6 +274,21 @@ export default function RecordPage() {
       <NavBarTop title="독서 기록" onBack={() => navigate(-1)} />
 
       <div className="px-5 pb-28 pt-4">
+        {/* ✅ 0) 책종류 */}
+        <div className="mb-6">
+          <div className="mb-3 text-en-subtitle-01 text-black">책종류</div>
+          <div className="flex flex-wrap gap-2">
+            {bookTypeOptions.map((opt) => (
+              <Pill
+                key={opt}
+                label={opt}
+                active={bookType === opt}
+                onClick={() => setBookType(opt)}
+              />
+            ))}
+          </div>
+        </div>
+
         {/* 1) 독서 상태 */}
         <div className="mb-6">
           <div className="mb-3 text-en-subtitle-01 text-black">독서 상태</div>
@@ -346,7 +350,42 @@ export default function RecordPage() {
               type="text"
               inputMode="numeric"
               value={pages}
-              onFocus={() => setDatePickerOpen(false)} 
+              onFocus={() => setDatePickerOpen(false)}
+              onChange={(e) => {
+                setPages(e.target.value);
+              }}
+              onBlur={() => {
+                setPages((prev) => prev.replace(/[^\d]/g, ""));
+              }}
+              placeholder="오늘의 독서량을 남겨주세요."
+              className={[
+                "h-[41px] w-full rounded-[4px] px-4 pr-10 border bg-bg outline-none",
+                "border-gray-200 text-en-subtitle-02 text-black",
+                "placeholder:text-[#CDCCCB]",
+                "focus:border-primary",
+              ].join(" ")}
+            />
+
+            {pages.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setPages("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                aria-label="입력 지우기"
+              >
+                <ClearIcon className="h-6 w-6" />
+              </button>
+            )}
+          </div>
+
+          <div className="mt-6 mb-3 text-en-subtitle-01 text-black">전체 페이지 수</div>
+
+          <div className="relative">
+            <input
+              type="text"
+              inputMode="numeric"
+              value={pages}
+              onFocus={() => setDatePickerOpen(false)}
               onChange={(e) => {
                 setPages(e.target.value);
               }}

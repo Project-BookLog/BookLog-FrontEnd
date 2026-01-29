@@ -8,7 +8,7 @@ const styles = ["간결한", "화려한", "담백한", "섬세한", "직설적",
 const immersions = ["기분 전환", "지적인 탐구", "압도적 몰입", "짙은 여운"] as const;
 
 function SearchFilterPage() {
-  const { filter, toggleFilter } = useFilter();
+  const { filter, toggleFilter } = useFilter("search");
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
