@@ -3,7 +3,6 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import NavBar from "../../components/common/navbar/NavBarTop";
 import BookContent from "../../components/booklog/BookContent";
 import { Bookmark } from "../../assets/icons"; 
-import { useFilter } from "../../hooks/useFilter"; 
 
 type Post = {
   id: string;
@@ -160,7 +159,7 @@ export default function BooklogDetailPage() {
 
             <button
               type="button"
-              className="h-[27px] rounded-[6px] bg-[#E7E5E4] px-3 text-en-caption-01 font-medium text-[#4D4D4C]"
+              className="h-[27px] rounded-[6px] bg-gray-200 px-3 text-en-caption-01 font-medium text-[#4D4D4C]"
               onClick={(e) => e.stopPropagation()}
             >
               팔로우
@@ -212,12 +211,12 @@ export default function BooklogDetailPage() {
           </div>
 
           {/* 본문 */}
-          <p className="mt-3 text-body-03 leading-relaxed text-[#0A0A0A]">
+          <p className="mt-3 text-body-03 leading-relaxed text-black">
             {post.body}
           </p>
 
           {/* 하단 메타 */}
-          <div className="mt-4 flex items-center justify-between text-caption-01 text-[#81807F]">
+          <div className="mt-4 flex items-center justify-between text-caption-01 text-gray-600">
             <div>
               {post.timeAgo} · 조회 {post.views}
             </div>
@@ -233,15 +232,15 @@ export default function BooklogDetailPage() {
               aria-label="북마크"
             >
               <Bookmark
-  className="h-5 w-5"
-  style={{
-    color: bookmarked ? "#3049C0" : "#9B9A97",
-    fill: bookmarked ? "currentColor" : "none",
-    stroke: bookmarked ? "#3049C0" : "#9B9A97",
-  }}
-/>
+                className="h-5 w-5"
+                style={{
+                color: bookmarked ? "#3049C0" : "#9B9A97",
+                fill: bookmarked ? "currentColor" : "none",
+                stroke: bookmarked ? "#3049C0" : "#9B9A97",
+                }}
+              />
 
-              <span className="text-caption-01 text-[#9B9A97]">
+              <span className="text-caption-01 text-gray-500">
                 {post.bookmarkCount + (bookmarked ? 1 : 0)}
               </span>
             </button>
@@ -249,7 +248,7 @@ export default function BooklogDetailPage() {
         </section>
 
         {/* 구분선 (스샷의 두꺼운 영역) */}
-        <div className="mt-8 h-[8px] bg-[#EFEDEB]" />
+        <div className="mt-8 h-[8px] bg-gray-100" />
 
         {/* Orbital과 비슷한 도서 */}
         <section className="px-5 pt-5">
@@ -291,7 +290,7 @@ export default function BooklogDetailPage() {
                     <p className="mt-1 line-clamp-2 text-caption-02 text-[#4D4D4C]">
                       유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을…
                     </p>
-                    <div className="mt-2 text-en-caption-02 text-[#81807F]">
+                    <div className="mt-2 text-en-caption-02 text-gray-600">
                       1일 전 · 조회 65 · 저장 14
                     </div>
                   </div>
@@ -299,7 +298,7 @@ export default function BooklogDetailPage() {
                 </div>
 
                 {/* ✅ 아이템 사이 구분선 (마지막은 제외) */}
-                {i !== 3 && <div className="h-[1px] w-full bg-[#E7E5E4]" />}
+                {i !== 3 && <div className="h-[1px] w-full bg-gray-200" />}
               </div>
             ))}
           </div>

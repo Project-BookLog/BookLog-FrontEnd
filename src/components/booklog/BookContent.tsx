@@ -22,7 +22,7 @@ export default function BookContent({
   return (
     <div className="h-full w-[240px] rounded-[12px] bg-[#EFEDEB] px-[12px] py-[16px]">
       {/* 책 이미지 */}
-      <div className="mx-auto h-[140px] w-[92px] rounded-[4px] bg-[#CDCCCB] grid place-items-center text-caption-01 text-[#0A0A0A]">
+      <div className="mx-auto h-[140px] w-[92px] rounded-[4px] bg-[#CDCCCB] grid place-items-center text-caption-01 text-black">
         책 img
       </div>
 

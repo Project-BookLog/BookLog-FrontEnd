@@ -85,7 +85,7 @@ function PostCard({ post }: { post: Post }) {
           </div>
 
           <div className="min-w-0">
-            <div className="text-body-01-sb text-[#0A0A0A]">{post.username}</div>
+            <div className="text-body-01-sb text-black">{post.username}</div>
             <div className="mt-0.5 text-caption-02 text-[#81807F]">
               {post.timeAgo} · 조회 {post.views}
             </div>
@@ -201,7 +201,7 @@ export default function BooklogPage() {
     <div className="min-h-screen bg-bg pb-24">
       <div className="mx-auto w-full max-w-[420px]">
         <header className="px-4 pt-8">
-          <h1 className="text-en-head text-[#0A0A0A]">북로그</h1>
+          <h1 className="text-en-head text-black">북로그</h1>
         </header>
 
         <div className="mt-4">

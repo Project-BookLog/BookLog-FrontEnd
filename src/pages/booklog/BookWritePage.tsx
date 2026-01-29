@@ -155,7 +155,7 @@ export default function BookWritePage() {
 
         {/* 내용 */}
         <section className="mt-6">
-          <h2 className="text-subtitle-02-sb text-[#0A0A0A]">내용 작성</h2>
+          <h2 className="text-subtitle-02-sb text-black">내용 작성</h2>
           <div className="mt-3 rounded border border-[#E7E5E4] bg-bg px-4 py-3">
             <textarea
               value={content}
@@ -168,7 +168,7 @@ export default function BookWritePage() {
 
         {/* 태그 */}
         <section className="mt-5">
-          <h2 className="text-subtitle-02-sb text-[#0A0A0A]">태그 고르기</h2>
+          <h2 className="text-subtitle-02-sb text-black">태그 고르기</h2>
           <div className="mt-2 -ml-3.5">
             <FilterBar
               scope="booklogWrite"
@@ -195,7 +195,7 @@ export default function BookWritePage() {
 
         {/* 이미지 */}
         <section className="mt-5">
-          <h2 className="text-subtitle-02-sb text-[#0A0A0A]">이미지 추가</h2>
+          <h2 className="text-subtitle-02-sb text-black">이미지 추가</h2>
 
           <input
             ref={fileInputRef}
@@ -223,7 +223,7 @@ export default function BookWritePage() {
 
 
           {images.length > 0 && (
-            <div className="mt-4 flex gap- overflow-x-auto">
+            <div className="mt-4 flex gap-3 overflow-x-auto">
               {images.map((img) => (
                 <div
                   key={img.id}

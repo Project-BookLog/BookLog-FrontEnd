@@ -49,8 +49,7 @@ export default function FilterBar({
             className="shrink-0 grid h-[36px] w-[36px] place-items-center rounded-full bg-[#EFEDEB]"
             aria-label="필터 초기화"
           >
-            {/* ✅ img/src 제거 */}
-            <ResetIcon className="h-[18px] w-[18px] text-[#0A0A0A]" />
+            <ResetIcon className="h-[18px] w-[18px] text-black" />
           </button>
 
           <div

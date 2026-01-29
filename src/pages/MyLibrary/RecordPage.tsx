@@ -39,7 +39,7 @@ function Pill({
         "text-en-body-02",
         active
           ? "border border-[#3049C0] bg-[#E9EBF4] text-primary"
-          : "border border-transparent bg-[#EFEDEB] text-[#676665]",
+          : "border border-transparent bg-gray-100 text-[#676665]",
       ].join(" ")}
     >
       {label}
@@ -52,7 +52,7 @@ function PlusPill({ onClick }: { onClick?: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="h-8 w-8 rounded-full bg-[#EFEDEB] text-[#676665] grid place-items-center text-subtitle-02-m"
+      className="h-8 w-8 rounded-full bg-gray-100 text-[#676665] grid place-items-center text-subtitle-02-m"
       aria-label="책장 추가"
     >
       <img src={PlusIcon} alt="" className="h-4 w-4 text-[#676665]" />
@@ -326,7 +326,7 @@ export default function RecordPage() {
           <button
             type="button"
             onClick={() => setDatePickerOpen((p) => !p)}
-            className="h-[36px] rounded-[20px] px-4 bg-[#EFEDEB] inline-flex items-center text-en-body-01 text-black"
+            className="h-[36px] rounded-[20px] px-4 bg-gray-100 inline-flex items-center text-en-body-01 text-black"
           >
             {dateLabel}
           </button>

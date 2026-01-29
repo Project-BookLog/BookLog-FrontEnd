@@ -97,7 +97,7 @@ export default function EditPage() {
         <NavBarTop title="서재 편집하기" onBack={handleBack} />
 
         <section className="px-4 pt-4">
-          <div className="rounded-[4px] border border-[#E7E5E4] bg-[#F2F0EE] px-3 py-2">
+          <div className="rounded-[4px] border border-gray-200 bg-[#F2F0EE] px-3 py-2">
             <div className="text-caption-02 text-[#9B9A97]">작성한 서재 명칭</div>
 
             <div className="mt-1 flex items-center gap-2">
@@ -105,7 +105,7 @@ export default function EditPage() {
                 value={shelfName}
                 onChange={(e) => setShelfName(e.target.value)}
                 placeholder="서재의 명칭을 작성해 주세요."
-                className="flex-1 bg-transparent text-subtitle-02-sb text-[#262626] placeholder:text-[#CDCCCB] outline-none"
+                className="flex-1 bg-transparent text-subtitle-02-sb text-[#262626] placeholder:text-[#] outline-none"
               />
 
               {shelfName.length > 0 && (
@@ -141,7 +141,7 @@ export default function EditPage() {
           <button
             type="button"
             onClick={handleDelete}
-            className="h-[53px] flex-1 rounded-[12px] bg-[#E7E5E4] text-subtitle-02-sb text-[#FF6E73]"
+            className="h-[53px] flex-1 rounded-[12px] bg-gray-200 text-subtitle-02-sb text-[#FF6E73]"
           >
             삭제
           </button>
@@ -154,7 +154,7 @@ export default function EditPage() {
               "h-[53px] flex-1 rounded-[12px] text-subtitle-02-sb transition-colors",
               isValid
                 ? "bg-[#3049C0] text-[#FFFFFF]"
-                : "bg-[#E7E5E4] text-[#81807F]",
+                : "bg-gray-200 text-[#81807F]",
             ].join(" ")}
           >
             적용
