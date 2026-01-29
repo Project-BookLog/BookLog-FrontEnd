@@ -11,7 +11,7 @@ export const getBookList = async(shelfId?: number, status?: BookStatus, sort: BO
 }
 
 export const deleteBookList = async ( body: RequestDeleteUserBooksDto, shelfId?: number, status?: BookStatus) => {
-    await publicApi.delete("api/v1/user-books", {
+    await publicApi.delete("/api/v1/user-books", {
         params: {
             shelfId,
             status,

@@ -44,5 +44,5 @@ export type ResponseUserBooksDto = {
 };
 
 export type RequestDeleteUserBooksDto = {
-  ids?: number[];
+  ids: number[];
 }

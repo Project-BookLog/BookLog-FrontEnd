@@ -277,7 +277,10 @@ export const EditBooksPage = () => {
                     >
                         <div className="flex px-2 flex-col items-start self-stretch">
                             {moveTargetShelves?.map((shelf, index) => (
-                                <div className="w-full flex flex-col">
+                                <div
+                                    key={shelf.shelfId}
+                                    className="w-full flex flex-col"
+                                >
                                     <button
                                         key={shelf.name}
                                         className="flex py-4 justify-between items-center self-stretch cursor-pointer"
