@@ -161,6 +161,7 @@ function AuthorBooks() {
 
 
   const goFilter = (from: FilterKey) => {
+    if(!authorid) return;
     setPageInfo({ 
       returnUrl: window.location.pathname, 
       preserveQuery: [] 

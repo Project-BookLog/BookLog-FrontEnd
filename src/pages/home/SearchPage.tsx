@@ -66,6 +66,9 @@ function SearchPage() {
       params.delete("q");
       params.delete("tab");
     }
+    params.delete("mood");
+    params.delete("style");
+    params.delete("immersion");
     navigate(`/search?${params.toString()}`, { replace: true });
     resetFilter();
     setActiveTab("전체");
@@ -80,7 +83,7 @@ function SearchPage() {
     params.delete("immersion");
     navigate(`/search?${params.toString()}`, { replace: true });
   }, [resetFilter, searchParams, navigate]);
-  
+
   const handleChangeTab = (tab: TabType) => {
     const params = new URLSearchParams(searchParams);
     if (tab === "도서") {

@@ -89,26 +89,20 @@ const goFilter = (from: FilterKey) => {
   navigate(url.toString());
 };
 
-  const filterChips: FilterChip[] = [
-    {
-      key: "mood",
-      label: selectedFilters.mood || "분위기",
-      isActive: !!selectedFilters.mood,
-      onClick: () => onFilterClick ? onFilterClick("mood") : goFilter("mood"),
-    },
-    {
-      key: "style",
-      label: selectedFilters.style || "문체",
-      isActive: !!selectedFilters.style,
-      onClick: () => onFilterClick ? onFilterClick("style") : goFilter("style"),
-    },
-    {
-      key: "immersion",
-      label: selectedFilters.immersion || "몰입도",
-      isActive: !!selectedFilters.immersion,
-      onClick: () => onFilterClick ? onFilterClick("immersion") : goFilter("immersion"),
-    },
-  ];
+const filterKeys: FilterKey[] = ["mood", "style", "immersion"];
+const filterLabels: Record<FilterKey, string> = {
+  mood: "분위기",
+  style: "문체", 
+  immersion: "몰입도"
+};
+
+const filterChips: FilterChip[] = filterKeys.map((key) => ({
+  key,
+  label: selectedFilters[key] || filterLabels[key],
+  isActive: !!selectedFilters[key],
+  onClick: () => onFilterClick ? onFilterClick(key) : goFilter(key),
+}));
+
 
   const hasAnyFilter = Object.values(selectedFilters).some(Boolean);
 
@@ -116,7 +110,9 @@ const goFilter = (from: FilterKey) => {
     onResetFilters?.();
     setSearchParams((prev) => {
       const newParams = new URLSearchParams(prev);
-      Object.keys(selectedFilters).forEach((key) => newParams.delete(key));
+      Object.keys(selectedFilters).forEach((key) => {  
+        newParams.delete(key);  
+      });  
       return newParams;
     });
   };
