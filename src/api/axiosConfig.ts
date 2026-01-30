@@ -59,9 +59,11 @@ privateApi.interceptors.response.use(
 
       if (!refreshPromise) {
         refreshPromise = (async () => {
-          const refreshToken = localStorage.getItem(
+          const refreshTokenRaw = localStorage.getItem(
             LOCAL_STORAGE_KEY.refreshToken
-          )?.replace(/"/g, "");
+          );
+
+          const refreshToken = refreshTokenRaw ? JSON.parse(refreshTokenRaw) : null;
 
           if (!refreshToken) throw new Error("No refresh token");
 
