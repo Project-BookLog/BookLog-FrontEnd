@@ -1,41 +1,114 @@
-import { createContext, useContext, useEffect, useState, type PropsWithChildren } from "react";
-import type { RequestSigninDto } from "../types/auth";
+import { createContext, useContext, useState, type PropsWithChildren } from "react";
+import type { RequestLoginDto } from "../types/auth";
+import { useLocalStorage } from "../hooks/useLocalStorage";
+import { LOCAL_STORAGE_KEY } from "../constants/key";
+import { usePostLogin } from "../hooks/mutations/usePostLogin";
+import { getMyInfo } from "../api/auth";
 
 interface AuthContextType {
-    id: string | null;
-    login: (signInData: RequestSigninDto) => Promise<void>;
+    accessToken: string | null;
+    refreshToken: string | null;
+    login: (signInData: RequestLoginDto) => Promise<void>;
     logout: () => Promise<void>;
+    userId: number | undefined;
+    nickname: string | undefined;
 }
 
 export const AuthContext = createContext<AuthContextType>({
-    id: null,
+    accessToken: null,
+    refreshToken: null,
     login: async () => {},
     logout: async () => {},
+    userId: undefined,
+    nickname: undefined,
 });
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
-    const [id, setId] = useState<string | null>(null);
+    const {
+        getItem: getAccessTokenFromStorage,
+        setItem: setAccessTokenInStorage,
+        removeItem: removeAccessTokenFromStorage
+    } = useLocalStorage(LOCAL_STORAGE_KEY.accessToken);
+    const {
+        getItem: getRefreshTokenFromStorage,
+        setItem: setRefreshTokenInStorage,
+        removeItem: removeRefreshTokenFromStorage
+    } = useLocalStorage(LOCAL_STORAGE_KEY.refreshToken);
+    const {
+        getItem: getUserIdFromStorage,
+        setItem: setUserIdInStorage,
+        removeItem: removeUserIdFromStorage
+    } = useLocalStorage(LOCAL_STORAGE_KEY.userId);
+    const {
+        getItem: getNicknameFromStorage,
+        setItem: setNicknameInStorage,
+        removeItem: removeNicknameFromStorage
+    } = useLocalStorage(LOCAL_STORAGE_KEY.nickname);
+    const [accessToken, setAccessToken] = useState<string | null>(
+        getAccessTokenFromStorage(),
+    );
+    const [refreshToken, setRefreshToken] = useState<string | null> (
+        getRefreshTokenFromStorage(),
+    );
+    const [ userId, setUserId] = useState<number | undefined>(
+        getUserIdFromStorage(),
+    );
+    const [ nickname, setNickname] = useState<string | undefined>(
+        getNicknameFromStorage(),
+    );
 
-    useEffect(() => {
-        const stored = localStorage.getItem("auth");
-        if (stored) {
-            const parsed: { id: string } = JSON.parse(stored);
-            setId(parsed.id);
+    const { mutateAsync: loginMutateAsync } = usePostLogin();
+
+    const login = async (loginData: RequestLoginDto) => {
+        try {
+            const data = await loginMutateAsync(loginData);
+
+            if (data) {
+                const newAccessToken = data.data?.accessToken
+                const newRefreshToken = data.data?.refreshToken;
+
+                if (!newAccessToken || !newRefreshToken) {
+                    throw new Error("토큰이 응답에 포함되지 않았습니다.");
+                }
+
+                setAccessTokenInStorage(newAccessToken);
+                setRefreshTokenInStorage(newRefreshToken);
+
+                setAccessToken(newAccessToken);
+                setRefreshToken(newRefreshToken);
+
+                const myInfo = await getMyInfo();
+                setUserId(myInfo?.userId);
+                setUserIdInStorage(myInfo?.userId);
+                setNickname(myInfo?.nickname);
+                setNicknameInStorage(myInfo?.nickname);
+            } 
+        } catch (error) {
+            console.error("로그인 오류", error);
+            throw error;
         }
-    }, []);
-
-    const login = async (signinData: RequestSigninDto) => {
-        setId(signinData.id);
-        localStorage.setItem("auth", JSON.stringify({ id: signinData.id }));
     };
 
-    const logout = async () => {
-        setId(null);
-        localStorage.removeItem("auth");
+    const logout = async() => {
+        try {
+            
+            removeAccessTokenFromStorage();
+            removeRefreshTokenFromStorage();
+            removeUserIdFromStorage();
+            removeNicknameFromStorage();
+
+            setAccessToken(null);
+            setRefreshToken(null);
+            setUserId(undefined);
+            setNickname(undefined);
+
+        } catch (error) {
+            console.log("로그아웃 오류", error);
+        }
     };
 
     return (
-        <AuthContext.Provider value={{ id, login, logout }}>
+        <AuthContext.Provider value={{ accessToken, refreshToken, login, logout, userId, nickname }}>
             {children}
         </AuthContext.Provider>
     );

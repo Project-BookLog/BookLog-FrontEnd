@@ -1,36 +1,43 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useForm from "../../hooks/useForm";
-import { validateSignin, type UserSigninInformation } from "../../utils/validate";
+import { validateSignin, type UserLoginInformation } from "../../utils/validate";
 import { useAuth } from "../../context/AuthContext";
 import { useEffect } from "react";
 import { KakaoTalk, LogoBooklog, SymbolLogo } from "../../assets/icons";
 
 export const LoginPage = () => {
     const navigate = useNavigate();
-
-    const { login, id } = useAuth();
+    const location = useLocation();
+    const from = location.state?.from || "/";
+    const { login, accessToken } = useAuth();
 
     useEffect(() => {
-        if (id) {
-           navigate("/onboarding"); 
+        if(accessToken) {
+            navigate("/");
         }
-    }, [navigate, id]);
+    }, [navigate, accessToken]);
 
-    const {values, errors, getInputProps} = useForm<UserSigninInformation>({
+    const {values, errors, getInputProps} = useForm<UserLoginInformation>({
         initialValue: {
-            id: "",
+            email: "",
             password: "",
         },
         validate: validateSignin
     });
 
-    const handleSubmit = async () => {
-        await login(values);
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        try {
+            await login(values);
+            navigate(from, { replace: true });
+        } catch (err) {
+            console.error("로그인 실패:", err);
+        }
     };
 
     const isDisabled =
-    Object.values(errors || {}).some(error => error.length > 0) ||
-    Object.values(values).some(value => value === "")
+        Object.values(errors || {}).some(error => error.length > 0) ||
+        Object.values(values).some(value => value === "")
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-bg border border-[#DEDEDE]">
@@ -39,12 +46,15 @@ export const LoginPage = () => {
                 <LogoBooklog className="[&_*]:fill-primary w-[114px] h-[30px]" />
             </div>
             <div className="flex flex-col w-[335px] items-center gap-3 mt-[70px]">
-                <div className="flex flex-col items-start gap-4 self-stretch">
+                <form
+                    className="flex flex-col items-start gap-4 self-stretch"
+                    onSubmit={handleSubmit}
+                >
                     <div className="flex flex-col items-start gap-2 self-stretch">
                         <input
-                            {...getInputProps("id")}
+                            {...getInputProps("email")}
                             className={`flex h-[56px] px-[24px] py-[15px] items-center gap-[10px] self-stretch rounded-[12px] border-none focus:outline-none focus:ring-0
-                                ${!values.id ? "bg-gray-100" : "bg-white"}`}
+                                ${!values.email ? "bg-gray-100" : "bg-white"}`}
                             type={"text"}
                             placeholder={"ID"}
                         />
@@ -57,8 +67,7 @@ export const LoginPage = () => {
                         />
                     </div>
                     <button
-                        type="button"
-                        onClick={handleSubmit}
+                        type="submit"
                         disabled={isDisabled}
                         className="flex px-[10px] py-[16px] justify-center items-center gap-[10px] self-stretch rounded-[12px] bg-primary active:bg-[#263A99] disabled:bg-gray-200 text-white text-center text-[15px] font-semibold leading-[21px] cursor-pointer disabled:cursor-not-allowed"
                     >   
@@ -67,7 +76,7 @@ export const LoginPage = () => {
                     <p className="text-[14px] leading-[19.6px] font-medium text-gray-500 text-center self-stretch">
                         로그인하고 기록을 이어갈 수 있어요.
                     </p>
-                </div>
+                </form>
             </div>
             <div className="flex flex-col w-[335px] items-center gap-6 mt-[83px]">
                 <div className="flex flex-row items-center">
