@@ -8,5 +8,7 @@ export function useGetBookList (shelfId?: number, status?: BookStatus, sort: BOO
     return useQuery({
         queryKey: [QUERY_KEY.books, shelfId, status, sort],
         queryFn: () => getBookList(shelfId, status, sort),
+        staleTime: 5 * 60 * 1000,
+        gcTime: 10 * 60 * 1000
     })
 }
