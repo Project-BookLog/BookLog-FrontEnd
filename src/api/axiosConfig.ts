@@ -1,8 +1,6 @@
 import axios, { type AxiosInstance, type AxiosError, type AxiosResponse } from 'axios';
 import { LOCAL_STORAGE_KEY } from '../constants/key';
 
-const accessToken = import.meta.env.VITE_ACCESS_TOKEN;
-
 // public Instance
 export const publicApi: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
