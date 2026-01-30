@@ -8,6 +8,8 @@ export function useGetShelves () {
     return useQuery({
         queryKey: [QUERY_KEY.shelves],
         queryFn: () => getShelves(),
+        staleTime: 5 * 60 * 1000,
+        gcTime: 10 * 60 * 1000,
         select: (shelves) => {
             const allBooksShelf: Shelf = {
                 shelfId: -1,

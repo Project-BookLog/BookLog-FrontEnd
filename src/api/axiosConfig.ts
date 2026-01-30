@@ -1,5 +1,8 @@
 import axios, { type AxiosInstance, type AxiosError, type AxiosResponse } from 'axios';
 import { LOCAL_STORAGE_KEY } from '../constants/key';
+import { postRefreshToken } from './auth';
+
+let refreshPromise: Promise<string> | null = null;
 
 // public Instance
 export const publicApi: AxiosInstance = axios.create({
@@ -45,3 +48,54 @@ privateApi.interceptors.request.use((config)=>{
     }
   );
 });
+
+privateApi.interceptors.response.use(
+  (response: AxiosResponse) => response,
+  async (error: AxiosError) => {
+    const originalRequest: any = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      if (!refreshPromise) {
+        refreshPromise = (async () => {
+          const refreshToken = localStorage.getItem(
+            LOCAL_STORAGE_KEY.refreshToken
+          )?.replace(/"/g, "");
+
+          if (!refreshToken) throw new Error("No refresh token");
+
+          const result = await postRefreshToken(refreshToken);
+
+          localStorage.setItem(
+            LOCAL_STORAGE_KEY.accessToken,
+            JSON.stringify(result.data!.accessToken)
+          );
+          localStorage.setItem(
+            LOCAL_STORAGE_KEY.refreshToken,
+            JSON.stringify(result.data!.refreshToken)
+          );
+
+          return result.data!.accessToken;
+        })()
+          .catch(() => {
+            localStorage.removeItem(LOCAL_STORAGE_KEY.accessToken);
+            localStorage.removeItem(LOCAL_STORAGE_KEY.refreshToken);
+            window.location.href = "/login";
+            throw error;
+          })
+          .finally(() => {
+            refreshPromise = null;
+          });
+      }
+
+      const newAccessToken = await refreshPromise;
+      originalRequest.headers = originalRequest.headers || {};
+      originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
+      return privateApi(originalRequest);
+    }
+
+    return Promise.reject(error);
+  }
+);
