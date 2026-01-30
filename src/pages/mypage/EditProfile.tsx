@@ -17,7 +17,7 @@ function EditProfile() {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [hasError, setHasError] = useState(false); 
+  const [loadError, setLoadError] = useState(false); 
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -33,7 +33,7 @@ function EditProfile() {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         // console.error("프로필 정보 불러오기 실패:", error);
-        setHasError(true);
+        setLoadError(true);
       } finally {
         setIsLoading(false);
       }
@@ -48,6 +48,9 @@ function EditProfile() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (profileImage?.startsWith('blob:')) {
+        URL.revokeObjectURL(profileImage);
+      }
       const url = URL.createObjectURL(file);
       setProfileImage(url);
     }
@@ -81,7 +84,6 @@ function EditProfile() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       // console.error(" 저장 실패:", error);
-      setHasError(true);
       alert("저장 중 오류가 발생했습니다.");
     } finally {
       setIsSaving(false);
@@ -89,7 +91,7 @@ function EditProfile() {
   };
 
   if (isLoading) return <LoadingPage />;
-  if (hasError) return <ErrorPage />
+  if (loadError) return <ErrorPage />
 
   return (
     <div className="bg-bg min-h-screen">
