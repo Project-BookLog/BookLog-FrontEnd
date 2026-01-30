@@ -4,6 +4,8 @@ import { postRefreshToken } from './auth';
 
 let refreshPromise: Promise<string> | null = null;
 
+const accessToken = import.meta.env.VITE_ACCESS_TOKEN;
+
 // public Instance
 export const publicApi: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
