@@ -10,12 +10,12 @@ import { LibraryActionDropDown, type LibraryAction } from "../../components/comm
 import { LIBRARY_TABS } from "../../constants/libraryTabs";
 import { useGetBookList } from "../../hooks/queries/useGetBookList";
 
-export function MyLibraryDetail() {
+export function MyLibraryDetailPage() {
 
   const { shelfId } = useParams();
   const parsedShelfId = shelfId === "-1" ? undefined : Number(shelfId);
   const location  = useLocation();
-  const shelfName = location.state?.shelfName ?? "전체 서재";
+  const shelfName = location.state?.shelfName;
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<LibraryTab>("ALL")
@@ -37,9 +37,13 @@ export function MyLibraryDetail() {
     {
       label: "도서 목록 편집",
       onClick: () => {
-        if (parsedShelfId === undefined) navigate(`edit-books`);
-        else navigate(`edit-books?tab=${activeTab}`);
-        }
+        if (parsedShelfId === undefined) navigate(`edit-books`, {
+          state: { shelfName },
+        });
+        else navigate(`edit-books?tab=${activeTab}`, {
+          state: { shelfName },
+        });
+      }
     },
     {
       label: "중단한 책 보기",

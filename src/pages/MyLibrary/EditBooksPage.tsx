@@ -1,5 +1,5 @@
-import { useNavigate, useParams, useSearchParams } from "react-router-dom"
-import type { Library, LibraryTab } from "../../types/library"
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom"
+import type { LibraryTab } from "../../types/library"
 import { useEffect, useMemo, useState } from "react"
 import { BackIcon, CheckIcon } from "../../assets/icons"
 import { ConfirmModal } from "../../components/common/ConfirmModal"
@@ -7,44 +7,39 @@ import { EditCheckBox } from "../../components/myLibrary/EditCheckBox"
 import EditBookCard from "../../components/myLibrary/EditBookCard"
 import { useToast } from "../../context/ToastContext"
 import { LIBRARY_TABS } from "../../constants/libraryTabs"
-import { getBookStatusByProgress } from "../../domain/BookStatus"
-import { TAB_TO_STATUSES } from "../../domain/Library"
+import { useDeleteBookList } from "../../hooks/mutations/useDeleteBookList"
+import { useGetBookList } from "../../hooks/queries/useGetBookList"
+import { useGetShelves } from "../../hooks/queries/useGetShelves"
 
-export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
+export const EditBooksPage = () => {
 
     const navigate = useNavigate();
-    const { libraryName } = useParams<{libraryName: string}>();
+
+    const { shelfId } = useParams();
+    const parsedShelfId = shelfId === "-1" ? undefined : Number(shelfId);
+
+    const location  = useLocation();
+    const shelfName = location.state?.shelfName;
+
     const [ searchParams ] = useSearchParams();
     const activeTab = searchParams.get("tab") as LibraryTab | null;
+    const status = activeTab === null || activeTab === "ALL" ? undefined : (activeTab as "TO_READ" | "READING" | "COMPLETED");
+
     const [selectedBooks, setSelectedBooks] = useState<number[]>([]);
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
     const [isMoveModalOpen, setIsMoveModalOpen] = useState<boolean>(false);
     const [targetLibraryName, setTargetLibraryName] = useState<string | null>(null);
+
+    const { mutate: deleteBooks } = useDeleteBookList();
+    const { data: books } = useGetBookList(parsedShelfId, status);
+    const { data: shelves } = useGetShelves();
     const { showToast } = useToast();
 
-    const library = useMemo(
-        () => libraries.find((lib) => lib.name === libraryName),
-        [libraries, libraryName]
+    const editableBooks = books?.items ?? [];
+
+    const moveTargetShelves = shelves?.filter(
+        (shelf) => shelf.name !== shelfName && shelf.name !== "전체 도서"
     );
-
-    if (!library) return null;
-
-    const moveTargetLibraries = libraries.filter(
-        (lib) => lib.name !== library.name && lib.name !== "전체 도서"
-    );
-
-    const editableBooks = useMemo(() => {
-        if (!library) return [];
-
-        if (library.name === "전체 도서") return library.books;
-
-        const statuses = TAB_TO_STATUSES[activeTab ?? "ALL"];
-
-        return library.books.filter((book) =>
-            statuses.includes(getBookStatusByProgress(book.progress))
-        );
-    }, [library, activeTab]);
-
 
     const activeTabLabel = useMemo(() => {
         if (!activeTab || activeTab === "ALL") return "전체";
@@ -53,56 +48,87 @@ export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
     }, [activeTab]);
 
 
-    const toggleSelect = (bookId: number) => {
+    const toggleSelect = (userBookId: number) => {
         setSelectedBooks((prev) =>
-            prev.includes(bookId)
-                ? prev.filter((id) => id !== bookId)
-                : [...prev, bookId]
+            prev.includes(userBookId)
+                ? prev.filter((id) => id !== userBookId)
+                : [...prev, userBookId]
         );
     };
 
     const toggleSelectAll = () => {
         if (selectedBooks.length === 0) {
-            setSelectedBooks(editableBooks.map(book => book.id));
+            setSelectedBooks(editableBooks.map(book => book.userBookId));
         } else {
             setSelectedBooks([]);
         }
     };
 
-    const isSelected = (bookId: number) => selectedBooks.includes(bookId);
+    const isSelected = (userBookId: number) => selectedBooks.includes(userBookId);
     const isDisabled = selectedBooks.length === 0;
 
     const handleBack = () => {
         if (editableBooks.length !== 0) setIsConfirmModalOpen(true);
-        else navigate(`/my-library/${libraryName}`);
+        else navigate(`/my-library/${shelfId}`, {
+            state: { shelfName },
+        });
     }
 
     const handleCancel = () => {
         setSelectedBooks([]);
-        navigate(`/my-library/${libraryName}`)
+        navigate(`/my-library/${shelfId}`, {
+          state: { shelfName },
+        })
     };
 
     const handleDeleteFromAll = () => {
-        console.log("삭제할 책 ID:", selectedBooks);
-        showToast("도서 목록이 편집되었어요.");
-        navigate(`/my-library/${libraryName}`)
+        deleteBooks(
+            {
+                body: { ids: selectedBooks},
+                shelfId: undefined,
+                status
+            },
+            {
+                onSuccess: () => {
+                    showToast("도서 목록이 편집되었어요.");
+                    navigate(`/my-library/${shelfId}`, {
+                        state: { shelfName },
+                    });
+                },
+            }
+        );
     };
 
     const handleRemoveFromLibrary = () => {
         console.log("삭제할 책 ID:", selectedBooks);
-        showToast("삭제가 완료되었어요.");
-        navigate(`/my-library/${libraryName}`);
-    }
+        deleteBooks(
+            {
+                body: { ids: selectedBooks },
+                shelfId: parsedShelfId,
+                status
+            },
+            {
+                onSuccess: () => {
+                    showToast("삭제가 완료되었어요.");
+                    navigate(`/my-library/${shelfId}`, {
+                        state: { shelfName },
+                    });
+                },
+            }
+        );
+    };
 
     const handleMoveBooks = () => {
         console.log("이동할 책 ID:", selectedBooks);
         showToast("서재 이동이 완료되었어요.");
-        navigate(`/my-library/${libraryName}`);
+        navigate(`/my-library/${shelfId}`, {
+            state: { shelfName },
+        });
     }
 
     useEffect(() => {
         setSelectedBooks([]);
-    }, [activeTab, libraryName]);
+    }, [activeTab, shelfId]);
 
     useEffect(() => {
         if (isMoveModalOpen) {
@@ -139,7 +165,7 @@ export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
                     className="w-6 h-6 cursor-pointer"
                     onClick={handleBack}
                 />
-                {library.name === "전체 도서" ? (
+                {parsedShelfId === undefined ? (
                     <p className="text-black text-title-01">도서 목록 편집하기</p>
                 ) : selectedBooks.length === 0 ? (
                     <p className="text-black text-title-01">도서 선택</p>
@@ -160,7 +186,7 @@ export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
                 />
             }
             {editableBooks.length === 0 ? (
-                library.name === "전체 도서" ? (
+                parsedShelfId === undefined ? (
                     <div className="flex flex-1 flex-col items-center gap-[10px] justify-center">
                         <p className="text-center text-gray-900 text-title-02">편집할 도서가 없습니다.</p>
                         <p className="text-center text-gray-600 text-body-03">먼저 읽고 있거나 읽고 싶은 책을 담아보세요.</p>
@@ -173,7 +199,7 @@ export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
                 )
             ) : (
                 <div className="flex w-[375px] px-5 flex-col items-start gap-4 mt-5">
-                    {library.name === "전체 도서" ? (
+                    {parsedShelfId === undefined ? (
                         <div className="flex items-center gap-2 cursor-pointer" onClick={toggleSelectAll}>
                             <EditCheckBox checked={selectedBooks.length > 0}/>
                             {selectedBooks.length === 0 ? (
@@ -192,22 +218,22 @@ export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
                                     <p className="text-black text-body-03">선택 해제 ({selectedBooks.length})</p>
                                 )}
                             </div>
-                            <p className="text-gray-600 text-body-03">{libraryName} &gt; {activeTabLabel}</p>
+                            <p className="text-gray-600 text-body-03">{shelfName} &gt; {activeTabLabel}</p>
                         </div>
                     )}
                     <div className="flex items-start content-start gap-x-[11.5px] gap-y-5 self-stretch flex-wrap">
                         {editableBooks.map((book) => (
                             <EditBookCard
-                                key={book.id}
+                                key={book.userBookId}
                                 book={book}
-                                selected={isSelected(book.id)}
-                                onToggle={() => toggleSelect(book.id)}
+                                selected={isSelected(book.userBookId)}
+                                onToggle={() => toggleSelect(book.userBookId)}
                             />
                         ))}
                     </div>
                 </div>
             )}
-            {editableBooks.length !== 0 &&  (library.name === "전체 도서" ? (
+            {editableBooks.length !== 0 &&  (parsedShelfId === undefined ? (
                 <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-40 flex px-5 pt-5 items-end gap-[2px] self-stretch">
                     <button
                         className="flex w-[335px] px-[10px] py-4 justify-center items-center gap-[10px] rounded-[12px] bg-primary active:bg-[#263A99] disabled:bg-gray-200 text-white disabled:text-gray-600 cursor-pointer"
@@ -250,17 +276,20 @@ export const EditBooksPage = ({ libraries }: { libraries: Library[] }) => {
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="flex px-2 flex-col items-start self-stretch">
-                            {moveTargetLibraries.map((lib, index) => (
-                                <div className="w-full flex flex-col">
+                            {moveTargetShelves?.map((shelf, index) => (
+                                <div
+                                    key={shelf.shelfId}
+                                    className="w-full flex flex-col"
+                                >
                                     <button
-                                        key={lib.name}
+                                        key={shelf.name}
                                         className="flex py-4 justify-between items-center self-stretch cursor-pointer"
-                                        onClick={() => setTargetLibraryName(lib.name)}
+                                        onClick={() => setTargetLibraryName(shelf.name)}
                                     >
-                                        <p className="text-gray-900 text-subtitle-02-m">{lib.name}</p>
-                                        {targetLibraryName === lib.name && <CheckIcon className="w-5 h-5"/>}
+                                        <p className="text-gray-900 text-subtitle-02-m">{shelf.name}</p>
+                                        {targetLibraryName === shelf.name && <CheckIcon className="w-5 h-5"/>}
                                     </button>
-                                    {index !== moveTargetLibraries.length - 1 && (
+                                    {index !== moveTargetShelves.length - 1 && (
                                         <div className="w-[227px] h-[1px] bg-gray-100"></div>
                                     )}
                                 </div>

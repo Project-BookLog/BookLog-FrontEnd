@@ -1,9 +1,9 @@
-import type { Book } from "../../types/book.types";
+import type { UserBook } from "../../types/library";
 import { BookCard } from "./BookCard";
 import { EditCheckBox } from "./EditCheckBox";
 
 interface EditBookCardProps {
-  book: Book;
+  book: UserBook;
   selected: boolean;
   onToggle: () => void;
 }

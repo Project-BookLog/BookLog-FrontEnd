@@ -42,3 +42,7 @@ export type ResponseUserBooksDto = {
   totalCount: number;
   items: UserBook[];
 };
+
+export type RequestDeleteUserBooksDto = {
+  ids: number[];
+}
