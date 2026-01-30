@@ -1,4 +1,4 @@
-export type User = {
+export type User = { //목업
   id: string;
   name: string;
   email: string;
@@ -8,3 +8,17 @@ export type User = {
   booklogCount: number;
   bookmarkCount: number;
 };
+
+export type ResponseMyProfileDto = {
+  userId: number;
+  nickname: string;
+  profileImageUrl: string;
+  isShelfPublic: boolean;
+  isBooklogPublic: boolean;
+};
+
+export interface UpdateProfileDto {
+  nickname: string;
+  isShelfPublic: boolean;
+  isBooklogPublic: boolean;
+}

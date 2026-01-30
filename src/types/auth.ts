@@ -16,11 +16,3 @@ export type ResponseLoginDto = CommonResponse<{
   tokenType: string;
   expiresIn: number;
 }>;
-
-export type ResponseMyInfoDto = {
-  userId: number;
-  nickname: string;
-  profileImageUrl: string;
-  isShelfPublic: boolean;
-  isBooklogPublic: boolean;
-};
