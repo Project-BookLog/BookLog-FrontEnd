@@ -57,7 +57,7 @@ export default function EditPage() {
   const { shelfId } = useParams();
 
   const location  = useLocation();
-  const originalShelfName = location.state?.shelfName;
+  const originalShelfName = location.state?.shelfName ?? "";
 
   const navigate = useNavigate();
 
@@ -86,7 +86,7 @@ export default function EditPage() {
     deleteShelf(Number(shelfId), {
       onSuccess: () => {
         showToast("서재 편집이 완료되었어요.");
-        navigate("/my-library");
+        navigate("/my-library", { replace: true });
       }
     })
   };
