@@ -79,14 +79,15 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
   }, []);
 
 
-  const handleSearchBoth = useCallback(async (params?: SearchBothParams) => {
-    if (!keyword.trim()) return;
+  const handleSearchBoth = useCallback(async (keyword: string, params?: SearchBothParams) => {
+    const kw = keyword;
+    if (!kw.trim()) return;
 
     setBothLoading(true);
     setBothError(null);
 
     try {
-      const { book, author } = await searchBoth(keyword, params);
+      const { book, author } = await searchBoth(kw, params);
 
       setBookTotal(book.totalCount);
       setBookItems(book.items);
@@ -99,7 +100,7 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
     } finally {
       setBothLoading(false);
     }
-  }, [keyword]);
+  }, []);
 
   const clearBooks = useCallback(() => {
     setBookPage(1);

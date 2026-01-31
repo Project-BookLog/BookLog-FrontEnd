@@ -7,20 +7,12 @@ export interface BookSearchParams {
   size?: number;
   sort?: string;
 }
-export interface BookSearchRequest extends BookSearchParams {
-  loadMore?: boolean;
-}
-
 
 export interface AuthorSearchParams {
   query: string;
   page?: number;
   size?: number;
 }
-export interface AuthorSearchRequest extends AuthorSearchParams {
-  loadMore?: boolean;
-}
-
 export interface SearchBothParams {
   book?: {
     page?: number;
@@ -60,7 +52,7 @@ export interface SearchContextType {
 
   searchBooks: (params: BookSearchParams) => Promise<void>;
   searchAuthors: (params: AuthorSearchParams) => Promise<void>;
-  searchBoth: (params?: SearchBothParams) => Promise<void>;
+  searchBoth: (keyword: string, params?: SearchBothParams) => Promise<void>;
   clearBooks: () => void;
   clearAuthors: () => void;
   clearBoth: () => void;

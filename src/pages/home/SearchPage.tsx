@@ -63,7 +63,7 @@ export default function SearchPage() {
     startTransition(() => {
       switch (activeTab) {
         case "전체":
-          search.searchBoth(); 
+          search.searchBoth(keyword); // Pass the current keyword explicitly 
           break;
         case "도서":
           search.searchBooks({ query: keyword });
@@ -89,9 +89,20 @@ export default function SearchPage() {
       else if (tab === "작가") params.set("tab", "author");
       else params.delete("tab");
 
+          // 탭 변경 시 해당 탭에 맞는 검색 실행
+    startTransition(() => {
+      if (tab === "도서") {
+        search.searchBooks({ query: searchKeyword });
+      } else if (tab === "작가") {
+        search.searchAuthors({ query: searchKeyword });
+      } else {
+        search.searchBoth(searchKeyword);
+      }
+    });
+
       navigate(`/search?${params.toString()}`, { replace: true });
     },
-    [searchKeyword, searchParams, navigate]
+    [searchKeyword, searchParams, navigate, search]
   );
 
 
