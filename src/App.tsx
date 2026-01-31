@@ -1,8 +1,11 @@
 import { Routes, Route, Outlet } from "react-router-dom";
 import MobileLayout from "./layout/MobileLayout";
-import { FilterProvider } from "./context/FilterContext";
 import { useToast } from "./context/ToastContext";
 import { Toast } from "./components/common/Toast";
+
+// provider
+import { SearchProvider } from "./context/SearchContext";
+import { FilterProvider } from "./context/FilterContext";
 
 // 0. 온보딩 & common
 import { LoginPage } from "./pages/onboarding/LoginPage";
@@ -63,9 +66,11 @@ function App() {
         {/* 필터 사용 라우트들에만 Provider 적용 */}
         <Route
           element={
-            <FilterProvider>
-              <Outlet />
-            </FilterProvider>
+            <SearchProvider>
+              <FilterProvider>
+                <Outlet />
+              </FilterProvider>
+            </SearchProvider>
           }
         >
           {/* 1. 홈 */}

@@ -52,6 +52,7 @@ privateApi.interceptors.request.use((config)=>{
 privateApi.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const originalRequest: any = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
