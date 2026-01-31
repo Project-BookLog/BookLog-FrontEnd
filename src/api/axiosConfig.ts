@@ -4,8 +4,6 @@ import { postRefreshToken } from './auth';
 
 let refreshPromise: Promise<string> | null = null;
 
-const accessToken = import.meta.env.VITE_ACCESS_TOKEN;
-
 // public Instance
 export const publicApi: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -54,6 +52,7 @@ privateApi.interceptors.request.use((config)=>{
 privateApi.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const originalRequest: any = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
