@@ -25,7 +25,6 @@ import BookWritePage from "./pages/booklog/BookWritePage";
 
 // 3. 서재
 import { MyLibraryPage } from "./pages/myLibrary/MyLibraryPage";
-import { libraries } from "./data/myLibrary.mock";
 import { MyLibraryDetailPage } from "./pages/myLibrary/MyLibraryDetailPage";
 import { EditBooksPage } from "./pages/myLibrary/EditBooksPage";
 import AddLibraryPage from "./pages/myLibrary/AddLibraryPage";
@@ -106,8 +105,8 @@ function App() {
         <Route path="/my-library/:libraryName/edit-library" element={<EditPage />} />
         <Route path="/my-library/record/:bookId" element={<RecordPage />} />
         <Route
-          path="/my-library/stopped"
-          element={<StoppedBooksPage stoppedBooks={libraries.flatMap((lib) => lib.books)} />}
+          path="/my-library/stopped/:shelfId"
+          element={<StoppedBooksPage />}
         />
 
         {/* 4. 마이페이지 */}
