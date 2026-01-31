@@ -1,5 +1,5 @@
-import type { RequestLoginDto, ResponseLoginDto, ResponseMyInfoDto } from "../types/auth";
-import { privateApi, publicApi } from "./axiosConfig";
+import type { RequestLoginDto, ResponseLoginDto } from "../types/auth";
+import { publicApi } from "./axiosConfig";
 
 export const postLogin = async (body: RequestLoginDto): Promise<ResponseLoginDto> => {
     const { data } = await publicApi.post("/auth/login", body);
@@ -11,7 +11,3 @@ export const postRefreshToken = async (refreshToken: string): Promise<ResponseLo
     return data;
 }
 
-export const getMyInfo = async(): Promise<ResponseMyInfoDto> => {
-    const { data } = await privateApi.get("/me/profile");
-    return data;
-}
