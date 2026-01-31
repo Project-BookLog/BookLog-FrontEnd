@@ -68,14 +68,13 @@ export const EditBooksPage = () => {
     const isDisabled = selectedBooks.length === 0;
 
     const handleBack = () => {
-        if (editableBooks.length !== 0) setIsConfirmModalOpen(true);
+        if (selectedBooks.length >= 0) setIsConfirmModalOpen(true);
         else navigate(`/my-library/${shelfId}`, {
             state: { shelfName },
         });
     }
 
     const handleCancel = () => {
-        setSelectedBooks([]);
         navigate(`/my-library/${shelfId}`, {
           state: { shelfName },
         })
@@ -100,7 +99,6 @@ export const EditBooksPage = () => {
     };
 
     const handleRemoveFromLibrary = () => {
-        console.log("삭제할 책 ID:", selectedBooks);
         deleteBooks(
             {
                 body: { ids: selectedBooks },

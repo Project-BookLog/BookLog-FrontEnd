@@ -45,4 +45,10 @@ export type ResponseUserBooksDto = {
 
 export type RequestDeleteUserBooksDto = {
   ids: number[];
-}
+};
+
+export type RequestPostShelfDto = {
+  name: string;
+  isPublic?: boolean;
+  setOrder?: BOOK_ORDER;
+};
