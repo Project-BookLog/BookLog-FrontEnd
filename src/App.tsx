@@ -40,6 +40,7 @@ import Setting from "./pages/mypage/Setting";
 import ReadingCalendarPage from "./pages/mypage/ReadingCalenderPage";
 import ReadingRankingPage from "./pages/mypage/ReadingRankingPage";
 import UserProfilePage from "./pages/mypage/UserProfilePage";
+import { KakaoLoginRedirectPage } from "./pages/KakaoLoginRedirectPage";
 
 function GlobalToast() {
   const { message } = useToast();
@@ -52,6 +53,7 @@ function App() {
       <Routes>
         {/* 0. 온보딩 */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/oauth/callback" element={<KakaoLoginRedirectPage />} />
         <Route path="/splash" element={<SplashPage />} />
         <Route path="/onboarding" element={<OnboardingPage />} />
 

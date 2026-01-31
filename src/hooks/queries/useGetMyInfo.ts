@@ -7,5 +7,7 @@ export const useGetMyInfo = () => {
     return useQuery<ResponseMyInfoDto>({
         queryKey: [QUERY_KEY.myInfo],
         queryFn: getMyInfo,
+        staleTime: 5 * 60 * 1000,
+        gcTime: 10 * 60 * 1000
     })
 }
