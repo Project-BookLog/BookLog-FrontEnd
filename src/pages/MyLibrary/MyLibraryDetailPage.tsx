@@ -14,8 +14,10 @@ export function MyLibraryDetailPage() {
 
   const { shelfId } = useParams();
   const parsedShelfId = shelfId === "-1" ? undefined : Number(shelfId);
+
   const location  = useLocation();
   const shelfName = location.state?.shelfName;
+  
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<LibraryTab>("ALL")
@@ -31,7 +33,9 @@ export function MyLibraryDetailPage() {
   const actions: LibraryAction[] = [
     {
       label: "서재 편집",
-      onClick: () => navigate("edit-library"),
+      onClick: () => navigate("edit-library", {
+          state: { shelfName },
+        }),
       visible: parsedShelfId !== undefined,
     },
     {
@@ -47,7 +51,9 @@ export function MyLibraryDetailPage() {
     },
     {
       label: "중단한 책 보기",
-      onClick: () => navigate("/my-library/stopped"),
+      onClick: () => navigate(`/my-library/stopped/${shelfId}`, {
+          state: { shelfName },
+        }),
     },
   ];
 

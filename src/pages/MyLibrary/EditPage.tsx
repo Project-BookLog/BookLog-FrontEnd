@@ -1,9 +1,10 @@
 // src/pages/MyLibrary/EditPage.tsx
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import { ConfirmModal } from "../../components/common/ConfirmModal";
 import { useToast } from "../../context/ToastContext";
+import { useDeleteShelf } from "../../hooks/mutations/useDeleteShelf";
 
 function ClearIcon({ className = "" }: { className?: string }) {
   return (
@@ -52,14 +53,21 @@ function Switch({
 }
 
 export default function EditPage() {
-  const navigate = useNavigate();
-  const { showToast } = useToast(); // ✅ 추가
 
-  const [shelfName, setShelfName] = useState("입력되어있던 서재 명칭 텍스트");
+  const { shelfId } = useParams();
+
+  const location  = useLocation();
+  const originalShelfName = location.state?.shelfName ?? "";
+
+  const navigate = useNavigate();
+
+  const { showToast } = useToast();
+  const { mutate: deleteShelf } = useDeleteShelf();
+
+  const [shelfName, setShelfName] = useState<string>(originalShelfName);
   const [isPublic, setIsPublic] = useState(true);
 
   const [isExitConfirmOpen, setIsExitConfirmOpen] = useState(false);
-  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
   const isValid = useMemo(() => shelfName.trim().length > 0, [shelfName]);
 
@@ -69,26 +77,26 @@ export default function EditPage() {
 
   const handleConfirmExit = () => {
     setIsExitConfirmOpen(false);
-    navigate(-1);
+    navigate(`/my-library/${shelfId}`,{
+      state: { shelfName: originalShelfName},
+    });
   };
 
   const handleDelete = () => {
-    setIsDeleteConfirmOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    setIsDeleteConfirmOpen(false);
-    // TODO: API 연결 시 여기서 delete 요청
-    // deleteShelf(...)
-    navigate(-1);
+    deleteShelf(Number(shelfId), {
+      onSuccess: () => {
+        showToast("서재 편집이 완료되었어요.");
+        navigate("/my-library", { replace: true });
+      }
+    })
   };
 
   const handleApply = () => {
     // TODO: API 연결 시 여기서 update 요청
     // updateShelf({ name: shelfName.trim(), isPublic })
 
-    showToast("서재 편집이 완료되었어요."); // ✅ 토스트
-    navigate(-1); // ✅ 이전 화면
+    showToast("서재 편집이 완료되었어요.");
+    navigate(-1);
   };
 
   return (
@@ -105,7 +113,7 @@ export default function EditPage() {
                 value={shelfName}
                 onChange={(e) => setShelfName(e.target.value)}
                 placeholder="서재의 명칭을 작성해 주세요."
-                className="flex-1 bg-transparent text-subtitle-02-sb text-gray-900 placeholder:text-gray-900 outline-none"
+                className="flex-1 bg-transparent text-subtitle-02-m text-gray-900 placeholder:text-gray-300 outline-none"
               />
 
               {shelfName.length > 0 && (
@@ -172,15 +180,6 @@ export default function EditPage() {
         onClose={() => setIsExitConfirmOpen(false)}
       />
 
-      <ConfirmModal
-        isOpen={isDeleteConfirmOpen}
-        title="서재를 삭제할까요?"
-        description="삭제한 서재는 복구할 수 없어요."
-        confirmText="삭제"
-        cancelText="취소"
-        onConfirm={handleConfirmDelete}
-        onClose={() => setIsDeleteConfirmOpen(false)}
-      />
     </div>
   );
 }
