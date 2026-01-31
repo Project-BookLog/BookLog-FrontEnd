@@ -3,7 +3,6 @@ import type { RequestLoginDto } from "../types/auth";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
 import { usePostLogin } from "../hooks/mutations/usePostLogin";
-import { getMyInfo } from "../api/auth";
 
 interface AuthContextType {
     accessToken: string | null;
