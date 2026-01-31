@@ -3,6 +3,7 @@ import type { RequestLoginDto } from "../types/auth";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
 import { usePostLogin } from "../hooks/mutations/usePostLogin";
+import { getMyProfile } from "../api/myProfile";
 
 interface AuthContextType {
     accessToken: string | null;
@@ -76,7 +77,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
                 setAccessToken(newAccessToken);
                 setRefreshToken(newRefreshToken);
 
-                const myInfo = await getMyInfo();
+                const myInfo = await getMyProfile();
                 setUserId(myInfo?.userId);
                 setUserIdInStorage(myInfo?.userId);
                 setNickname(myInfo?.nickname);

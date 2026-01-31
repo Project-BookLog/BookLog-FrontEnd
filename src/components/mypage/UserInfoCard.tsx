@@ -8,6 +8,11 @@ type UserInfoCardProps = {
 
 function UserInfoCard({ user }: UserInfoCardProps) {
   const navigate = useNavigate();
+  
+  const handleEditProfile = () => {
+    navigate("/mypage/editprofile"); 
+  };
+  
 
   return (
     <div className="bg-bg">
@@ -70,7 +75,9 @@ function UserInfoCard({ user }: UserInfoCardProps) {
         {/* 버튼 */}
         <section>
           <div className="flex gap-2">
-            <button className="h-11 w-71 rounded-[12px] bg-gray-200 text-subtitle-02-sb text-gray-900">
+            <button 
+              onClick={handleEditProfile}
+              className="h-11 w-71 rounded-[12px] bg-gray-200 text-subtitle-02-sb text-gray-900">
               프로필 편집
             </button>
             <button className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-gray-200">
