@@ -1,12 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { BackIcon } from "../../../assets/icons";
 import { OnboardingIcon2 } from "../../../components/onboarding/OnboardingIcon2";
-import { useAuth } from "../../../context/AuthContext";
 import { useOnboarding } from "../../../context/OnboardingContext";
 
 export default function CompletePage() {
   const { answers, prevStep } = useOnboarding();
-  const { nickname } = useAuth();
   const navigate = useNavigate();
 
   console.log(answers);
@@ -22,7 +20,7 @@ export default function CompletePage() {
       <div className="flex flex-1 justify-center w-[286px] flex-col items-center gap-10">
         <OnboardingIcon2 />
         <div className="flex flex-col items-center gap-3 self-stretch">
-          <p className="self-stretch text-center text-title-01 text-[#000]">{nickname}님의 독서 취향이 저장되었어요</p>
+          <p className="self-stretch text-center text-title-01 text-[#000]">독서 취향이 저장되었어요</p>
           <p className="self-stretch text-center text-body-01-m text-[#949494]">취향을 반영하여 추천 서비스를 제공합니다.</p>
         </div>
       </div>
