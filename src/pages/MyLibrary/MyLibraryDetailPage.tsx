@@ -33,7 +33,9 @@ export function MyLibraryDetailPage() {
   const actions: LibraryAction[] = [
     {
       label: "서재 편집",
-      onClick: () => navigate("edit-library"),
+      onClick: () => navigate("edit-library", {
+          state: { shelfName },
+        }),
       visible: parsedShelfId !== undefined,
     },
     {
