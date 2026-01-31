@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import { ConfirmModal } from "../../components/common/ConfirmModal";
 import { useToast } from "../../context/ToastContext";
+import { usePostShelf } from "../../hooks/mutations/usePostShelf";
 
 function ClearIcon({ className = "" }: { className?: string }) {
   return (
@@ -54,6 +55,7 @@ function Switch({
 export default function AddLibraryPage() {
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { mutate: createShelf, isPending } = usePostShelf();
 
   const [shelfName, setShelfName] = useState("");
   const [isPublic, setIsPublic] = useState(true);
@@ -72,10 +74,19 @@ export default function AddLibraryPage() {
   };
 
   const handleComplete = () => {
-    // TODO: 실제 API 연결 시 여기서 createShelf({ name: shelfName.trim(), isPublic })
+    createShelf(
+      {
+        name: shelfName.trim(),
+        isPublic: isPublic,
+      },
+      {
+        onSuccess: () => {
+          showToast("서재가 추가되었어요.");
+          navigate("/my-library");
+        }
+      }
+    )
 
-    showToast("서재가 추가되었어요.");
-    navigate(-1);
   };
 
   return (
@@ -129,7 +140,7 @@ export default function AddLibraryPage() {
         <div className="fixed bottom-0 left-1/2 z-50 w-full max-w-[375px] -translate-x-1/2 bg-bg px-4 pb-6 pt-3">
           <button
             type="button"
-            disabled={!isValid}
+            disabled={!isValid || isPending}
             onClick={handleComplete}
             className={[
               "h-[53px] w-full rounded-[12px] text-subtitle-02-sb transition-colors",
