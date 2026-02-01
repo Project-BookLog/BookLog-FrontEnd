@@ -10,4 +10,3 @@ export const postRefreshToken = async (refreshToken: string): Promise<ResponseLo
     const { data } = await publicApi.post("/auth/refresh", { refreshToken });
     return data;
 }
-

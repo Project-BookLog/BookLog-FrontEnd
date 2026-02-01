@@ -21,7 +21,7 @@ export const FinishedBooksPage = ({ libraries }: { libraries: Library[] }) => {
     const finishedBooks = useMemo(() => {
         if(!library) return [];
 
-        return library.books.filter((book) => book.progress === 100);
+        return library.books.filter((book) => book.bookId === 100);
     }, [library]);
 
     const sortedBooks = useMemo(() => {

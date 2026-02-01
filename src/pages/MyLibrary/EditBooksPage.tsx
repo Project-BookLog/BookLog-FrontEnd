@@ -75,7 +75,6 @@ export const EditBooksPage = () => {
     }
 
     const handleCancel = () => {
-        setSelectedBooks([]);
         navigate(`/my-library/${shelfId}`, {
           state: { shelfName },
         })
@@ -100,7 +99,6 @@ export const EditBooksPage = () => {
     };
 
     const handleRemoveFromLibrary = () => {
-        console.log("삭제할 책 ID:", selectedBooks);
         deleteBooks(
             {
                 body: { ids: selectedBooks },
