@@ -17,6 +17,7 @@ export function MyLibraryDetailPage() {
 
   const location  = useLocation();
   const shelfName = location.state?.shelfName;
+  const isPublic = location.state?.isPublic;
   
   const navigate = useNavigate();
 
@@ -34,7 +35,7 @@ export function MyLibraryDetailPage() {
     {
       label: "서재 편집",
       onClick: () => navigate("edit-library", {
-          state: { shelfName },
+          state: { shelfName, isPublic },
         }),
       visible: parsedShelfId !== undefined,
     },
