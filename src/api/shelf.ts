@@ -10,3 +10,7 @@ export const postShelf = async (body: RequestPostShelfDto) => {
     const {data} = await privateApi.post("/shelves", body);
     return data;
 }
+
+export const deleteShelf = async (shelfId: number) => {
+    await privateApi.delete(`/shelves/${shelfId}`);
+}
