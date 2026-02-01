@@ -4,8 +4,10 @@ import { useNavigate } from "react-router-dom";
 import BookTag from "../../components/booklog/BookTag";
 import FilterBar from "../../components/booklog/FilterBar";
 import NavbarBottom from "../../components/common/navbar/NavBarBottom";
-import { Bookmark, Reset } from "../../assets/icons"; 
+import { Bookmark, Reset } from "../../assets/icons";
 import { useFilter } from "../../hooks/useFilter";
+
+import { getBooklogsFeed } from "../../api/booklogFeed";
 
 function TagPill({ children }: { children: React.ReactNode }) {
   return (
@@ -163,6 +165,7 @@ export default function BooklogPage() {
 
   const [posts, setPosts] = useState<Post[]>([]);
 
+  // ✅ mockPosts는 유지 (API 실패 시 fallback 용도로만 사용)
   const mockPosts = useMemo<Post[]>(
     () => [
       {
@@ -194,7 +197,92 @@ export default function BooklogPage() {
   );
 
   useEffect(() => {
-    setPosts(mockPosts);
+    let alive = true;
+
+    (async () => {
+      try {
+        const data: any = await getBooklogsFeed();
+
+        // ✅ 응답이 { items: [...] } 이든, [...] 이든 둘 다 대응
+        const list: any[] = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.items)
+          ? data.items
+          : [];
+
+        // ✅ 디버깅용 로그 (UI 영향 없음)
+        console.log("feed raw data:", data);
+        console.log("feed list length:", list.length);
+
+        const mapped: Post[] = list.map((it) => {
+          // user / book / content 필드명은 백마다 달라서 안전하게 여러 케이스 대응
+          const username =
+            it?.username ??
+            it?.userName ??
+            it?.user?.nickname ??
+            it?.user?.name ??
+            "User Name";
+
+          const body = it?.body ?? it?.content ?? it?.text ?? "";
+
+          const tagsRaw = it?.tags ?? it?.tagList ?? it?.moods ?? [];
+          const tags: string[] = Array.isArray(tagsRaw)
+            ? tagsRaw.map((t: any) => String(t))
+            : typeof tagsRaw === "string"
+            ? tagsRaw
+                .split(",")
+                .map((s) => s.trim())
+                .filter(Boolean)
+            : [];
+
+          const bookTitle =
+            it?.bookTitle ?? it?.book?.title ?? it?.book_name ?? "책 제목";
+
+          const bookAuthor =
+            it?.bookAuthor ?? it?.book?.author ?? it?.author ?? "저자명 저";
+
+          const views = Number(it?.views ?? it?.viewCount ?? 0) || 0;
+
+          const bookmarkCount =
+            Number(
+              it?.bookmarkCount ?? it?.scrapCount ?? it?.likeCount ?? 0
+            ) || 0;
+
+          const imageCount =
+            (Array.isArray(it?.imageUrls) && it.imageUrls.length) ||
+            (Array.isArray(it?.images) && it.images.length) ||
+            it?.imageCount ||
+            1;
+
+          const timeAgo =
+            it?.timeAgo ?? it?.createdAgo ?? it?.createdAt ?? "방금 전";
+
+          return {
+            id: String(
+              it?.id ?? it?.postId ?? it?.booklogId ?? crypto.randomUUID()
+            ),
+            username,
+            timeAgo,
+            views,
+            bookmarkCount,
+            body,
+            tags,
+            bookTitle,
+            bookAuthor,
+            imageCount,
+          };
+        });
+
+        if (alive) setPosts(mapped.length ? mapped : mockPosts);
+      } catch (e) {
+        console.error("북로그 피드 조회 실패:", e);
+        if (alive) setPosts(mockPosts);
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
   }, [mockPosts]);
 
   return (
