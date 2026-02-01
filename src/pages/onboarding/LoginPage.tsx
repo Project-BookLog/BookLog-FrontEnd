@@ -35,6 +35,10 @@ export const LoginPage = () => {
         }
     };
 
+    const handleKakaoLogin = () => {
+         window.location.href = import.meta.env.VITE_API_BASE_URL + "/auth/kakao/login"
+    }
+
     const isDisabled =
         Object.values(errors || {}).some(error => error.length > 0) ||
         Object.values(values).some(value => value === "")
@@ -92,6 +96,7 @@ export const LoginPage = () => {
                     <button
                         type="button"
                         className="flex w-[54px] h-[54px] py-4 justify-center items-center gap-2 rounded-[12px] bg-[#FFE812] cursor-pointer"
+                        onClick={handleKakaoLogin}
                     >
                         <KakaoTalk className="w-[26px] h-[26px] flex-shrink-0 aspect-square"/>
                     </button>
