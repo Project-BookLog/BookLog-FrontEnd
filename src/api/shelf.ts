@@ -14,3 +14,7 @@ export const postShelf = async (body: RequestPostShelfDto) => {
 export const deleteShelf = async (shelfId: number) => {
     await privateApi.delete(`/shelves/${shelfId}`);
 }
+
+export const patchShelf = async (shelfId: number, body: RequestPostShelfDto) => {
+    await privateApi.patch(`/shelves/${shelfId}`, body);
+}

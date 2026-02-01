@@ -1,10 +1,10 @@
-// src/pages/MyLibrary/EditPage.tsx
 import { useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import { ConfirmModal } from "../../components/common/ConfirmModal";
 import { useToast } from "../../context/ToastContext";
 import { useDeleteShelf } from "../../hooks/mutations/useDeleteShelf";
+import { usePatchShefl } from "../../hooks/mutations/usePatchShelf";
 
 function ClearIcon({ className = "" }: { className?: string }) {
   return (
@@ -58,14 +58,16 @@ export default function EditPage() {
 
   const location  = useLocation();
   const originalShelfName = location.state?.shelfName ?? "";
+  const originalIsPublic = location.state?.isPublic;
 
   const navigate = useNavigate();
 
   const { showToast } = useToast();
   const { mutate: deleteShelf } = useDeleteShelf();
+  const { mutate: patchShelf } = usePatchShefl();
 
   const [shelfName, setShelfName] = useState<string>(originalShelfName);
-  const [isPublic, setIsPublic] = useState(true);
+  const [isPublic, setIsPublic] = useState<boolean>(originalIsPublic);
 
   const [isExitConfirmOpen, setIsExitConfirmOpen] = useState(false);
 
@@ -78,7 +80,10 @@ export default function EditPage() {
   const handleConfirmExit = () => {
     setIsExitConfirmOpen(false);
     navigate(`/my-library/${shelfId}`,{
-      state: { shelfName: originalShelfName},
+      state: {
+        shelfName: originalShelfName,
+        isPublic: originalIsPublic,
+      },
     });
   };
 
@@ -92,11 +97,21 @@ export default function EditPage() {
   };
 
   const handleApply = () => {
-    // TODO: API 연결 시 여기서 update 요청
-    // updateShelf({ name: shelfName.trim(), isPublic })
-
-    showToast("서재 편집이 완료되었어요.");
-    navigate(-1);
+    patchShelf(
+      {
+        shelfId: Number(shelfId),
+        body: {
+          name: shelfName.trim(),
+          isPublic,
+        },
+      },
+      {
+        onSuccess: () => {
+          showToast("서재 편집이 완료되었어요.");
+          navigate("/my-library", { replace: true });
+        }
+      }
+    )
   };
 
   return (

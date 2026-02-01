@@ -22,7 +22,10 @@ export function MyLibraryPage () {
                             <button
                                 className="flex items-center gap-[2px]"
                                 onClick={() => navigate(`/my-library/${shelf.shelfId}`,{
-                                    state: { shelfName: shelf.name},
+                                    state: {
+                                        shelfName: shelf.name,
+                                        isPublic: shelf.isPublic,
+                                    },
                                 })}
                             >
                                 <p className="text-body-03 text-gray-500 cursor-pointer">전체보기</p>
