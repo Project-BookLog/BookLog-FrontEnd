@@ -18,9 +18,9 @@ export const KakaoLoginRedirectPage = () => {
     if (accessToken && refreshToken) {
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
-      navigate("/");
+      navigate("/", { replace: true });
     } else {
-      navigate("/login");
+      navigate("/login", { replace: true });
     }
   }, []);
 
