@@ -10,9 +10,25 @@ import { useFilter } from "../../hooks/useFilter";
 
 import { getBooklogsFeed } from "../../api/booklogFeed";
 
-/** =========================
+/* =============================
+ *  ✅ 안전한 ID 생성기 (crypto.randomUUID fallback)
+ * ============================= */
+function generateId(): string {
+  try {
+    if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+      return crypto.randomUUID();
+    }
+  } catch {
+    // ignore
+  }
+  return `${Date.now().toString(36)}-${Math.random()
+    .toString(36)
+    .slice(2, 10)}`;
+}
+
+/* =============================
  *  ✅ 최소 응답 타입 (any 제거)
- *  ========================= */
+ * ============================= */
 type ItemUser = {
   nickname?: string;
   name?: string;
@@ -130,7 +146,6 @@ function PostCard({ post }: { post: Post }) {
         if (e.key === "Enter") goDetail();
       }}
     >
-      {/* 상단 정보 */}
       <div className="flex items-start justify-between px-4">
         <div className="flex items-center gap-3">
           <div className="grid h-[35px] w-[35px] place-items-center rounded-full bg-[#CDCCCB] text-caption-02 text-[#4B4B4B]">
@@ -145,7 +160,6 @@ function PostCard({ post }: { post: Post }) {
           </div>
         </div>
 
-        {/* ✅ 북마크 */}
         <button
           type="button"
           onClick={(e) => {
@@ -170,7 +184,6 @@ function PostCard({ post }: { post: Post }) {
         </button>
       </div>
 
-      {/* 이미지 영역 */}
       <div className="mt-4">
         <div className="flex gap-3 overflow-x-auto px-4 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div className="pl-[45px]">
@@ -189,7 +202,6 @@ function PostCard({ post }: { post: Post }) {
         </div>
       </div>
 
-      {/* 본문 */}
       <div className="px-4 pl-[60px]">
         <p className="mt-3 line-clamp-2 text-caption-01 text-[#4D4D4C]">
           {post.body}
@@ -216,7 +228,6 @@ export default function BooklogPage() {
 
   const [posts, setPosts] = useState<Post[]>([]);
 
-  // ✅ mockPosts는 "응답 형식이 깨졌을 때만" fallback
   const mockPosts = useMemo<Post[]>(
     () => [
       {
@@ -252,23 +263,23 @@ export default function BooklogPage() {
 
     (async () => {
       try {
-        // ✅ getBooklogsFeed가 타입을 제공하지 않으면 여기서 캐스팅
         const data = (await getBooklogsFeed()) as FeedReturn;
 
-        // ✅ 응답 형식이 "유효한 피드"인지 판단
-        const isValidFeed = Array.isArray(data) || Array.isArray((data as FeedResponse)?.items);
+        const isValidFeed =
+          Array.isArray(data) || Array.isArray((data as FeedResponse)?.items);
 
-        // ✅ 응답이 { items: [...] } 이든, [...] 이든 둘 다 대응
         const list: Item[] = Array.isArray(data)
           ? data
           : Array.isArray((data as FeedResponse)?.items)
           ? (data as FeedResponse).items
           : [];
 
-        // ✅ 디버깅용 로그 (UI 영향 없음)
-        console.log("feed raw data:", data);
-        console.log("feed list length:", list.length);
-        console.log("isValidFeed:", isValidFeed);
+        // ✅ 개발 환경에서만 로그 출력
+        if (import.meta.env.DEV) {
+          console.log("feed raw data:", data);
+          console.log("feed list length:", list.length);
+          console.log("isValidFeed:", isValidFeed);
+        }
 
         const mapped: Post[] = list.map((it: Item) => {
           const username =
@@ -307,10 +318,11 @@ export default function BooklogPage() {
             it.imageCount ||
             1;
 
-          const timeAgo = it.timeAgo ?? it.createdAgo ?? it.createdAt ?? "방금 전";
+          const timeAgo =
+            it.timeAgo ?? it.createdAgo ?? it.createdAt ?? "방금 전";
 
           return {
-            id: String(it.id ?? it.postId ?? it.booklogId ?? crypto.randomUUID()),
+            id: String(it.id ?? it.postId ?? it.booklogId ?? generateId()),
             username,
             timeAgo,
             views,
@@ -323,8 +335,6 @@ export default function BooklogPage() {
           };
         });
 
-        // ✅ 핵심: 빈 배열이지만 유효한 응답이면 그대로 빈 배열 렌더링
-        // ✅ mockPosts는 응답 형식이 깨졌을 때만 fallback
         if (alive) setPosts(isValidFeed ? mapped : mockPosts);
       } catch (e) {
         console.error("북로그 피드 조회 실패:", e);
