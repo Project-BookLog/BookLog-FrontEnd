@@ -10,6 +10,56 @@ import { useFilter } from "../../hooks/useFilter";
 
 import { getBooklogsFeed } from "../../api/booklogFeed";
 
+/** =========================
+ *  ✅ 최소 응답 타입 (any 제거)
+ *  ========================= */
+type ItemUser = {
+  nickname?: string;
+  name?: string;
+};
+
+type Item = {
+  id?: string | number;
+  postId?: string | number;
+  booklogId?: string | number;
+
+  username?: string;
+  userName?: string;
+  user?: ItemUser;
+
+  body?: string;
+  content?: string;
+  text?: string;
+
+  tags?: unknown[] | string;
+  tagList?: unknown[] | string;
+  moods?: unknown[] | string;
+
+  bookTitle?: string;
+  bookAuthor?: string;
+  book?: { title?: string; author?: string };
+  book_name?: string;
+  author?: string;
+
+  views?: number | string;
+  viewCount?: number | string;
+
+  bookmarkCount?: number | string;
+  scrapCount?: number | string;
+  likeCount?: number | string;
+
+  imageUrls?: unknown[];
+  images?: unknown[];
+  imageCount?: number;
+
+  timeAgo?: string;
+  createdAgo?: string;
+  createdAt?: string;
+};
+
+type FeedResponse = { items: Item[] };
+type FeedReturn = Item[] | FeedResponse;
+
 function TagPill({ children }: { children: React.ReactNode }) {
   return (
     <span className="inline-flex items-center rounded bg-[#E9EBF4] px-2 py-1 text-caption-02 font-medium text-[#3049C0]">
@@ -166,7 +216,7 @@ export default function BooklogPage() {
 
   const [posts, setPosts] = useState<Post[]>([]);
 
-  // ✅ mockPosts는 유지 (응답 형식이 깨졌을 때만 fallback 용도)
+  // ✅ mockPosts는 "응답 형식이 깨졌을 때만" fallback
   const mockPosts = useMemo<Post[]>(
     () => [
       {
@@ -202,16 +252,17 @@ export default function BooklogPage() {
 
     (async () => {
       try {
-        const data: any = await getBooklogsFeed();
+        // ✅ getBooklogsFeed가 타입을 제공하지 않으면 여기서 캐스팅
+        const data = (await getBooklogsFeed()) as FeedReturn;
 
         // ✅ 응답 형식이 "유효한 피드"인지 판단
-        const isValidFeed = Array.isArray(data) || Array.isArray(data?.items);
+        const isValidFeed = Array.isArray(data) || Array.isArray((data as FeedResponse)?.items);
 
         // ✅ 응답이 { items: [...] } 이든, [...] 이든 둘 다 대응
-        const list: any[] = Array.isArray(data)
+        const list: Item[] = Array.isArray(data)
           ? data
-          : Array.isArray(data?.items)
-          ? data.items
+          : Array.isArray((data as FeedResponse)?.items)
+          ? (data as FeedResponse).items
           : [];
 
         // ✅ 디버깅용 로그 (UI 영향 없음)
@@ -219,20 +270,19 @@ export default function BooklogPage() {
         console.log("feed list length:", list.length);
         console.log("isValidFeed:", isValidFeed);
 
-        const mapped: Post[] = list.map((it) => {
-          // user / book / content 필드명은 백마다 달라서 안전하게 여러 케이스 대응
+        const mapped: Post[] = list.map((it: Item) => {
           const username =
-            it?.username ??
-            it?.userName ??
-            it?.user?.nickname ??
-            it?.user?.name ??
+            it.username ??
+            it.userName ??
+            it.user?.nickname ??
+            it.user?.name ??
             "User Name";
 
-          const body = it?.body ?? it?.content ?? it?.text ?? "";
+          const body = it.body ?? it.content ?? it.text ?? "";
 
-          const tagsRaw = it?.tags ?? it?.tagList ?? it?.moods ?? [];
+          const tagsRaw = it.tags ?? it.tagList ?? it.moods ?? [];
           const tags: string[] = Array.isArray(tagsRaw)
-            ? tagsRaw.map((t: any) => String(t))
+            ? tagsRaw.map((t) => String(t))
             : typeof tagsRaw === "string"
             ? tagsRaw
                 .split(",")
@@ -241,31 +291,26 @@ export default function BooklogPage() {
             : [];
 
           const bookTitle =
-            it?.bookTitle ?? it?.book?.title ?? it?.book_name ?? "책 제목";
+            it.bookTitle ?? it.book?.title ?? it.book_name ?? "책 제목";
 
           const bookAuthor =
-            it?.bookAuthor ?? it?.book?.author ?? it?.author ?? "저자명 저";
+            it.bookAuthor ?? it.book?.author ?? it.author ?? "저자명 저";
 
-          const views = Number(it?.views ?? it?.viewCount ?? 0) || 0;
+          const views = Number(it.views ?? it.viewCount ?? 0) || 0;
 
           const bookmarkCount =
-            Number(
-              it?.bookmarkCount ?? it?.scrapCount ?? it?.likeCount ?? 0
-            ) || 0;
+            Number(it.bookmarkCount ?? it.scrapCount ?? it.likeCount ?? 0) || 0;
 
           const imageCount =
-            (Array.isArray(it?.imageUrls) && it.imageUrls.length) ||
-            (Array.isArray(it?.images) && it.images.length) ||
-            it?.imageCount ||
+            (Array.isArray(it.imageUrls) && it.imageUrls.length) ||
+            (Array.isArray(it.images) && it.images.length) ||
+            it.imageCount ||
             1;
 
-          const timeAgo =
-            it?.timeAgo ?? it?.createdAgo ?? it?.createdAt ?? "방금 전";
+          const timeAgo = it.timeAgo ?? it.createdAgo ?? it.createdAt ?? "방금 전";
 
           return {
-            id: String(
-              it?.id ?? it?.postId ?? it?.booklogId ?? crypto.randomUUID()
-            ),
+            id: String(it.id ?? it.postId ?? it.booklogId ?? crypto.randomUUID()),
             username,
             timeAgo,
             views,
@@ -278,7 +323,7 @@ export default function BooklogPage() {
           };
         });
 
-        // ✅ 핵심: "빈 배열이지만 유효한 응답"이면 그대로 빈 배열 렌더링
+        // ✅ 핵심: 빈 배열이지만 유효한 응답이면 그대로 빈 배열 렌더링
         // ✅ mockPosts는 응답 형식이 깨졌을 때만 fallback
         if (alive) setPosts(isValidFeed ? mapped : mockPosts);
       } catch (e) {
