@@ -1,3 +1,4 @@
+// src/pages/booklog/BooklogPage.tsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -165,7 +166,7 @@ export default function BooklogPage() {
 
   const [posts, setPosts] = useState<Post[]>([]);
 
-  // ✅ mockPosts는 유지 (API 실패 시 fallback 용도로만 사용)
+  // ✅ mockPosts는 유지 (응답 형식이 깨졌을 때만 fallback 용도)
   const mockPosts = useMemo<Post[]>(
     () => [
       {
@@ -203,6 +204,9 @@ export default function BooklogPage() {
       try {
         const data: any = await getBooklogsFeed();
 
+        // ✅ 응답 형식이 "유효한 피드"인지 판단
+        const isValidFeed = Array.isArray(data) || Array.isArray(data?.items);
+
         // ✅ 응답이 { items: [...] } 이든, [...] 이든 둘 다 대응
         const list: any[] = Array.isArray(data)
           ? data
@@ -213,6 +217,7 @@ export default function BooklogPage() {
         // ✅ 디버깅용 로그 (UI 영향 없음)
         console.log("feed raw data:", data);
         console.log("feed list length:", list.length);
+        console.log("isValidFeed:", isValidFeed);
 
         const mapped: Post[] = list.map((it) => {
           // user / book / content 필드명은 백마다 달라서 안전하게 여러 케이스 대응
@@ -273,7 +278,9 @@ export default function BooklogPage() {
           };
         });
 
-        if (alive) setPosts(mapped.length ? mapped : mockPosts);
+        // ✅ 핵심: "빈 배열이지만 유효한 응답"이면 그대로 빈 배열 렌더링
+        // ✅ mockPosts는 응답 형식이 깨졌을 때만 fallback
+        if (alive) setPosts(isValidFeed ? mapped : mockPosts);
       } catch (e) {
         console.error("북로그 피드 조회 실패:", e);
         if (alive) setPosts(mockPosts);
