@@ -12,6 +12,7 @@ import BookResults from "../../components/home/search/BookResults";
 import AuthorResults from "../../components/home/search/AuthorResults";
 
 import { useSearch } from "../../context/SearchContext";
+import { saveSearchKeyword } from "../../api/search";
 import { LoadingPage } from "../onboarding/LoadingPage";
 import { ErrorPage } from "../onboarding/ErrorPage";
 
@@ -56,6 +57,9 @@ export default function SearchPage() {
     const keyword = inputKeyword.trim();
     if (!keyword) return;
 
+    saveSearchKeyword(keyword).catch((e) => {
+      console.warn("검색어 저장 실패", e);
+    });
 
     search.setKeyword(keyword);
     setSearchKeyword(keyword);
@@ -63,7 +67,7 @@ export default function SearchPage() {
     startTransition(() => {
       switch (activeTab) {
         case "전체":
-          search.searchBoth(keyword); // Pass the current keyword explicitly 
+          search.searchBoth(keyword);
           break;
         case "도서":
           search.searchBooks({ query: keyword });
@@ -89,7 +93,7 @@ export default function SearchPage() {
       else if (tab === "작가") params.set("tab", "author");
       else params.delete("tab");
 
-          // 탭 변경 시 해당 탭에 맞는 검색 실행
+    
     startTransition(() => {
       if (tab === "도서") {
         search.searchBooks({ query: searchKeyword });
