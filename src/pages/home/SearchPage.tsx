@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, useTransition} from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import NavBarTop from "../../components/common/navbar/NavBarTop";
@@ -12,7 +12,10 @@ import BookResults from "../../components/home/search/BookResults";
 import AuthorResults from "../../components/home/search/AuthorResults";
 
 import { useSearch } from "../../context/SearchContext";
-import { saveSearchKeyword, getRecentSearchKeywords } from "../../api/search";
+import {
+  saveSearchKeyword,
+  getRecentSearchKeywords,
+} from "../../api/search";
 import type { RecentSearchKeyword } from "../../types/search.types";
 import { LoadingPage } from "../onboarding/LoadingPage";
 import { ErrorPage } from "../onboarding/ErrorPage";
@@ -22,126 +25,155 @@ type TabType = (typeof TABS)[number];
 
 export default function SearchPage() {
   const navigate = useNavigate();
-  const isInitRef = useRef(false);
   const search = useSearch();
   const [searchParams] = useSearchParams();
-  const [recentKeywords, setRecentKeywords] = useState<RecentSearchKeyword[]>([]);
-  const [searchKeyword, setSearchKeyword] = useState("");
+  const isInitRef = useRef(false);
+
+  const [recentKeywords, setRecentKeywords] = useState<
+    RecentSearchKeyword[]
+  >([]);
+
+  const searchKeyword = search.keyword;
   const hasSearched = Boolean(searchKeyword);
+
   const [isPending, startTransition] = useTransition();
 
   const q = searchParams.get("q") ?? "";
   const tabParam = searchParams.get("tab");
-  const inputKeyword = search.keyword;
-  const activeTab: TabType = tabParam === "book" ? "도서" : tabParam === "author" ? "작가" : "전체";
-  
+
+  const activeTab: TabType =
+    tabParam === "book"
+      ? "도서"
+      : tabParam === "author"
+      ? "작가"
+      : "전체";
+
 
   useEffect(() => {
     if (isInitRef.current) return;
     if (!q) return;
 
-    search.setKeyword(q);
-    setSearchKeyword(q);
+    startTransition(() => {
+      search.setKeyword(q);
+      search.searchBoth(q);
+    });
 
     isInitRef.current = true;
   }, [q, search]);
 
 
-  const fetchRecentKeywords = useCallback(async () => {
-    try {
-      const data = await getRecentSearchKeywords();
-      setRecentKeywords(data.keywords);
-    } catch (e) {
-      console.warn("최근 검색어 조회 실패", e);
-    } 
-  }, []);
 
   useEffect(() => {
-    fetchRecentKeywords();
-  }, [fetchRecentKeywords]);
+    (async () => {
+      try {
+        const data = await getRecentSearchKeywords();
+        setRecentKeywords(data.keywords);
+      } catch (e) {
+        console.warn("최근 검색어 조회 실패", e);
+      }
+    })();
+  }, []);
 
 
   const handleSearch = useCallback(() => {
-    const keyword = inputKeyword.trim();
+    const keyword = search.keyword.trim();
     if (!keyword) return;
 
-    saveSearchKeyword(keyword).catch((e) => {
-      console.warn("검색어 저장 실패", e);
-    });
+    saveSearchKeyword(keyword).catch(() => {});
 
+    search.clearBooks();
+    search.clearAuthors();
     search.setKeyword(keyword);
-    setSearchKeyword(keyword);
 
     startTransition(() => {
-      switch (activeTab) {
-        case "전체":
-          search.searchBoth(keyword);
-          break;
-        case "도서":
-          search.searchBooks({ query: keyword });
-          break;
-        case "작가":
-          search.searchAuthors({ query: keyword });
-          break;
+      if (activeTab === "도서") {
+        search.searchBooks({ query: keyword });
+      } else if (activeTab === "작가") {
+        search.searchAuthors({ query: keyword });
+      } else {
+        search.searchBoth(keyword);
       }
     });
 
     const params = new URLSearchParams(searchParams);
     params.set("q", keyword);
     navigate(`/search?${params.toString()}`, { replace: true });
-  }, [inputKeyword, activeTab, search, navigate, searchParams]);
+  }, [search, activeTab, navigate, searchParams]);
 
 
+  
   const handleChangeTab = useCallback(
     (tab: TabType) => {
       if (!searchKeyword) return;
+
+      search.clearBooks();
+      search.clearAuthors();
 
       const params = new URLSearchParams(searchParams);
       if (tab === "도서") params.set("tab", "book");
       else if (tab === "작가") params.set("tab", "author");
       else params.delete("tab");
 
-    
-    startTransition(() => {
-      if (tab === "도서") {
-        search.searchBooks({ query: searchKeyword });
-      } else if (tab === "작가") {
-        search.searchAuthors({ query: searchKeyword });
-      } else {
-        search.searchBoth(searchKeyword);
-      }
-    });
+      startTransition(() => {
+        if (tab === "도서") {
+          search.searchBooks({ query: searchKeyword });
+        } else if (tab === "작가") {
+          search.searchAuthors({ query: searchKeyword });
+        } else {
+          search.searchBoth(searchKeyword);
+        }
+      });
 
       navigate(`/search?${params.toString()}`, { replace: true });
     },
-    [searchKeyword, searchParams, navigate, search]
+    [searchKeyword, search, navigate, searchParams]
   );
 
 
-  const showLoadingRef = useRef(false);
-  const [, forceRender] = useState(0);
+  
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (!isPending) {
-      showLoadingRef.current = false;
-      forceRender((v) => v + 1);
-      return;
+  const onLoadMore = useCallback(() => {
+    if (activeTab === "도서") {
+      if (search.bookLoading || search.bookIsEnd) return;
+      search.searchBooks({
+        query: searchKeyword,
+        loadMore: true,
+      });
     }
 
-    const timer = setTimeout(() => {
-      showLoadingRef.current = true;
-      forceRender((v) => v + 1);
-    }, 300);
+    if (activeTab === "작가") {
+      if (search.authorLoading || search.authorIsEnd) return;
+      search.searchAuthors({
+        query: searchKeyword,
+        loadMore: true,
+      });
+    }
+  }, [activeTab, search, searchKeyword]);
 
-    return () => clearTimeout(timer);
-  }, [isPending]);
+  useEffect(() => {
+    if (!loadMoreRef.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          onLoadMore();
+        }
+      },
+      { threshold: 1 }
+    );
+
+    observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [onLoadMore]);
 
 
-  const error = search.bothError || search.bookError || search.authorError;
+  const error =
+    search.bothError || search.bookError || search.authorError;
 
-  // eslint-disable-next-line react-hooks/refs
-  if (showLoadingRef.current) return <LoadingPage />;
+  if (isPending) return <LoadingPage />;
   if (error) return <ErrorPage />;
+
 
   return (
     <div className="min-h-screen bg-bg">
@@ -150,7 +182,7 @@ export default function SearchPage() {
         onBack={() => navigate("/")}
         centerSlot={
           <NavBarSearchInput
-            value={inputKeyword}
+            value={search.keyword}
             onChange={search.setKeyword}
             onSearch={handleSearch}
             placeholder="도서 검색하기"
@@ -160,7 +192,12 @@ export default function SearchPage() {
 
       {hasSearched && (
         <div className="mt-2 px-4">
-          <Tab tabs={TABS} active={activeTab} onChange={handleChangeTab} align="start" />
+          <Tab
+            tabs={TABS}
+            active={activeTab}
+            onChange={handleChangeTab}
+            align="start"
+          />
         </div>
       )}
 
@@ -172,7 +209,6 @@ export default function SearchPage() {
                 items={recentKeywords.map((k) => k.keyword)}
                 onClickItem={(keyword) => {
                   search.setKeyword(keyword);
-                  setSearchKeyword(keyword);
 
                   startTransition(() => {
                     search.searchBoth(keyword);
@@ -180,10 +216,13 @@ export default function SearchPage() {
 
                   const params = new URLSearchParams(searchParams);
                   params.set("q", keyword);
-                  navigate(`/search?${params.toString()}`, { replace: true });
+                  navigate(`/search?${params.toString()}`, {
+                    replace: true,
+                  });
                 }}
               />
             </section>
+
             <section className="px-5">
               <RecommendedSearches items={["검색어1", "검색어2"]} />
             </section>
@@ -203,11 +242,23 @@ export default function SearchPage() {
             )}
 
             {activeTab === "도서" && (
-              <BookResults total={search.bookTotal} items={search.bookItems} />
+              <>
+                <BookResults
+                  total={search.bookTotal}
+                  items={search.bookItems}
+                />
+                <div ref={loadMoreRef} />
+              </>
             )}
 
             {activeTab === "작가" && (
-              <AuthorResults total={search.authorTotal} items={search.authorItems} />
+              <>
+                <AuthorResults
+                  total={search.authorTotal}
+                  items={search.authorItems}
+                />
+                <div ref={loadMoreRef} />
+              </>
             )}
           </>
         )}

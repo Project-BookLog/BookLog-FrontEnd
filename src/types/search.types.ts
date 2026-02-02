@@ -15,13 +15,16 @@ export interface BookSearchParams {
   page?: number;
   size?: number;
   sort?: string;
+  loadMore?: boolean;
 }
 
 export interface AuthorSearchParams {
   query: string;
   page?: number;
   size?: number;
+  loadMore?: boolean; 
 }
+
 export interface SearchBothParams {
   book?: {
     page?: number;
@@ -35,7 +38,6 @@ export interface SearchBothParams {
 }
 
 export interface SearchContextType {
-  // 책 상태
   bookPage: number;
   bookSize: number;
   bookIsEnd: boolean;
@@ -44,7 +46,6 @@ export interface SearchContextType {
   bookLoading: boolean;
   bookError: string | null;
   
-  // 작가 상태
   authorPage: number;
   authorSize: number;
   authorIsEnd: boolean;
@@ -53,7 +54,6 @@ export interface SearchContextType {
   authorLoading: boolean;
   authorError: string | null;
   
-  // 통합 상태
   keyword: string;
   bothLoading: boolean;
   bothError: string | null;
