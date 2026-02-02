@@ -1,6 +1,6 @@
 import type { AuthorSearchResponse, BookSearchResponse } from "../types/book.types";
 import { privateApi } from "./axiosConfig";
-import type { AuthorSearchParams, BookSearchParams, SearchBothParams } from "../types/search.types";
+import type { AuthorSearchParams, BookSearchParams, SearchBothParams, RecentSearchResponse } from "../types/search.types";
 
 export const saveSearchKeyword = async (keyword: string): Promise<void> => {
   if (!keyword.trim()) return;
@@ -9,6 +9,15 @@ export const saveSearchKeyword = async (keyword: string): Promise<void> => {
     keyword,
   });
 };
+
+export const getRecentSearchKeywords =
+  async (): Promise<RecentSearchResponse> => {
+    const { data } = await privateApi.get<RecentSearchResponse>(
+      "/search/recent"
+    );
+    return data;
+  };
+
 
 export const searchAuthors = async (params: AuthorSearchParams): Promise<AuthorSearchResponse> => {
   const { data } = await privateApi.get<AuthorSearchResponse>("/search/authors", {
