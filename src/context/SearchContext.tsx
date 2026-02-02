@@ -42,6 +42,7 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
 
   const handleSearchBooks = useCallback(
     async (params: BookSearchParams & { loadMore?: boolean }) => {
+      if (bookLoading) return;
       const query = params.query.trim();
       if (!query) return;
       if (params.loadMore && bookIsEnd) return;
@@ -51,9 +52,11 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
 
       try {
         const nextPage = params.loadMore ? bookPage + 1 : 1;
-
+        
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { loadMore, ...rest } = params;
         const data = await searchBooks({
-          ...params,
+          ...rest,
           page: nextPage,
           size: bookSize,
         });
@@ -72,12 +75,13 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
         setBookLoading(false);
       }
     },
-    [bookPage, bookIsEnd, bookSize]
+    [bookPage, bookIsEnd, bookSize, bookLoading]
   );
 
 
   const handleSearchAuthors = useCallback(
     async (params: AuthorSearchParams & { loadMore?: boolean }) => {
+      if (authorLoading) return;
       const query = params.query.trim();
       if (!query) return;
       if (params.loadMore && authorIsEnd) return;
@@ -88,8 +92,10 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
       try {
         const nextPage = params.loadMore ? authorPage + 1 : 1;
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { loadMore, ...rest } = params;
         const data = await searchAuthors({
-          ...params,
+          ...rest,
           page: nextPage,
           size: authorSize,
         });
@@ -108,7 +114,7 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
         setAuthorLoading(false);
       }
     },
-    [authorPage, authorIsEnd, authorSize]
+    [authorPage, authorIsEnd, authorSize, authorLoading]
   );
 
 
