@@ -40,43 +40,82 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
   const [bothLoading, setBothLoading] = useState(false);
   const [bothError, setBothError] = useState<string | null>(null);
 
-  const handleSearchBooks = useCallback(async (params: BookSearchParams) => {
-    if (!params.query.trim()) return;
-    setBookLoading(true);
-    setBookError(null);
-    try {
-      const data = await searchBooks(params);
-      setBookPage(data.page);
-      setBookSize(data.size);
-      setBookIsEnd(data.isEnd);
-      setBookTotal(data.totalCount);
-      setBookItems(data.items);
-    } catch (e) {
-      console.error("/search/books error:", e);
-      setBookError("도서 검색 실패");
-    } finally {
-      setBookLoading(false);
-    }
-  }, []);
+  const handleSearchBooks = useCallback(
+    async (params: BookSearchParams & { loadMore?: boolean }) => {
+      if (bookLoading) return;
+      const query = params.query.trim();
+      if (!query) return;
+      if (params.loadMore && bookIsEnd) return;
 
-  const handleSearchAuthors = useCallback(async (params: AuthorSearchParams) => {
-    if (!params.query.trim()) return;
-    setAuthorLoading(true);
-    setAuthorError(null);
-    try {
-      const data = await searchAuthors(params);
-      setAuthorPage(data.page);
-      setAuthorSize(data.size);
-      setAuthorIsEnd(data.isEnd);
-      setAuthorTotal(data.totalCount);
-      setAuthorItems(data.items);
-    } catch (e) {
-      console.error("/search/authors error:", e);
-      setAuthorError("작가 검색 실패");
-    } finally {
-      setAuthorLoading(false);
-    }
-  }, []);
+      setBookLoading(true);
+      setBookError(null);
+
+      try {
+        const nextPage = params.loadMore ? bookPage + 1 : 1;
+        
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { loadMore, ...rest } = params;
+        const data = await searchBooks({
+          ...rest,
+          page: nextPage,
+          size: bookSize,
+        });
+
+        setBookPage(data.page);
+        setBookIsEnd(data.isEnd);
+        setBookTotal(data.totalCount);
+
+        setBookItems(prev =>
+          params.loadMore ? [...prev, ...data.items] : data.items
+        );
+      } catch (e) {
+        console.error("/search/books error:", e);
+        setBookError("도서 검색 실패");
+      } finally {
+        setBookLoading(false);
+      }
+    },
+    [bookPage, bookIsEnd, bookSize, bookLoading]
+  );
+
+
+  const handleSearchAuthors = useCallback(
+    async (params: AuthorSearchParams & { loadMore?: boolean }) => {
+      if (authorLoading) return;
+      const query = params.query.trim();
+      if (!query) return;
+      if (params.loadMore && authorIsEnd) return;
+
+      setAuthorLoading(true);
+      setAuthorError(null);
+
+      try {
+        const nextPage = params.loadMore ? authorPage + 1 : 1;
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { loadMore, ...rest } = params;
+        const data = await searchAuthors({
+          ...rest,
+          page: nextPage,
+          size: authorSize,
+        });
+
+        setAuthorPage(data.page);
+        setAuthorIsEnd(data.isEnd);
+        setAuthorTotal(data.totalCount);
+
+        setAuthorItems(prev =>
+          params.loadMore ? [...prev, ...data.items] : data.items
+        );
+      } catch (e) {
+        console.error("/search/authors error:", e);
+        setAuthorError("작가 검색 실패");
+      } finally {
+        setAuthorLoading(false);
+      }
+    },
+    [authorPage, authorIsEnd, authorSize, authorLoading]
+  );
 
 
   const handleSearchBoth = useCallback(async (keyword: string, params?: SearchBothParams) => {
