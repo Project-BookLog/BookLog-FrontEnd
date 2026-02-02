@@ -9,6 +9,24 @@ export interface Book {
   publishedDate?: string;
 }
 
+export type UserBookDetail = {
+  userBookId: number;
+  status: BookStatus;
+  progressPercent: number;
+  currentPage: number | null;
+  startDate: string | null;
+  endDate: string | null;
+  format: BookFormat | null;
+  pageCountSnapshot: number | null;
+  bookId: number;
+  title: string;
+  contents: string;
+  thumbnailUrl: string;
+  publisherName: string;
+  publishedAt: string;
+  kakaoUrl: string;
+}
+
 export interface Author {
   authorId: number;
   name: string;
@@ -18,6 +36,7 @@ export interface Author {
   biography?: string | null;
   books?: AuthorBook[]; 
 }
+
 export interface AuthorBook { 
   bookId: number;
   title: string;
@@ -25,8 +44,6 @@ export interface AuthorBook {
   authors: string; 
   publisherName: string;
 }
-
-
 
 export interface BookSearchResponse {
   page: number;
@@ -45,5 +62,6 @@ export interface AuthorSearchResponse {
   items: Author[];
 }
 
-
 export type BookStatus = "TO_READ" | "READING" | "COMPLETED" | "STOPPED";
+
+export type BookFormat = "PAPER" | "EBOOK" | "AUDIO"

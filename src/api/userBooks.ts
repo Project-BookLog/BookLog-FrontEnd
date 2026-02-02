@@ -1,5 +1,5 @@
 import { BOOK_ORDER } from "../enum/book"
-import type { BookStatus } from "../types/book.types";
+import type { BookStatus, UserBookDetail } from "../types/book.types";
 import type { RequestDeleteUserBooksDto, ResponseUserBooksDto } from "../types/library"
 import { privateApi } from "./axiosConfig"
 
@@ -18,4 +18,9 @@ export const deleteBookList = async ( body: RequestDeleteUserBooksDto, shelfId?:
         },
         data: body,
     });
+}
+
+export const getBookDetail = async (userBookId: number): Promise<UserBookDetail> => {
+    const { data } = await privateApi.get(`/user-books/${userBookId}`);
+    return data;
 }

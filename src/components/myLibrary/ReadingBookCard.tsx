@@ -2,11 +2,15 @@ import type { UserBook } from "../../types/library";
 
 type BookCardProps = {
     book: UserBook;
+    onClick?: (book: UserBook) => void;
 }
 
-export const ReadingBookCard = ({book}: BookCardProps) => {
+export const ReadingBookCard = ({book, onClick}: BookCardProps) => {
     return (
-        <div className="flex w-[104px] flex-col items-start gap-2 shrink-0">
+        <div
+            className="flex w-[104px] flex-col items-start gap-2 shrink-0"
+            onClick={() => onClick?.(book)}
+        >
             {book.thumbnailUrl ? (
                 <img
                     src={book.thumbnailUrl}
