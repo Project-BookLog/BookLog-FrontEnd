@@ -5,13 +5,14 @@ import { LoadingPage } from "../onboarding/LoadingPage";
 import { ErrorPage } from "../onboarding/ErrorPage";
 import EditPhotoModal from "../../components/mypage/EditPhotoModal";
 import { XIcon, Pencil } from "../../assets/icons";
-import { getMyProfile, updateMyProfile } from "../../api/myProfile";
+import { getMyProfile, updateMyProfile, updateMyProfileAvatar } from "../../api/myProfile";
 import type { UpdateProfileDto } from "../../types/user.types";
 
 function EditProfile() {
   const navigate = useNavigate();
   const [nickname, setNickname] = useState("");
-  const [profileImage, setProfileImage] = useState<string | undefined>();
+  const [profileImage, setProfileImage] = useState<string | undefined>(undefined); //미리보기,서버url
+  const [profileImageFile, setProfileImageFile] = useState<File | null>(null); //실제업로드할파일
   const [shelfPublic, setShelfPublic] = useState(false);
   const [logPublic, setLogPublic] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
@@ -27,7 +28,7 @@ function EditProfile() {
         // console.log(" 불러온 프로필 데이터:", data);
 
         setNickname(data.nickname);
-        setProfileImage(data.profileImageUrl || undefined);
+        setProfileImage(data.profileImageUrl);
         setShelfPublic(data.isShelfPublic);
         setLogPublic(data.isBooklogPublic);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -47,15 +48,19 @@ function EditProfile() {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (profileImage?.startsWith('blob:')) {
-        URL.revokeObjectURL(profileImage);
-      }
-      const url = URL.createObjectURL(file);
-      setProfileImage(url);
+    if (!file) return;
+
+    if (profileImage?.startsWith("blob:")) {
+      URL.revokeObjectURL(profileImage);
     }
+
+    const previewUrl = URL.createObjectURL(file);
+
+    setProfileImage(previewUrl);   
+    setProfileImageFile(file);     
     setIsImageModalOpen(false);
   };
+
 
   const clearNickname = () => {
     setNickname("");
@@ -64,31 +69,34 @@ function EditProfile() {
 
   const handleSaveProfile = async () => {
     if (isSaving) return;
-    
+
     setIsSaving(true);
     try {
+      if (profileImageFile) {
+        const avatarRes = await updateMyProfileAvatar(profileImageFile);
+        setProfileImage(avatarRes.profileImageUrl);
+        setProfileImageFile(null);
+      }
+
       const updateData: UpdateProfileDto = {
         nickname,
         isShelfPublic: shelfPublic,
         isBooklogPublic: logPublic,
       };
 
-      // console.log("저장할 데이터:", updateData);
-
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const updatedData = await updateMyProfile(updateData);
-      // console.log("업데이트 완료:", updatedData);
+      await updateMyProfile(updateData);
 
       alert("프로필이 저장되었습니다!");
       navigate(-1);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      // console.error(" 저장 실패:", error);
       alert("저장 중 오류가 발생했습니다.");
     } finally {
       setIsSaving(false);
     }
   };
+
+
 
   if (isLoading) return <LoadingPage />;
   if (loadError) return <ErrorPage />
