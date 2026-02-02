@@ -12,6 +12,8 @@ import BookResults from "../../components/home/search/BookResults";
 import AuthorResults from "../../components/home/search/AuthorResults";
 
 import { useSearch } from "../../context/SearchContext";
+import { saveSearchKeyword, getRecentSearchKeywords } from "../../api/search";
+import type { RecentSearchKeyword } from "../../types/search.types";
 import { LoadingPage } from "../onboarding/LoadingPage";
 import { ErrorPage } from "../onboarding/ErrorPage";
 
@@ -20,26 +22,19 @@ type TabType = (typeof TABS)[number];
 
 export default function SearchPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const isInitRef = useRef(false);
   const search = useSearch();
-
-  const q = searchParams.get("q") ?? "";
-  const tabParam = searchParams.get("tab");
-
-  const activeTab: TabType =
-    tabParam === "book" ? "도서" : tabParam === "author" ? "작가" : "전체";
-
-
-  const inputKeyword = search.keyword;
-
-
+  const [searchParams] = useSearchParams();
+  const [recentKeywords, setRecentKeywords] = useState<RecentSearchKeyword[]>([]);
   const [searchKeyword, setSearchKeyword] = useState("");
-
   const hasSearched = Boolean(searchKeyword);
   const [isPending, startTransition] = useTransition();
 
-
-  const isInitRef = useRef(false);
+  const q = searchParams.get("q") ?? "";
+  const tabParam = searchParams.get("tab");
+  const inputKeyword = search.keyword;
+  const activeTab: TabType = tabParam === "book" ? "도서" : tabParam === "author" ? "작가" : "전체";
+  
 
   useEffect(() => {
     if (isInitRef.current) return;
@@ -52,10 +47,27 @@ export default function SearchPage() {
   }, [q, search]);
 
 
+  const fetchRecentKeywords = useCallback(async () => {
+    try {
+      const data = await getRecentSearchKeywords();
+      setRecentKeywords(data.keywords);
+    } catch (e) {
+      console.warn("최근 검색어 조회 실패", e);
+    } 
+  }, []);
+
+  useEffect(() => {
+    fetchRecentKeywords();
+  }, [fetchRecentKeywords]);
+
+
   const handleSearch = useCallback(() => {
     const keyword = inputKeyword.trim();
     if (!keyword) return;
 
+    saveSearchKeyword(keyword).catch((e) => {
+      console.warn("검색어 저장 실패", e);
+    });
 
     search.setKeyword(keyword);
     setSearchKeyword(keyword);
@@ -63,7 +75,7 @@ export default function SearchPage() {
     startTransition(() => {
       switch (activeTab) {
         case "전체":
-          search.searchBoth(keyword); // Pass the current keyword explicitly 
+          search.searchBoth(keyword);
           break;
         case "도서":
           search.searchBooks({ query: keyword });
@@ -89,7 +101,7 @@ export default function SearchPage() {
       else if (tab === "작가") params.set("tab", "author");
       else params.delete("tab");
 
-          // 탭 변경 시 해당 탭에 맞는 검색 실행
+    
     startTransition(() => {
       if (tab === "도서") {
         search.searchBooks({ query: searchKeyword });
@@ -156,7 +168,21 @@ export default function SearchPage() {
         {!hasSearched ? (
           <>
             <section className="mb-12 px-5">
-              <RecentSearches items={["궤도", "소년이 온다", "한강"]} />
+              <RecentSearches
+                items={recentKeywords.map((k) => k.keyword)}
+                onClickItem={(keyword) => {
+                  search.setKeyword(keyword);
+                  setSearchKeyword(keyword);
+
+                  startTransition(() => {
+                    search.searchBoth(keyword);
+                  });
+
+                  const params = new URLSearchParams(searchParams);
+                  params.set("q", keyword);
+                  navigate(`/search?${params.toString()}`, { replace: true });
+                }}
+              />
             </section>
             <section className="px-5">
               <RecommendedSearches items={["검색어1", "검색어2"]} />

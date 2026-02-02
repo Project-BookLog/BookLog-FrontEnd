@@ -1,5 +1,14 @@
 import type { Author, Book } from "./book.types";
 
+export interface RecentSearchKeyword {
+  id: number;
+  keyword: string;
+  searchedAt: string;
+}
+
+export interface RecentSearchResponse {
+  keywords: RecentSearchKeyword[];
+}
 
 export interface BookSearchParams {
   query: string;
