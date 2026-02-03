@@ -1,13 +1,16 @@
 import { useOnboarding } from "../../../context/OnboardingContext";
 import { ONBOARDING_QUESTION } from "../../../data/onboardingTestQuestion";
 import { BackIcon } from "../../../assets/icons";
+import type { RequestOnboardingAnswers } from "../../../types/onboarding";
 
 export default function Step_2_Page() {
   const { answers, toggleAnswer, nextStep, prevStep, skipStep } = useOnboarding();
   const stepData = ONBOARDING_QUESTION[2];
-  const selected = answers[2] || [];
 
-  const canNext = selected.length >= stepData.step_max;
+  const canNext = stepData.questions.every((question) => {
+    const keys = question.key as readonly (keyof RequestOnboardingAnswers)[];
+    return keys.some((k) => answers[k] != null);
+  });
 
   return (
     <div className="min-h-screen bg-bg flex flex-col items-center">
@@ -19,7 +22,13 @@ export default function Step_2_Page() {
         />
         <button
           className="text-subtitle-02-sb text-gray-600"
-          onClick={skipStep}
+          onClick={() =>
+            skipStep(
+              stepData.questions.flatMap(
+                (q) => q.key as readonly (keyof RequestOnboardingAnswers)[]
+              )
+            )
+          }
         >
           건너뛰기
         </button>
@@ -40,25 +49,31 @@ export default function Step_2_Page() {
 
       <div className="flex flex-col flex-1 items-start w-[335px] gap-7 mt-[36px]">
         {stepData.questions.map((question) => {
-          const selectedCountInQuestion = question.options.filter((opt) =>
-            selected.includes(opt.label)
-          ).length;
+          const keys = question.key as readonly (keyof RequestOnboardingAnswers)[];
+
+          const selectedValues = keys
+            .map((k) => answers[k])
+            .filter(
+              (v): v is NonNullable<RequestOnboardingAnswers[keyof RequestOnboardingAnswers]> =>
+                v != null
+          );
+
+          const selectedCountInQuestion = selectedValues.length;
 
           return (
             <div
               key={question.id}
               className="flex flex-col items-start gap-[10px] self-stretch"
             >
-              <p className="self-stretch text-gray-700 text-body-01-m">{question.key}</p>
+              <p className="self-stretch text-gray-700 text-body-01-m">{question.label}</p>
               <div className="flex justify-between items-center self-stretch">
                 {question.options.map((opt) => {
-                  const isSelected = selected.includes(opt.label);
-                  const isDisabled = !isSelected && selectedCountInQuestion >= question.question_max!;
-
+                  const isSelected = selectedValues.includes(opt.value);
+                  const isDisabled = !isSelected && question.question_max != null && selectedValues.length >= question.question_max;
                   return (
                     <button
                       key={opt.label}
-                      onClick={() => toggleAnswer(stepData.step, opt.label, stepData.step_max)}
+                      onClick={() => toggleAnswer( question.key as readonly (keyof RequestOnboardingAnswers)[], opt.value, question.question_max )}
                       disabled={isDisabled}
                       className={`flex w-[164px] px-5 py-[14px] flex-col justify-center items-start gap-[4px] rounded-[12px] bg-gray-100 ${ isSelected ? "bg-lightblue-1" : "bg-gray-100" } cursor-pointer`}
                     >

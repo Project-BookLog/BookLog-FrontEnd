@@ -8,12 +8,12 @@ import { KakaoTalk, LogoBooklog, SymbolLogo } from "../../assets/icons";
 export const LoginPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location.state?.from || "/";
+    const from = location.state?.from || "/onboarding";
     const { login, accessToken } = useAuth();
 
     useEffect(() => {
         if(accessToken) {
-            navigate("/");
+            navigate("/onboarding");
         }
     }, [navigate, accessToken]);
 

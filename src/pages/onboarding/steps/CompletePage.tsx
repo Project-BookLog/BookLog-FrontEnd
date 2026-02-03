@@ -2,12 +2,64 @@ import { useNavigate } from "react-router-dom";
 import { BackIcon } from "../../../assets/icons";
 import { OnboardingIcon2 } from "../../../components/onboarding/OnboardingIcon2";
 import { useOnboarding } from "../../../context/OnboardingContext";
+import type { RequestOnboardingAnswers } from "../../../types/onboarding";
+import { usePatchOnboardingAnswers } from "../../../hooks/mutations/usePatchOnboardingAnswers";
+import { useEffect, useRef } from "react";
+import { usePatchOnboardingComplete } from "../../../hooks/mutations/usePatchOnboardingComplete";
+
+const DEFAULT_ONBOARDING_PROFILE: RequestOnboardingAnswers = {
+  readerType: "BEGINNER_READER",
+  preferredMood1: "CALM",
+  preferredMood2: "WARM",
+  sentenceBreath: "CONCISE",
+  expressionTexture: "PLAIN",
+  expressionDirection: "DIRECT",
+  readingMoment: "ROUTINE_TRANSITION",
+};
 
 export default function CompletePage() {
   const { answers, prevStep } = useOnboarding();
+  const { mutate: patchOnboardingAnswers } = usePatchOnboardingAnswers();
+  const { mutate: patchOnboardingComplete } = usePatchOnboardingComplete();
+
+  const hasPatchedRef = useRef(false);
   const navigate = useNavigate();
 
-  console.log(answers);
+  const { preferredMood1, preferredMood2 } = {
+    ...DEFAULT_ONBOARDING_PROFILE,
+    ...Object.fromEntries(
+      Object.entries(answers).filter(([, v]) => v !== undefined)
+    ),
+  };
+
+  let finalMood1 = preferredMood1;
+  let finalMood2 = preferredMood2;
+
+  if (finalMood1 === finalMood2) {
+    finalMood2 = finalMood1 === "CALM" ? "WARM" : "CALM";
+  }
+
+  const finalAnswers: RequestOnboardingAnswers = {
+    ...DEFAULT_ONBOARDING_PROFILE,
+    ...Object.fromEntries(
+      Object.entries(answers).filter(([, v]) => v !== undefined)
+    ),
+    preferredMood1: finalMood1,
+    preferredMood2: finalMood2,
+  };
+
+  useEffect(() => {
+    if (hasPatchedRef.current) return;
+    hasPatchedRef.current = true;
+
+    patchOnboardingAnswers(finalAnswers, {
+      onSuccess: () => {
+        patchOnboardingComplete();
+      },
+    });
+  }, [patchOnboardingAnswers, patchOnboardingComplete, finalAnswers, navigate]);
+
+  console.log(finalAnswers);
 
   return (
     <div className="min-h-screen bg-bg flex flex-col items-center">
