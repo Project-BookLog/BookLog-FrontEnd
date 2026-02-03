@@ -120,15 +120,15 @@ export default function EditPage() {
         <NavBarTop title="서재 편집하기" onBack={handleBack} />
 
         <section className="px-4 pt-4">
-          <div className="rounded-[4px] border border-gray-200 bg-[#F2F0EE] px-3 py-2">
-            <div className="text-caption-02 text-gray-500">작성한 서재 명칭</div>
+          <div className="rounded-[4px] border border-gray-200 bg-bg px-3 py-2">
+            <div className="text-en-caption-02 text-gray-500">작성한 서재 명칭</div>
 
             <div className="mt-1 flex items-center gap-2">
               <input
                 value={shelfName}
                 onChange={(e) => setShelfName(e.target.value)}
-                placeholder="서재의 명칭을 작성해 주세요."
-                className="flex-1 bg-transparent text-subtitle-02-m text-gray-900 placeholder:text-gray-300 outline-none"
+                placeholder="입력한 서재 명칭 텍스트"
+                className="flex-1 bg-bg text-subtitle-02-m text-gray-900 placeholder:text-gray-900 outline-none whitespace-nowrap overflow-x-auto overflow-y-hidden"
               />
 
               {shelfName.length > 0 && (
