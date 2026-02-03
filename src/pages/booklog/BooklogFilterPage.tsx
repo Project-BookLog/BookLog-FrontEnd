@@ -1,26 +1,36 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useFilter } from "../../hooks/useFilter";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Book } from "../../types/book.types";
 import type { FilterScope } from "../../context/FilterContext";
 
-const moods = ["따뜻한", "잔잔한", "유쾌한", "어두운", "서늘한", "몽환적인"] as const;
-const styles = ["간결한", "화려한", "담백한", "섬세한", "직설적", "은유적"] as const;
-const immersions = ["기분 전환", "지적인 탐구", "압도적 몰입", "짙은 여운"] as const;
+import { getBooklogTagOptions } from "../../api/booklogTags";
+
+// ✅ fallback 값 (기존 그대로)
+const FALLBACK_MOODS = ["따뜻한", "잔잔한", "유쾌한", "어두운", "서늘한", "몽환적인"] as const;
+const FALLBACK_STYLES = ["간결한", "화려한", "담백한", "섬세한", "직설적", "은유적"] as const;
+const FALLBACK_IMMERSIONS = ["기분 전환", "지적인 탐구", "압도적 몰입", "짙은 여운"] as const;
+
+// ✅ useFilter가 기대하는 유니온 타입에 맞추기
+type Mood = (typeof FALLBACK_MOODS)[number];
+type Style = (typeof FALLBACK_STYLES)[number];
+type Immersion = (typeof FALLBACK_IMMERSIONS)[number];
 
 type FilterPageState = {
-  from?: string; // "/booklog" | "/booklog/write" 등
-  book?: Book;   // 글쓰기에서 넘어올 때 book 복구용
+  from?: string;
+  book?: Book;
 };
 
 export default function BooklogFilterPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const navState = (location.state || {}) as FilterPageState;
+
   const scope: FilterScope = location.pathname.startsWith("/booklog/write")
     ? "booklogWrite"
     : "booklog";
+
   const { filter, toggleFilter } = useFilter(scope);
 
   const from = useMemo(() => navState.from ?? "/booklog", [navState.from]);
@@ -28,8 +38,12 @@ export default function BooklogFilterPage() {
   const hasAnyFilter =
     filter.mood.length > 0 || filter.style.length > 0 || filter.immersion.length > 0;
 
+  // ✅ state도 유니온 타입으로 유지
+  const [moods, setMoods] = useState<Mood[]>([...FALLBACK_MOODS]);
+  const [styles, setStyles] = useState<Style[]>([...FALLBACK_STYLES]);
+  const [immersions, setImmersions] = useState<Immersion[]>([...FALLBACK_IMMERSIONS]);
+
   const goBackToFrom = () => {
-    // ✅ 글쓰기에서 왔다면 book state도 같이 다시 넘겨줌
     if (from === "/booklog/write") {
       navigate(from, { state: { book: navState.book } });
       return;
@@ -38,8 +52,6 @@ export default function BooklogFilterPage() {
   };
 
   const handleApply = () => {
-    // ✅ 필터 상태는 FilterContext에 이미 저장되어 있으니,
-    //    "어디서 왔는지"로만 돌아가면 됨
     goBackToFrom();
   };
 
@@ -48,6 +60,51 @@ export default function BooklogFilterPage() {
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = original;
+    };
+  }, []);
+
+  // ✅ 태그 옵션 API 연결 (union에 맞는 값만 채택)
+  useEffect(() => {
+    let alive = true;
+
+    (async () => {
+      try {
+        const options = await getBooklogTagOptions();
+
+        const nextMoods = (options.mood ?? [])
+          .map((x) => x.name)
+          .filter((name): name is Mood =>
+            (FALLBACK_MOODS as readonly string[]).includes(name)
+          );
+
+        const nextStyles = (options.style ?? [])
+          .map((x) => x.name)
+          .filter((name): name is Style =>
+            (FALLBACK_STYLES as readonly string[]).includes(name)
+          );
+
+        const nextImmersions = (options.immersion ?? [])
+          .map((x) => x.name)
+          .filter((name): name is Immersion =>
+            (FALLBACK_IMMERSIONS as readonly string[]).includes(name)
+          );
+
+        if (!alive) return;
+
+        if (nextMoods.length) setMoods(nextMoods);
+        if (nextStyles.length) setStyles(nextStyles);
+        if (nextImmersions.length) setImmersions(nextImmersions);
+
+        if (import.meta.env.DEV) {
+          console.log("✅ tag options loaded:", options);
+        }
+      } catch (e) {
+        console.error("❌ 태그 옵션 조회 실패:", e);
+      }
+    })();
+
+    return () => {
+      alive = false;
     };
   }, []);
 

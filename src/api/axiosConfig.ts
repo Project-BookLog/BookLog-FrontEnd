@@ -26,7 +26,7 @@ privateApi.interceptors.request.use((config)=>{
 
     if(parsedToken) {
         config.headers = config.headers || {};
-        config.headers.Authorization = `Bearer ${parsedToken}`;
+        config.headers.Authorization = `${parsedToken}`;
     }
 
     return config;
@@ -94,7 +94,7 @@ privateApi.interceptors.response.use(
 
       const newAccessToken = await refreshPromise;
       originalRequest.headers = originalRequest.headers || {};
-      originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+      originalRequest.headers.Authorization = `${newAccessToken}`;
 
       return privateApi(originalRequest);
     }

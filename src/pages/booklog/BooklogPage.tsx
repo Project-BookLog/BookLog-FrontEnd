@@ -9,6 +9,7 @@ import { Bookmark, Reset } from "../../assets/icons";
 import { useFilter } from "../../hooks/useFilter";
 
 import { getBooklogsFeed } from "../../api/booklogFeed";
+import { getBooklogTagOptions } from "../../api/booklogTags";
 
 /* =============================
  *  ✅ 안전한 ID 생성기 (crypto.randomUUID fallback)
@@ -75,6 +76,16 @@ type Item = {
 
 type FeedResponse = { items: Item[] };
 type FeedReturn = Item[] | FeedResponse;
+
+/* =============================
+ * ✅ 태그 옵션 타입 (API: /booklogs/tags/options)
+ * ============================= */
+type TagOption = { tagId: number; name: string };
+type BooklogTagOptions = {
+  mood: TagOption[];
+  style: TagOption[];
+  immersion: TagOption[];
+};
 
 function TagPill({ children }: { children: React.ReactNode }) {
   return (
@@ -227,6 +238,7 @@ export default function BooklogPage() {
   const { resetFilter } = useFilter("booklog");
 
   const [posts, setPosts] = useState<Post[]>([]);
+  const [tagOptions, setTagOptions] = useState<BooklogTagOptions | null>(null);
 
   const mockPosts = useMemo<Post[]>(
     () => [
@@ -263,6 +275,21 @@ export default function BooklogPage() {
 
     (async () => {
       try {
+        try {
+          const options = (await getBooklogTagOptions()) as BooklogTagOptions;
+          if (alive) setTagOptions(options);
+
+          if (import.meta.env.DEV) {
+            console.log("✅ tag options:", options);
+            console.log("mood:", options.mood?.length);
+            console.log("style:", options.style?.length);
+            console.log("immersion:", options.immersion?.length);
+          }
+        } catch (e) {
+          console.error("태그 옵션 조회 실패:", e);
+        }
+
+        // ✅ 2) 피드 조회
         const data = (await getBooklogsFeed()) as FeedReturn;
 
         const isValidFeed =
@@ -274,7 +301,6 @@ export default function BooklogPage() {
           ? (data as FeedResponse).items
           : [];
 
-        // ✅ 개발 환경에서만 로그 출력
         if (import.meta.env.DEV) {
           console.log("feed raw data:", data);
           console.log("feed list length:", list.length);
