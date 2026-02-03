@@ -133,13 +133,19 @@ export function MyLibraryDetailPage() {
             activeTab !== "READING" ? (
               <div className="flex w-[335px] items-end content-end gap-x-[11.5px] gap-y-6 flex-wrap">
                 {bookItems.map((book) => (
-                  <BookCard key={book.bookId} book={book} />
+                  <BookCard
+                    key={book.bookId}
+                    book={book}
+                    onClick={() => navigate(`/book/${book.userBookId}`, { state: {shelfName}})}/>
                 ))}
               </div>
             ) : (
               <div className="flex w-[335px] items-end content-end gap-x-[11.5px] gap-y-[32px] flex-wrap">
                 {bookItems.map((book) => (
-                  <ReadingBookCard key={book.bookId} book={book} />
+                  <ReadingBookCard
+                    key={book.bookId}
+                    book={book}
+                    onClick={() => navigate(`/book/${book.userBookId}`, { state: {shelfName}})}/>
                 ))}
               </div>
             )

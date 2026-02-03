@@ -1,13 +1,23 @@
 import { useOnboarding } from "../../../context/OnboardingContext";
 import { ONBOARDING_QUESTION } from "../../../data/onboardingTestQuestion";
 import { BackIcon } from "../../../assets/icons";
+import type { RequestOnboardingAnswers } from "../../../types/onboarding";
 
 export default function Step_1_Page() {
   const { answers, toggleAnswer, nextStep, prevStep, skipStep } = useOnboarding();
   const stepData = ONBOARDING_QUESTION[1];
-  const selected = answers[1] || [];
+  const question = stepData.questions[0];
+  const keys = question.key as readonly (keyof RequestOnboardingAnswers)[];
 
-  const canNext = selected.length >= 1 || selected.length == stepData.step_max;
+  const selectedValues = keys
+    .map((k) => answers[k])
+    .filter(
+      (v): v is NonNullable<RequestOnboardingAnswers[keyof RequestOnboardingAnswers]> =>
+        v != null
+    );
+
+
+  const canNext = selectedValues.length >= 1;
   
   return (
     <div className="min-h-screen bg-bg flex flex-col items-center">
@@ -19,7 +29,7 @@ export default function Step_1_Page() {
           />
           <button
             className="text-subtitle-02-sb text-gray-600"
-            onClick={skipStep}
+            onClick={() => skipStep(keys)}
           >
             건너뛰기
           </button>
@@ -41,18 +51,21 @@ export default function Step_1_Page() {
         <div className="flex flex-col flex-1 items-start w-[335px] gap-3 mt-[77px]">
           <p className="self-stretch text-body-03 text-gray-500">최대 {stepData.step_max}개까지 선택할 수 있어요.</p>
           <div className="flex items-start content-start gap-[7px] self-stretch flex-wrap">
-            {stepData.questions[0].options.map((opt) => (
-              <button
-                key={opt.label}
-                onClick={() => toggleAnswer(stepData.step, opt.label, stepData.step_max)}
-                className={`relative flex flex-col justify-center items-center w-[164px] h-[66px] gap-[5px] rounded-[12px] ${ selected.includes(opt.label) && "bg-lightblue-1" } cursor-pointer`}
-              >
-                {!selected.includes(opt.label) && opt.img && (
-                  <opt.img className="absolute inset-0 w-full h-full rounded-[12px]" />
-                )}
-                <p className={`z-10 text-center text-subtitle-01-sb ${selected.includes(opt.label) ? "text-primary" : "text-white"}`}>{opt.label}</p>
-              </button>
-            ))}
+            {stepData.questions[0].options.map((opt) => {
+              const isSelected = selectedValues.includes(opt.value);
+              return (
+                <button
+                  key={opt.label}
+                  onClick={() =>toggleAnswer(keys, opt.value, stepData.step_max)}
+                  className={`relative flex flex-col justify-center items-center w-[164px] h-[66px] gap-[5px] rounded-[12px] ${ isSelected && "bg-lightblue-1" } cursor-pointer`}
+                >
+                  {!isSelected && opt.img && (
+                    <opt.img className="absolute inset-0 w-full h-full rounded-[12px]" />
+                  )}
+                  <p className={`z-10 text-center text-subtitle-01-sb ${isSelected ? "text-primary" : "text-white"}`}>{opt.label}</p>
+                </button>
+              )
+            })}
           </div>
         </div>
         

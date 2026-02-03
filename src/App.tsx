@@ -61,7 +61,8 @@ function App() {
 
         {/* 1. 홈 */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/book/:bookid" element={<BookDetailPage />} />
+        <Route path="/book/:bookId" element={<BookDetailPage />} />
+        <Route path="/book/:userBookId" element={<BookDetailPage />} />
 
         {/* 필터 사용 라우트들에만 Provider 적용 */}
         <Route

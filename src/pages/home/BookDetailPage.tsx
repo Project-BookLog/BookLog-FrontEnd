@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
-import { Dummy_book } from "../../assets/icons";
 import Tab from "../../components/common/Tab";
 import BookRecommeded from "../../components/home/book/BookRecommended";
 import BookInfo from "../../components/home/book/BookInfo";
 import BookLogCarousel from "../../components/home/book/BookLogCarousel";
 import { useParams } from "react-router-dom";
+import { useGetBookDetail } from "../../hooks/queries/useGetBookDetail";
 
 const TABS = ["책 추천", "책 정보", "북로그"] as const;
 type TabType = (typeof TABS)[number];
@@ -17,9 +17,13 @@ export const BookDetailPage = () => {
   const InfoRef = useRef<HTMLElement | null>(null);
   const BookLogRef = useRef<HTMLElement | null>(null);
   
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { bookid } = useParams<{ bookid: string }>(); 
-  // console.log("bookid:", bookid);
+  const { bookId, userBookId } = useParams();
+
+  const { data: userBook } = useGetBookDetail(Number(userBookId));
+  if (!userBook) return;
+
+  const isInMyShelf = !!userBookId;
+  // const displayBook = isInMyShelf ? userBook : book;
 
   const handleChangeTab = (nextTab: TabType) => {
     setTab(nextTab);
@@ -92,7 +96,10 @@ export const BookDetailPage = () => {
         {/* 상단 책 썸네일 + 정보 */}
         <div className="px-6">
           <div className="flex justify-center">
-            <Dummy_book className="w-37.5 h-57.5 flex-shrink-0 rounded-md" />
+            <img
+              className="w-37.5 h-57.5 flex-shrink-0 rounded-md"
+              src={userBook.thumbnailUrl}
+            />
           </div>
           <div className="mt-6 space-y-4">
             <div>
@@ -101,7 +108,7 @@ export const BookDetailPage = () => {
               </button>
             </div>
             <div>
-              <p className="text-title-01">물고기는 존재하지 않는다</p>
+              <p className="text-title-01">{userBook.title}</p>
               <p className="text-caption-01 text-gray-500 mb-2 mt-1">
                 상실, 사랑 그리고 숨어있는 삶의 질서에 관한 이야기
               </p>
@@ -132,7 +139,7 @@ export const BookDetailPage = () => {
 
         {/* 책 정보 섹션 */}
         <section ref={InfoRef}>
-          <BookInfo />
+          <BookInfo book={userBook}/>
           <hr className="mt-5 h-2 bg-gray-100 border-none" />
         </section>
 

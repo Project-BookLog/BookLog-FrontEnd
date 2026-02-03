@@ -6,7 +6,9 @@ export const LOCAL_STORAGE_KEY = {
 }
 
 export const QUERY_KEY = {
+    book: "book",
     books: "books",
     shelves: "shelves",
-    myInfo: "myInfo"
+    myInfo: "myInfo",
+    onboarding: "onboarding"
 }

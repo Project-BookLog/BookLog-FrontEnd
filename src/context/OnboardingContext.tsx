@@ -1,17 +1,16 @@
 import { createContext, useContext, useState } from "react";
+import type { RequestOnboardingAnswers } from "../types/onboarding";
 
-type AnswerMap = {
-  [step: number]: string[];
-};
+type AnswerMap = Partial<RequestOnboardingAnswers>;
 
 interface OnboardingContextType {
   step: number;
-  answers: AnswerMap;
+  answers: Partial<RequestOnboardingAnswers>;
+  toggleAnswer: <K extends readonly (keyof RequestOnboardingAnswers)[]>(keys: K, value: NonNullable<RequestOnboardingAnswers[K[number]]>, max?: number) => void;
   nextStep: () => void;
   prevStep: () => void;
-  toggleAnswer: (step: number, value: string, max?: number) => void;
-  skipStep: () => void;
-}
+  skipStep: (keys: readonly (keyof RequestOnboardingAnswers)[]) => void;
+};
 
 const OnboardingContext = createContext<OnboardingContextType | null>(null);
 
@@ -22,39 +21,43 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
 
-  const toggleAnswer = (step: number, value: string, max?: number) => {
+  const toggleAnswer = <K extends readonly (keyof RequestOnboardingAnswers)[]>(
+    keys: K,
+    value: NonNullable<RequestOnboardingAnswers[K[number]]>,
+    max = keys.length
+  ) => {
     setAnswers((prev) => {
-      const prevValues = prev[step] ?? [];
+      const selectedKeys = keys.filter((k) => prev[k] != null);
+      const selectedCount = selectedKeys.length;
 
-      if (prevValues.includes(value)) {
-        return {
-          ...prev,
-          [step]: prevValues.filter((v) => v !== value),
-        };
+      const existingKey = keys.find((k) => prev[k] === value);
+      if (existingKey) {
+        return { ...prev, [existingKey]: undefined };
       }
 
-      if (max && prevValues.length >= max) {
+      if (selectedCount >= max) {
         return prev;
       }
 
-      return {
-        ...prev,
-        [step]: [...prevValues, value],
-      };
+      const emptyKey = keys.find((k) => prev[k] == null);
+      if (!emptyKey) return prev;
+
+      return { ...prev, [emptyKey]: value };
     });
   };
-  
-  const skipStep = () => {
-    setAnswers((prev) => ({
-      ...prev,
-      [step]: [],
-    }));
+
+  const skipStep = (keys: readonly (keyof RequestOnboardingAnswers)[]) => {
+    setAnswers((prev) => {
+      const next = { ...prev };
+      keys.forEach((k) => (next[k] = undefined));
+      return next;
+    });
     nextStep();
   };
-
+  
   return (
     <OnboardingContext.Provider
-      value={{ step, answers, nextStep, prevStep, toggleAnswer, skipStep }}
+      value={{ step, answers, toggleAnswer, nextStep, prevStep, skipStep }}
     >
       {children}
     </OnboardingContext.Provider>
