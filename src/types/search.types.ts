@@ -10,6 +10,19 @@ export interface RecentSearchResponse {
   keywords: RecentSearchKeyword[];
 }
 
+export interface RecommendedKeyword {
+  id: number;
+  keyword: string;
+  type: string;
+  description: string;
+}
+
+export interface RecommendedSearchResponse {
+  keywords: RecommendedKeyword[];
+}
+
+
+
 export interface BookSearchParams {
   query: string;
   page?: number;
