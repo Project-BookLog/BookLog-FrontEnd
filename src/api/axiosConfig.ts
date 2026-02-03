@@ -26,7 +26,7 @@ privateApi.interceptors.request.use((config)=>{
 
     if(parsedToken) {
         config.headers = config.headers || {};
-        config.headers.Authorization = `Bearer ${parsedToken}`;
+        config.headers.Authorization = `${parsedToken}`;
     }
 
     return config;
