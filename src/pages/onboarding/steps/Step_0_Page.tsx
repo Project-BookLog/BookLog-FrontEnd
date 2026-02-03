@@ -48,7 +48,7 @@ export default function Step_0_Page() {
                 <p className={`text-center text-subtitle-01-sb ${isSelected ? "text-primary" : hasSelection ? "text-gray-500" : "text-gray-900"}`}>{opt.label}</p>
               </button>
             )
-          })};
+          })}
         </div>
         
 

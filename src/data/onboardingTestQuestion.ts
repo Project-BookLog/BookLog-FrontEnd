@@ -13,7 +13,7 @@ export const ONBOARDING_QUESTION: OnboardingQuestion[] = [
         id: 0,
         key: ["readerType"] as const,
         options: [
-          { label: "독서 입문자", value: "BEGGINER_READER", img: OnboardingIcon1 },
+          { label: "독서 입문자", value: "BEGINNER_READER", img: OnboardingIcon1 },
           { label: "프로 다독러", value: "PROFESSIONAL_READER", img: OnboardingIcon2 },
         ]
       }

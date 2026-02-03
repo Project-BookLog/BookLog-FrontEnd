@@ -59,8 +59,6 @@ export default function CompletePage() {
     });
   }, [patchOnboardingAnswers, patchOnboardingComplete, finalAnswers, navigate]);
 
-  console.log(finalAnswers);
-
   return (
     <div className="min-h-screen bg-bg flex flex-col items-center">
       <div className="flex w-full h-[62px] px-5 pt-5 pb-2 justify-between items-center">
