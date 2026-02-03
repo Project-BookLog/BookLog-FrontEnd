@@ -94,7 +94,7 @@ privateApi.interceptors.response.use(
 
       const newAccessToken = await refreshPromise;
       originalRequest.headers = originalRequest.headers || {};
-      originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+      originalRequest.headers.Authorization = `${newAccessToken}`;
 
       return privateApi(originalRequest);
     }
