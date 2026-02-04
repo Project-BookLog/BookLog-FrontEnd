@@ -1,11 +1,45 @@
-import { useMemo, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+// src/pages/booklog/BooklogDetailPage.tsx
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import NavBar from "../../components/common/navbar/NavBarTop";
 import BookContent from "../../components/booklog/BookContent";
-import { Bookmark } from "../../assets/icons"; 
+import { Bookmark } from "../../assets/icons";
+
+import { getBooklogDetail } from "../../api/booklogs";
+import type { BooklogDetailResponse } from "../../types/booklogDetail.types";
+
+import { getBooklogRecommendBooks } from "../../api/booklogRecommend";
+import type { RecommendBook } from "../../types/booklogRecommend.types";
+
+import { getBooklogRecommendPosts } from "../../api/booklogRecommendPosts";
+import type { RecommendPost } from "../../types/booklogRecommendPosts.types";
+
+/** ---------- utils ---------- */
+function timeAgo(iso: string) {
+  const t = new Date(iso).getTime();
+
+  // ❌ 날짜 파싱 실패
+  if (isNaN(t)) return "알 수 없음";
+
+  const now = Date.now();
+
+  // ❌ 미래 시간 → 방금 전으로 처리 (diff 음수 방지)
+  const diff = Math.max(0, now - t);
+
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return "방금 전";
+  if (min < 60) return `${min}분 전`;
+
+  const hour = Math.floor(min / 60);
+  if (hour < 24) return `${hour}시간 전`;
+
+  const day = Math.floor(hour / 24);
+  return `${day}일 전`;
+}
 
 type Post = {
-  id: string;
+  id: string; // postId
+  authorId: string; // userId
   username: string;
   email?: string;
   timeAgo: string;
@@ -16,6 +50,10 @@ type Post = {
   bookTitle: string;
   bookAuthor: string;
   publisher?: string;
+  profileImageUrl?: string;
+  followedByMe?: boolean;
+  images?: { imageId: number; imageUrl: string; order: number }[];
+  bookmarkedByMe?: boolean;
 };
 
 function MoreIcon({ className = "" }: { className?: string }) {
@@ -39,84 +77,143 @@ function TagPill({ children }: { children: React.ReactNode }) {
 export default function BooklogDetailPage() {
   const navigate = useNavigate();
   const { postId } = useParams<{ postId: string }>();
-  const location = useLocation();
 
   const [bookmarked, setBookmarked] = useState(false);
 
-  const statePost = (location.state as { post?: Post } | null)?.post;
+  // ✅ API로 받아온 원본 데이터
+  const [detail, setDetail] = useState<BooklogDetailResponse | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const fallbackPosts = useMemo<Post[]>(
-    () => [
-      {
-        id: "1",
-        username: "User Name",
-        email: "ididididid@gmail.com",
-        timeAgo: "3분 전",
-        views: 27,
-        bookmarkCount: 20,
-        body:
-          "유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글…",
-        tags: ["잔잔한, 따뜻한", "사유적", "생각이 필요한"],
-        bookTitle: "소년이 온다",
-        bookAuthor: "한강 저",
-        publisher: "출판사",
-      },
-      {
-        id: "2",
-        username: "User Name",
-        email: "ididididid@gmail.com",
-        timeAgo: "3분 전",
-        views: 27,
-        bookmarkCount: 20,
-        body: "유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글…",
-        tags: ["잔잔한, 따뜻한", "사유적", "생각이 필요한"],
-        bookTitle: "책 제목",
-        bookAuthor: "저자명 저",
-        publisher: "출판사",
-      },
-    ],
-    []
-  );
+  // ✅ 추천 도서 목록(API)
+  const [recommendBooks, setRecommendBooks] = useState<RecommendBook[]>([]);
 
-  const post =
-    statePost ?? fallbackPosts.find((p) => p.id === postId) ?? fallbackPosts[0];
+  // ✅ 추천 인기글 목록(API)
+  const [recommendPosts, setRecommendPosts] = useState<RecommendPost[]>([]);
 
+  // ✅ 기존 UI가 기대하는 Post 형태로 매핑해서 그대로 쓰기
+  const post: Post | null = useMemo(() => {
+    if (!detail) return null;
+
+    // ✅ BooklogAuthor의 userId를 신뢰 (detail만 nullable)
+    const authorId = String(detail?.author.userId ?? "0");
+
+    return {
+      id: String(detail.postId),
+      authorId,
+      username: detail.author.nickname,
+      email: detail.author.email,
+      timeAgo: timeAgo(detail.createdAt),
+      views: Number(detail.viewCount ?? 0),
+      bookmarkCount: Number(detail.bookmarkCount ?? 0),
+      body: detail.content,
+      tags: (detail.tags ?? []).map((t) => t.name),
+      bookTitle: detail.book.title,
+      bookAuthor: `${detail.book.authorName} 저`,
+      publisher: detail.book.publisher,
+      profileImageUrl: detail.author.profileImageUrl,
+      followedByMe: detail.author.followedByMe,
+      images: (detail.images ?? []).map((img) => ({
+        imageId: Number(img.imageId),
+        imageUrl: img.imageUrl,
+        order: Number(img.order),
+      })),
+      bookmarkedByMe: detail.bookmarkedByMe,
+    };
+  }, [detail]);
+
+  const sortedImages = useMemo(() => {
+    const imgs = post?.images ?? [];
+    return [...imgs].sort((a, b) => a.order - b.order);
+  }, [post]);
+
+  useEffect(() => {
+    if (!postId) return;
+
+    let alive = true;
+
+    const fetchAll = async () => {
+      try {
+        setLoading(true);
+
+        // ✅ 1) 상세 조회
+        const data = await getBooklogDetail(Number(postId));
+        if (!alive) return;
+        setDetail(data);
+        setBookmarked(!!data.bookmarkedByMe);
+
+        // ✅ 2) 추천 도서 조회
+        try {
+          const recBooks = await getBooklogRecommendBooks(Number(postId));
+          if (!alive) return;
+          setRecommendBooks(recBooks);
+        } catch (e) {
+          console.error("추천 도서 조회 실패", e);
+          if (!alive) return;
+          setRecommendBooks([]);
+        }
+
+        // ✅ 3) 추천 인기글 조회
+        try {
+          const recPosts = await getBooklogRecommendPosts(Number(postId));
+          if (!alive) return;
+          setRecommendPosts(recPosts);
+        } catch (e) {
+          console.error("추천 인기글 조회 실패", e);
+          if (!alive) return;
+          setRecommendPosts([]);
+        }
+      } catch (e) {
+        console.error("북로그 상세 조회 실패", e);
+      } finally {
+        // ✅ finally에서 return 금지: mounted일 때만 setLoading(false)
+        if (alive) setLoading(false);
+      }
+    };
+
+    fetchAll();
+
+    return () => {
+      alive = false;
+    };
+  }, [postId]);
+
+  // ✅ UI에서 쓰던 형태로 그대로 맞춰주기 (BookContent props 유지)
   const similarBooks = useMemo(
-    () => [
-      {
-        id: "s1",
-        title: "소년이 온다",
-        author: "한강 저",
-        publisher: "출판사",
-        tags: ["잔잔한", "사유적", "생각이 필요한"],
-      },
-      {
-        id: "s2",
-        title: "책 제목",
-        author: "저자명 저",
-        publisher: "출판사",
-        tags: ["잔잔한", "사유적", "생각이 필요한"],
-      },
-      {
-        id: "s3",
-        title: "책 제목",
-        author: "저자명 저",
-        publisher: "출판사",
-        tags: ["잔잔한", "사유적", "생각이 필요한"],
-      },
-      {
-        id: "s4",
-        title: "책 제목",
-        author: "저자명 저",
-        publisher: "출판사",
-        tags: ["잔잔한", "사유적", "생각이 필요한"],
-      },
-    ],
-    []
+    () =>
+      (recommendBooks ?? []).map((b) => ({
+        id: String(b.bookId),
+        title: b.title,
+        author: `${b.authorName} 저`,
+        publisher: b.publisher,
+        tags: (b.tags ?? []).map((t) => t.name),
+      })),
+    [recommendBooks]
   );
 
-  // 임시: 지금은 post.id를 userId처럼 사용
-  const profileUserId = post.id;
+  // ✅ 프로필은 postId가 아니라 authorId로
+  const profileUserId = post?.authorId ?? "0";
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-bg">
+        <div className="mx-auto w-full max-w-[420px] bg-bg">
+          <NavBar title="책 정보" onBack={() => navigate("/booklog")} />
+          <div className="p-4 text-caption-01 text-gray-600">로딩중...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!post) {
+    return (
+      <div className="min-h-screen bg-bg">
+        <div className="mx-auto w-full max-w-[420px] bg-bg">
+          <NavBar title="책 정보" onBack={() => navigate("/booklog")} />
+          <div className="p-4 text-caption-01 text-gray-600">데이터가 없어요.</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-bg">
@@ -146,7 +243,16 @@ export default function BooklogDetailPage() {
               className="flex items-center gap-3 min-w-0 text-left"
               aria-label="유저 프로필로 이동"
             >
-              <div className="h-10 w-10 rounded-full bg-[#D9D9D9]" />
+              {post.profileImageUrl ? (
+                <img
+                  src={post.profileImageUrl}
+                  alt=""
+                  className="h-10 w-10 rounded-full object-cover bg-[#D9D9D9]"
+                />
+              ) : (
+                <div className="h-10 w-10 rounded-full bg-[#D9D9D9]" />
+              )}
+
               <div className="min-w-0">
                 <div className="text-body-01-sb text-[#1F1F1F] truncate">
                   {post.username}
@@ -162,7 +268,7 @@ export default function BooklogDetailPage() {
               className="h-[27px] rounded-[6px] bg-gray-200 px-3 text-en-caption-01 font-medium text-[#4D4D4C]"
               onClick={(e) => e.stopPropagation()}
             >
-              팔로우
+              {post.followedByMe ? "팔로잉" : "팔로우"}
             </button>
           </div>
         </section>
@@ -187,13 +293,19 @@ export default function BooklogDetailPage() {
               />
             </div>
 
-            {/* 오른쪽: 사진 */}
-            <div className="shrink-0 h-[220px] w-[240px] rounded-[12px] bg-[#6F6F6F] grid place-items-center text-caption-01 text-white/80">
-              사진
-            </div>
+            {sortedImages[0]?.imageUrl ? (
+              <img
+                src={sortedImages[0].imageUrl}
+                alt=""
+                className="shrink-0 h-[220px] w-[240px] rounded-[12px] object-cover bg-[#6F6F6F] grid place-items-center text-caption-01 text-white/80"
+              />
+            ) : (
+              <div className="shrink-0 h-[220px] w-[240px] rounded-[12px] bg-[#6F6F6F] grid place-items-center text-caption-01 text-white/80">
+                사진
+              </div>
+            )}
           </div>
 
-          {/* ✅ 태그 줄 (스샷처럼 카드 아래) */}
           <div
             className="
               mt-2
@@ -210,18 +322,13 @@ export default function BooklogDetailPage() {
             ))}
           </div>
 
-          {/* 본문 */}
-          <p className="mt-3 text-body-03 leading-relaxed text-black">
-            {post.body}
-          </p>
+          <p className="mt-3 text-body-03 leading-relaxed text-black">{post.body}</p>
 
-          {/* 하단 메타 */}
           <div className="mt-4 flex items-center justify-between text-caption-01 text-gray-600">
             <div>
               {post.timeAgo} · 조회 {post.views}
             </div>
 
-            {/* ✅ 북마크 */}
             <button
               type="button"
               onClick={(e) => {
@@ -234,9 +341,9 @@ export default function BooklogDetailPage() {
               <Bookmark
                 className="h-5 w-5"
                 style={{
-                color: bookmarked ? "#3049C0" : "#9B9A97",
-                fill: bookmarked ? "currentColor" : "none",
-                stroke: bookmarked ? "#3049C0" : "#9B9A97",
+                  color: bookmarked ? "#3049C0" : "#9B9A97",
+                  fill: bookmarked ? "currentColor" : "none",
+                  stroke: bookmarked ? "#3049C0" : "#9B9A97",
                 }}
               />
 
@@ -247,7 +354,6 @@ export default function BooklogDetailPage() {
           </div>
         </section>
 
-        {/* 구분선 (스샷의 두꺼운 영역) */}
         <div className="mt-8 h-[8px] bg-gray-100" />
 
         {/* Orbital과 비슷한 도서 */}
@@ -280,27 +386,64 @@ export default function BooklogDetailPage() {
             게시글과 비슷한 내용의 게시글을 모아봤어요
           </p>
 
-          {/* ✅ 구분선 있는 리스트 */}
+          {/* ✅ 구분선 있는 리스트 (UI 그대로) */}
           <div className="mt-2">
-            {[1, 2, 3].map((i) => (
-              <div key={i}>
-                <div className="flex items-center justify-between gap-4 py-5">
+            {(recommendPosts ?? []).slice(0, 3).map((rp, idx, arr) => (
+              <div key={String(rp.postId)}>
+                <div
+                  className="flex items-center justify-between gap-4 py-5"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => navigate(`/booklog/${rp.postId}`)}
+                  onKeyDown={(e) => {
+                    // ✅ Enter + Space 모두 지원 (Space는 스크롤 방지)
+                    if (e.key === "Enter") {
+                      navigate(`/booklog/${rp.postId}`);
+                      return;
+                    }
+                    if (e.key === " " || e.code === "Space") {
+                      e.preventDefault();
+                      navigate(`/booklog/${rp.postId}`);
+                    }
+                  }}
+                >
                   <div className="min-w-0">
-                    <div className="text-body-01-sb text-[#000000]">책 제목</div>
+                    <div className="text-body-01-sb text-[#000000]">
+                      {rp.bookTitle}
+                    </div>
                     <p className="mt-1 line-clamp-2 text-caption-02 text-[#4D4D4C]">
-                      유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을 유저가작성한글을…
+                      {rp.excerpt}
                     </p>
                     <div className="mt-2 text-en-caption-02 text-gray-600">
-                      1일 전 · 조회 65 · 저장 14
+                      {timeAgo(rp.createdAt)} · 조회 {Number(rp.viewCount ?? 0)} · 저장{" "}
+                      {Number(rp.bookmarkCount ?? 0)}
                     </div>
                   </div>
-                  <div className="h-[80px] w-[80px] shrink-0 rounded-[12px] bg-[#D9D9D9]" />
+
+                  {rp.thumbnailImageUrl ? (
+                    <img
+                      src={rp.thumbnailImageUrl}
+                      alt=""
+                      className="h-[80px] w-[80px] shrink-0 rounded-[12px] object-cover bg-[#D9D9D9]"
+                    />
+                  ) : (
+                    <div className="h-[80px] w-[80px] shrink-0 rounded-[12px] bg-[#D9D9D9]" />
+                  )}
                 </div>
 
                 {/* ✅ 아이템 사이 구분선 (마지막은 제외) */}
-                {i !== 3 && <div className="h-[1px] w-full bg-gray-200" />}
+                {idx !== arr.length - 1 && idx !== 2 && (
+                  <div className="h-[1px] w-full bg-gray-200" />
+                )}
               </div>
             ))}
+
+            {/* 데이터가 없을 때도 UI 깨지지 않게 (문구는 최소) */}
+            {recommendPosts.length === 0 && (
+              <div className="py-6 text-caption-02 text-[#676665]">
+                추천 인기글이 없어요.
+              </div>
+            )}
           </div>
         </section>
       </div>

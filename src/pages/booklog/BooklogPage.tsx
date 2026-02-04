@@ -9,7 +9,6 @@ import { Bookmark, Reset } from "../../assets/icons";
 import { useFilter } from "../../hooks/useFilter";
 
 import { getBooklogsFeed } from "../../api/booklogFeed";
-import { getBooklogTagOptions } from "../../api/booklogTags";
 
 /* =============================
  *  ✅ 안전한 ID 생성기 (crypto.randomUUID fallback)
@@ -76,16 +75,6 @@ type Item = {
 
 type FeedResponse = { items: Item[] };
 type FeedReturn = Item[] | FeedResponse;
-
-/* =============================
- * ✅ 태그 옵션 타입 (API: /booklogs/tags/options)
- * ============================= */
-type TagOption = { tagId: number; name: string };
-type BooklogTagOptions = {
-  mood: TagOption[];
-  style: TagOption[];
-  immersion: TagOption[];
-};
 
 function TagPill({ children }: { children: React.ReactNode }) {
   return (
@@ -235,10 +224,11 @@ function PostCard({ post }: { post: Post }) {
  * ============================= */
 export default function BooklogPage() {
   const navigate = useNavigate();
-  const { resetFilter } = useFilter("booklog");
+
+  // ✅ filter도 같이 꺼내서, 그 값으로 피드 요청 보냄
+  const { filter, resetFilter } = useFilter("booklog");
 
   const [posts, setPosts] = useState<Post[]>([]);
-  const [tagOptions, setTagOptions] = useState<BooklogTagOptions | null>(null);
 
   const mockPosts = useMemo<Post[]>(
     () => [
@@ -270,27 +260,20 @@ export default function BooklogPage() {
     []
   );
 
+  // ✅ filter 변화 감지용 key (의존성 깔끔하게)
+  const filterKey = useMemo(() => JSON.stringify(filter), [filter]);
+
   useEffect(() => {
     let alive = true;
 
     (async () => {
       try {
-        try {
-          const options = (await getBooklogTagOptions()) as BooklogTagOptions;
-          if (alive) setTagOptions(options);
-
-          if (import.meta.env.DEV) {
-            console.log("✅ tag options:", options);
-            console.log("mood:", options.mood?.length);
-            console.log("style:", options.style?.length);
-            console.log("immersion:", options.immersion?.length);
-          }
-        } catch (e) {
-          console.error("태그 옵션 조회 실패:", e);
-        }
-
-        // ✅ 2) 피드 조회
-        const data = (await getBooklogsFeed()) as FeedReturn;
+        // ✅ 필터 값을 params로 넘겨서 피드 조회
+        const data = (await getBooklogsFeed({
+          mood: filter.mood,
+          style: filter.style,
+          immersion: filter.immersion,
+        })) as FeedReturn;
 
         const isValidFeed =
           Array.isArray(data) || Array.isArray((data as FeedResponse)?.items);
@@ -302,6 +285,7 @@ export default function BooklogPage() {
           : [];
 
         if (import.meta.env.DEV) {
+          console.log("✅ feed params(filter):", filter);
           console.log("feed raw data:", data);
           console.log("feed list length:", list.length);
           console.log("isValidFeed:", isValidFeed);
@@ -371,7 +355,7 @@ export default function BooklogPage() {
     return () => {
       alive = false;
     };
-  }, [mockPosts]);
+  }, [mockPosts, filterKey]); // ✅ 필터 바뀌면 재요청
 
   return (
     <div className="min-h-screen bg-bg pb-24">
