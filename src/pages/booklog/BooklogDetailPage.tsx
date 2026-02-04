@@ -14,6 +14,8 @@ import type { RecommendBook } from "../../types/booklogRecommend.types";
 import { getBooklogRecommendPosts } from "../../api/booklogRecommendPosts";
 import type { RecommendPost } from "../../types/booklogRecommendPosts.types";
 
+import { toggleBooklogBookmark } from "../../api/booklogBookmark";
+
 /** ---------- utils ---------- */
 function timeAgo(iso: string) {
   const t = new Date(iso).getTime();
@@ -79,6 +81,8 @@ export default function BooklogDetailPage() {
   const { postId } = useParams<{ postId: string }>();
 
   const [bookmarked, setBookmarked] = useState(false);
+  const [bookmarkCount, setBookmarkCount] = useState(0);
+  const [isToggling, setIsToggling] = useState(false);
 
   // ✅ API로 받아온 원본 데이터
   const [detail, setDetail] = useState<BooklogDetailResponse | null>(null);
@@ -139,7 +143,10 @@ export default function BooklogDetailPage() {
         const data = await getBooklogDetail(Number(postId));
         if (!alive) return;
         setDetail(data);
+
+        // ✅ 상세 응답 기반으로 북마크 상태/카운트 동기화
         setBookmarked(!!data.bookmarkedByMe);
+        setBookmarkCount(Number(data.bookmarkCount ?? 0));
 
         // ✅ 2) 추천 도서 조회
         try {
@@ -177,7 +184,6 @@ export default function BooklogDetailPage() {
     };
   }, [postId]);
 
-  // ✅ UI에서 쓰던 형태로 그대로 맞춰주기 (BookContent props 유지)
   const similarBooks = useMemo(
     () =>
       (recommendBooks ?? []).map((b) => ({
@@ -190,7 +196,6 @@ export default function BooklogDetailPage() {
     [recommendBooks]
   );
 
-  // ✅ 프로필은 postId가 아니라 authorId로
   const profileUserId = post?.authorId ?? "0";
 
   if (loading) {
@@ -331,9 +336,32 @@ export default function BooklogDetailPage() {
 
             <button
               type="button"
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.stopPropagation();
-                setBookmarked((v) => !v);
+                if (!postId) return;
+                if (isToggling) return;
+
+                try {
+                  setIsToggling(true);
+                  const { data } = await toggleBooklogBookmark(Number(postId));
+                  setBookmarked(data.bookmarkedByMe);
+                  setBookmarkCount(data.bookmarkCount);
+
+                  // ✅ detail도 같이 최신화(다른 곳에서 detail.bookmarkCount를 참조할 수도 있어서)
+                  setDetail((prev) =>
+                    prev
+                      ? {
+                          ...prev,
+                          bookmarkedByMe: data.bookmarkedByMe,
+                          bookmarkCount: data.bookmarkCount,
+                        }
+                      : prev
+                  );
+                } catch (err) {
+                  console.error("북로그 북마크 토글 실패:", err);
+                } finally {
+                  setIsToggling(false);
+                }
               }}
               className="flex items-center gap-1"
               aria-label="북마크"
@@ -347,9 +375,7 @@ export default function BooklogDetailPage() {
                 }}
               />
 
-              <span className="text-caption-01 text-gray-500">
-                {post.bookmarkCount + (bookmarked ? 1 : 0)}
-              </span>
+              <span className="text-caption-01 text-gray-500">{bookmarkCount}</span>
             </button>
           </div>
         </section>
