@@ -9,6 +9,7 @@ import { Bookmark, Reset } from "../../assets/icons";
 import { useFilter } from "../../hooks/useFilter";
 
 import { getBooklogsFeed } from "../../api/booklogFeed";
+import { toggleBooklogBookmark } from "../../api/booklogBookmark";
 
 /* =============================
  *  ✅ 안전한 ID 생성기 (crypto.randomUUID fallback)
@@ -63,6 +64,10 @@ type Item = {
   bookmarkCount?: number | string;
   scrapCount?: number | string;
   likeCount?: number | string;
+
+  // ✅ 북마크 여부(백엔드에서 내려주면 사용)
+  bookmarkedByMe?: boolean;
+  isBookmarked?: boolean;
 
   imageUrls?: unknown[];
   images?: unknown[];
@@ -124,11 +129,26 @@ type Post = {
   bookTitle: string;
   bookAuthor: string;
   imageCount?: number;
+
+  // ✅ 내가 북마크 했는지 (있으면 초기값으로 사용)
+  bookmarkedByMe?: boolean;
 };
 
 function PostCard({ post }: { post: Post }) {
   const navigate = useNavigate();
-  const [bookmarked, setBookmarked] = useState(false);
+
+  // ✅ 서버/피드에서 내려온 값이 있으면 그걸 초기값으로
+  const [bookmarked, setBookmarked] = useState<boolean>(
+    post.bookmarkedByMe ?? false
+  );
+  const [bookmarkCount, setBookmarkCount] = useState<number>(post.bookmarkCount);
+  const [isToggling, setIsToggling] = useState(false);
+
+  // ✅ 카드가 바뀌면(리스트 갱신 등) 로컬 상태도 동기화
+  useEffect(() => {
+    setBookmarked(post.bookmarkedByMe ?? false);
+    setBookmarkCount(post.bookmarkCount);
+  }, [post.id, post.bookmarkCount, post.bookmarkedByMe]);
 
   const goDetail = () => {
     navigate(`/booklog/${post.id}`, { state: { post } });
@@ -162,9 +182,20 @@ function PostCard({ post }: { post: Post }) {
 
         <button
           type="button"
-          onClick={(e) => {
+          onClick={async (e) => {
             e.stopPropagation();
-            setBookmarked((v) => !v);
+            if (isToggling) return;
+
+            try {
+              setIsToggling(true);
+              const { data } = await toggleBooklogBookmark(Number(post.id));
+              setBookmarked(data.bookmarkedByMe);
+              setBookmarkCount(data.bookmarkCount);
+            } catch (err) {
+              console.error("북로그 북마크 토글 실패:", err);
+            } finally {
+              setIsToggling(false);
+            }
           }}
           className="flex items-center gap-1 pt-1"
           aria-label="북마크"
@@ -179,7 +210,7 @@ function PostCard({ post }: { post: Post }) {
           />
 
           <span className="text-caption-01 text-[#9B9A97]">
-            {post.bookmarkCount + (bookmarked ? 1 : 0)}
+            {bookmarkCount}
           </span>
         </button>
       </div>
@@ -225,7 +256,6 @@ function PostCard({ post }: { post: Post }) {
 export default function BooklogPage() {
   const navigate = useNavigate();
 
-  // ✅ filter도 같이 꺼내서, 그 값으로 피드 요청 보냄
   const { filter, resetFilter } = useFilter("booklog");
 
   const [posts, setPosts] = useState<Post[]>([]);
@@ -243,6 +273,7 @@ export default function BooklogPage() {
         bookTitle: "책 제목",
         bookAuthor: "저자명 저",
         imageCount: 1,
+        bookmarkedByMe: false,
       },
       {
         id: "2",
@@ -255,6 +286,7 @@ export default function BooklogPage() {
         bookTitle: "책 제목",
         bookAuthor: "저자명 저",
         imageCount: 3,
+        bookmarkedByMe: false,
       },
     ],
     []
@@ -329,6 +361,9 @@ export default function BooklogPage() {
           const timeAgo =
             it.timeAgo ?? it.createdAgo ?? it.createdAt ?? "방금 전";
 
+          const bookmarkedByMe =
+            it.bookmarkedByMe ?? it.isBookmarked ?? false;
+
           return {
             id: String(it.id ?? it.postId ?? it.booklogId ?? generateId()),
             username,
@@ -340,6 +375,7 @@ export default function BooklogPage() {
             bookTitle,
             bookAuthor,
             imageCount,
+            bookmarkedByMe,
           };
         });
 
@@ -353,7 +389,7 @@ export default function BooklogPage() {
     return () => {
       alive = false;
     };
-  }, [mockPosts, filterKey]); 
+  }, [mockPosts, filterKey, filter, resetFilter]);
 
   return (
     <div className="min-h-screen bg-bg pb-24">
