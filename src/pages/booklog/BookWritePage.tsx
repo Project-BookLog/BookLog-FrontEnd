@@ -95,6 +95,7 @@ export default function BookWritePage() {
 
   /** ---------------- 발행 ---------------- */
   const onPublish = async () => {
+    // ✅ 동기 락: state 업데이트 전에도 중복 발행 방지
     if (publishingRef.current) return;
     if (!canPublish) return;
 
@@ -114,6 +115,7 @@ export default function BookWritePage() {
       return;
     }
 
+    // ✅ filter.* 는 string[] (태그 이름) → 옵션으로 name -> tagId 매핑
     const nameToId = new Map<string, number>();
     for (const t of tagOptions.mood) nameToId.set(t.name, t.tagId);
     for (const t of tagOptions.style) nameToId.set(t.name, t.tagId);
@@ -192,6 +194,7 @@ export default function BookWritePage() {
     e.target.value = "";
   };
 
+  // blob 정리
   useEffect(() => {
     return () => {
       images.forEach((img) => URL.revokeObjectURL(img.previewUrl));
@@ -237,7 +240,7 @@ export default function BookWritePage() {
         <section className="mt-4 flex justify-center">
           <div className="h-[220px] w-[240px] rounded-[12px] bg-[#EFEDEB]">
             <BookContent
-              title={book?.title ?? "소년이 온다"}
+              title={book?.title ?? "제목을 입력하세요"}
               author={authorText}
               publisher={publisherText}
               tags={[]}
