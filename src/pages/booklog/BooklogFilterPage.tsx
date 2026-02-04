@@ -7,12 +7,10 @@ import type { FilterScope } from "../../context/FilterContext";
 
 import { getBooklogTagOptions } from "../../api/booklogTags";
 
-// ✅ fallback 값 (기존 그대로)
 const FALLBACK_MOODS = ["따뜻한", "잔잔한", "유쾌한", "어두운", "서늘한", "몽환적인"] as const;
 const FALLBACK_STYLES = ["간결한", "화려한", "담백한", "섬세한", "직설적", "은유적"] as const;
 const FALLBACK_IMMERSIONS = ["기분 전환", "지적인 탐구", "압도적 몰입", "짙은 여운"] as const;
 
-// ✅ useFilter가 기대하는 유니온 타입에 맞추기
 type Mood = (typeof FALLBACK_MOODS)[number];
 type Style = (typeof FALLBACK_STYLES)[number];
 type Immersion = (typeof FALLBACK_IMMERSIONS)[number];
@@ -38,7 +36,6 @@ export default function BooklogFilterPage() {
   const hasAnyFilter =
     filter.mood.length > 0 || filter.style.length > 0 || filter.immersion.length > 0;
 
-  // ✅ state도 유니온 타입으로 유지
   const [moods, setMoods] = useState<Mood[]>([...FALLBACK_MOODS]);
   const [styles, setStyles] = useState<Style[]>([...FALLBACK_STYLES]);
   const [immersions, setImmersions] = useState<Immersion[]>([...FALLBACK_IMMERSIONS]);
@@ -63,7 +60,6 @@ export default function BooklogFilterPage() {
     };
   }, []);
 
-  // ✅ 태그 옵션 API 연결 (union에 맞는 값만 채택)
   useEffect(() => {
     let alive = true;
 

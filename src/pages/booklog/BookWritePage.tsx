@@ -13,7 +13,11 @@ import { useToast } from "../../context/ToastContext";
 import { Camera, Reset } from "../../assets/icons";
 
 import type { Book } from "../../types/book.types";
-import { createBooklog, uploadBooklogImages } from "../../api/booklogs"; 
+import { createBooklog, uploadBooklogImages } from "../../api/booklogs";
+import {
+  getBooklogTagOptions,
+  type BooklogTagOptionsResponse,
+} from "../../api/booklogTags";
 
 type LocationState = {
   book?: Book;
@@ -40,6 +44,28 @@ export default function BookWritePage() {
 
   const [content, setContent] = useState("");
   const [isPublishing, setIsPublishing] = useState(false);
+
+  /** ---------------- 태그 옵션 ---------------- */
+  const [tagOptions, setTagOptions] =
+    useState<BooklogTagOptionsResponse | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const opts = await getBooklogTagOptions();
+        if (alive) setTagOptions(opts);
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  /** ---------------- 발행 재진입 방지(동기 락) ---------------- */
+  const publishingRef = useRef(false);
 
   /** ---------------- 이미지 ---------------- */
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -69,25 +95,41 @@ export default function BookWritePage() {
 
   /** ---------------- 발행 ---------------- */
   const onPublish = async () => {
+    if (publishingRef.current) return;
     if (!canPublish) return;
+
+    publishingRef.current = true;
 
     const bookId = book?.bookId;
 
     if (!bookId || bookId <= 0) {
+      publishingRef.current = false;
       showToast("책 정보(bookId)가 올바르지 않아요. 다시 선택해 주세요.");
       return;
     }
 
+    if (!tagOptions) {
+      publishingRef.current = false;
+      showToast("태그 정보를 불러오는 중이에요. 잠시 후 다시 시도해 주세요.");
+      return;
+    }
+
+    const nameToId = new Map<string, number>();
+    for (const t of tagOptions.mood) nameToId.set(t.name, t.tagId);
+    for (const t of tagOptions.style) nameToId.set(t.name, t.tagId);
+    for (const t of tagOptions.immersion) nameToId.set(t.name, t.tagId);
+
+    const selectedNames = [...filter.mood, ...filter.style, ...filter.immersion];
     const tagIds = Array.from(
       new Set(
-        [...filter.mood, ...filter.style, ...filter.immersion]
-          // @ts-expect-error - useFilter 타입이 실제 값과 다르면 여기서 에러가 날 수 있음
-          .map((t) => t.tagId)
-          .filter((v: unknown): v is number => typeof v === "number")
+        selectedNames
+          .map((name) => nameToId.get(name))
+          .filter((v): v is number => typeof v === "number")
       )
     );
 
     if (tagIds.length === 0) {
+      publishingRef.current = false;
       showToast("태그를 최소 1개 이상 선택해 주세요.");
       return;
     }
@@ -98,7 +140,7 @@ export default function BookWritePage() {
       let imageUrls: string[] = [];
       if (images.length > 0) {
         const files = images.map((img) => img.file);
-        imageUrls = await uploadBooklogImages(files); // POST /booklogs/images
+        imageUrls = await uploadBooklogImages(files);
       }
 
       // 2) 북로그 발행
@@ -119,6 +161,7 @@ export default function BookWritePage() {
       console.error(err);
       showToast("발행에 실패했어요. 잠시 후 다시 시도해 주세요.");
     } finally {
+      publishingRef.current = false;
       setIsPublishing(false);
     }
   };
@@ -149,7 +192,6 @@ export default function BookWritePage() {
     e.target.value = "";
   };
 
-  // blob 정리
   useEffect(() => {
     return () => {
       images.forEach((img) => URL.revokeObjectURL(img.previewUrl));
@@ -167,8 +209,9 @@ export default function BookWritePage() {
     navigate("/booklog/pick");
   };
 
-  const authorText =
-    book?.authors?.length ? `${book.authors.join(", ")} 저` : "한강 저";
+  const authorText = book?.authors?.length
+    ? `${book.authors.join(", ")} 저`
+    : "저자 정보 없음";
   const publisherText = book?.publisherName ?? "출판사";
 
   return (
