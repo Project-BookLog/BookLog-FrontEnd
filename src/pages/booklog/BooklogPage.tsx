@@ -353,7 +353,7 @@ export default function BooklogPage() {
     return () => {
       alive = false;
     };
-  }, [mockPosts, filterKey]); // ✅ 필터 바뀌면 재요청
+  }, [mockPosts, filterKey]); 
 
   return (
     <div className="min-h-screen bg-bg pb-24">
