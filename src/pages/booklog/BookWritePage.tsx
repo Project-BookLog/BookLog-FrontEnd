@@ -10,9 +10,14 @@ import { useFilter } from "../../hooks/useFilter";
 import { ConfirmModal } from "../../components/common/ConfirmModal";
 import { useToast } from "../../context/ToastContext";
 
-import { Camera, Reset } from "../../assets/icons"; 
+import { Camera, Reset } from "../../assets/icons";
 
 import type { Book } from "../../types/book.types";
+import { createBooklog, uploadBooklogImages } from "../../api/booklogs";
+import {
+  getBooklogTagOptions,
+  type BooklogTagOptionsResponse,
+} from "../../api/booklogTags";
 
 type LocationState = {
   book?: Book;
@@ -38,6 +43,29 @@ export default function BookWritePage() {
   const { showToast } = useToast();
 
   const [content, setContent] = useState("");
+  const [isPublishing, setIsPublishing] = useState(false);
+
+  /** ---------------- 태그 옵션 ---------------- */
+  const [tagOptions, setTagOptions] =
+    useState<BooklogTagOptionsResponse | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const opts = await getBooklogTagOptions();
+        if (alive) setTagOptions(opts);
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  /** ---------------- 발행 재진입 방지(동기 락) ---------------- */
+  const publishingRef = useRef(false);
 
   /** ---------------- 이미지 ---------------- */
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -48,12 +76,10 @@ export default function BookWritePage() {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   /** ---------------- 필터 초기화 로직 ---------------- */
-  // ✅ "새 글쓰기 시작"일 때만 초기화
   useEffect(() => {
     if (state.fresh) {
       resetFilter();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /** ---------------- 발행 가능 여부 ---------------- */
@@ -65,17 +91,81 @@ export default function BookWritePage() {
     );
   }, [filter]);
 
-  const canPublish = content.trim().length > 0 && hasTag;
+  const canPublish = content.trim().length > 0 && hasTag && !isPublishing;
 
   /** ---------------- 발행 ---------------- */
-  const onPublish = () => {
+  const onPublish = async () => {
+    // ✅ 동기 락: state 업데이트 전에도 중복 발행 방지
+    if (publishingRef.current) return;
     if (!canPublish) return;
 
-    console.log("publish", { book, content, filter, images });
+    publishingRef.current = true;
 
-    showToast("북로그가 발행되었어요.");
-    resetFilter(); // ✅ 다음 글쓰기 대비
-    navigate("/booklog");
+    const bookId = book?.bookId;
+
+    if (!bookId || bookId <= 0) {
+      publishingRef.current = false;
+      showToast("책 정보(bookId)가 올바르지 않아요. 다시 선택해 주세요.");
+      return;
+    }
+
+    if (!tagOptions) {
+      publishingRef.current = false;
+      showToast("태그 정보를 불러오는 중이에요. 잠시 후 다시 시도해 주세요.");
+      return;
+    }
+
+    // ✅ filter.* 는 string[] (태그 이름) → 옵션으로 name -> tagId 매핑
+    const nameToId = new Map<string, number>();
+    for (const t of tagOptions.mood) nameToId.set(t.name, t.tagId);
+    for (const t of tagOptions.style) nameToId.set(t.name, t.tagId);
+    for (const t of tagOptions.immersion) nameToId.set(t.name, t.tagId);
+
+    const selectedNames = [...filter.mood, ...filter.style, ...filter.immersion];
+    const tagIds = Array.from(
+      new Set(
+        selectedNames
+          .map((name) => nameToId.get(name))
+          .filter((v): v is number => typeof v === "number")
+      )
+    );
+
+    if (tagIds.length === 0) {
+      publishingRef.current = false;
+      showToast("태그를 최소 1개 이상 선택해 주세요.");
+      return;
+    }
+
+    setIsPublishing(true);
+    try {
+      // 1) 이미지 업로드 (있을 때만)
+      let imageUrls: string[] = [];
+      if (images.length > 0) {
+        const files = images.map((img) => img.file);
+        imageUrls = await uploadBooklogImages(files);
+      }
+
+      // 2) 북로그 발행
+      const res = await createBooklog({
+        bookId,
+        title: book?.title ?? "",
+        content: content.trim(),
+        tagIds,
+        imageUrls,
+      });
+
+      showToast("북로그가 발행되었어요.");
+      resetFilter();
+      navigate("/booklog", { replace: true });
+
+      console.log("created postId:", res.postId);
+    } catch (err) {
+      console.error(err);
+      showToast("발행에 실패했어요. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      publishingRef.current = false;
+      setIsPublishing(false);
+    }
   };
 
   /** ---------------- 이미지 ---------------- */
@@ -118,9 +208,14 @@ export default function BookWritePage() {
 
   const deleteDraftAndGoBack = () => {
     setIsConfirmOpen(false);
-    resetFilter(); // ✅ 필터 초기화
+    resetFilter();
     navigate("/booklog/pick");
   };
+
+  const authorText = book?.authors?.length
+    ? `${book.authors.join(", ")} 저`
+    : "저자 정보 없음";
+  const publisherText = book?.publisherName ?? "출판사";
 
   return (
     <div className="relative min-h-dvh bg-bg pb-28">
@@ -145,9 +240,9 @@ export default function BookWritePage() {
         <section className="mt-4 flex justify-center">
           <div className="h-[220px] w-[240px] rounded-[12px] bg-[#EFEDEB]">
             <BookContent
-              title={book?.title ?? "소년이 온다"}
-              author={book?.author ?? "한강 저"}
-              publisher={book?.publisher ?? "출판사"}
+              title={book?.title ?? "제목을 입력하세요"}
+              author={authorText}
+              publisher={publisherText}
               tags={[]}
             />
           </div>
@@ -210,17 +305,16 @@ export default function BookWritePage() {
             type="button"
             onClick={openFilePicker}
             className="mt-3 flex h-[60px] w-[64px] flex-col items-center justify-center rounded border border-[#CDCCCB]"
-            >
+          >
             {/* 카메라 아이콘 */}
             <Camera className="h-6 w-6 text-[#676665] -translate-y-[3px]" />
 
             {/* 숫자 */}
             <span className="text-text-en-body-01 leading-none">
-            <span className="text-[#676665]">{imageCount}</span>
-            <span className="text-[#9B9A97]"> / {MAX_IMAGE_COUNT}</span>
+              <span className="text-[#676665]">{imageCount}</span>
+              <span className="text-[#9B9A97]"> / {MAX_IMAGE_COUNT}</span>
             </span>
           </button>
-
 
           {images.length > 0 && (
             <div className="mt-4 flex gap-3 overflow-x-auto">
@@ -251,7 +345,7 @@ export default function BookWritePage() {
             canPublish ? "bg-primary text-white" : "bg-gray-200 text-gray-500"
           }`}
         >
-          {canPublish ? "발행" : "발행하기"}
+          {isPublishing ? "발행 중..." : canPublish ? "발행" : "발행하기"}
         </button>
       </div>
     </div>

@@ -5,18 +5,30 @@ import { useNavigate } from "react-router-dom";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import Tab from "../../components/common/Tab";
 import { BookCard } from "../../components/myLibrary/BookCard";
+
 import type { Book } from "../../types/book.types";
+import type { UserBook } from "../../types/library"; 
 
 type Shelf = {
   id: string;
   name: string; // "서재 1"
-  books: Book[];
+  books: UserBook[];
 };
+
+function userBookToBook(ub: UserBook): Book {
+  return {
+    bookId: ub.bookId,
+    title: ub.title,
+    thumbnailUrl: ub.thumbnailUrl ?? "",
+    publisherName: ub.publisherName ?? "",
+    authors: ub.authorName ? [ub.authorName] : [],
+  };
+}
 
 export default function BookPickPage() {
   const navigate = useNavigate();
 
-  /** ✅ 퍼블리싱용 더미데이터 (책 있는 화면 확인용) */
+  /** ✅ BookCard(UserBook)용 더미데이터 */
   const shelves = useMemo<Shelf[]>(
     () => [
       {
@@ -24,33 +36,27 @@ export default function BookPickPage() {
         name: "서재 1",
         books: [
           {
-            id: "b1",
-            title: "책 제목",
-            author: "저자명",
-            publisher: "출판사",
-            coverUrl: "",
-          } as unknown as Book,
+            userBookId: 101,
+            status: "READING",
+            progressPercent: 20,
+            currentPage: 60,
+            bookId: 1,
+            title: "소년이 온다",
+            thumbnailUrl: "",
+            publisherName: "창비",
+            authorName: "한강",
+          },
           {
-            id: "b2",
-            title: "책 제목",
-            author: "저자명",
-            publisher: "출판사",
-            coverUrl: "",
-          } as unknown as Book,
-          {
-            id: "b3",
-            title: "책 제목",
-            author: "저자명",
-            publisher: "출판사",
-            coverUrl: "",
-          } as unknown as Book,
-          {
-            id: "b4",
-            title: "책 제목",
-            author: "저자명",
-            publisher: "출판사",
-            coverUrl: "",
-          } as unknown as Book,
+            userBookId: 102,
+            status: "TO_READ",
+            progressPercent: 0,
+            currentPage: 0, 
+            bookId: 2,
+            title: "채식주의자",
+            thumbnailUrl: "",
+            publisherName: "창비",
+            authorName: "한강",
+          },
         ],
       },
       {
@@ -58,19 +64,16 @@ export default function BookPickPage() {
         name: "서재 2",
         books: [
           {
-            id: "b5",
-            title: "다른 책 제목",
-            author: "다른 저자",
-            publisher: "출판사",
-            coverUrl: "",
-          } as unknown as Book,
-          {
-            id: "b6",
-            title: "다른 책 제목",
-            author: "다른 저자",
-            publisher: "출판사",
-            coverUrl: "",
-          } as unknown as Book,
+            userBookId: 201,
+            status: "COMPLETED",
+            progressPercent: 100,
+            currentPage: 0, // ✅ null 불가
+            bookId: 3,
+            title: "불편한 편의점",
+            thumbnailUrl: "",
+            publisherName: "나무옆의자",
+            authorName: "김호연",
+          },
         ],
       },
     ],
@@ -93,8 +96,9 @@ export default function BookPickPage() {
 
   const hasBooks = booksByTab.length > 0;
 
-  const goWritePage = (book: Book) => {
-    navigate("/booklog/write", { state: { book } });
+  const goWritePage = (userBook: UserBook) => {
+    const book = userBookToBook(userBook);
+    navigate("/booklog/write", { state: { book, fresh: true } });
   };
 
   return (
@@ -115,7 +119,6 @@ export default function BookPickPage() {
       </header>
 
       <main className="px-4 pb-10">
-        {/* ✅ 탭 아래 본문 맨 위 + 책 있을 때만 */}
         {hasBooks && (
           <p className="pt-3 text-en-body-02 text-[#81807F]">
             북로그를 작성할 책을 선택해주세요.
@@ -126,7 +129,11 @@ export default function BookPickPage() {
           <section className="pt-4">
             <div className="grid grid-cols-3 justify-items-start gap-x-4 gap-y-6">
               {booksByTab.map((book) => (
-                <BookCard key={book.id} book={book} onClick={goWritePage} />
+                <BookCard
+                  key={book.userBookId} 
+                  book={book}
+                  onClick={goWritePage}
+                />
               ))}
             </div>
           </section>

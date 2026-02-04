@@ -260,7 +260,6 @@ export default function BooklogPage() {
     []
   );
 
-  // ✅ filter 변화 감지용 key (의존성 깔끔하게)
   const filterKey = useMemo(() => JSON.stringify(filter), [filter]);
 
   useEffect(() => {
@@ -268,7 +267,6 @@ export default function BooklogPage() {
 
     (async () => {
       try {
-        // ✅ 필터 값을 params로 넘겨서 피드 조회
         const data = (await getBooklogsFeed({
           mood: filter.mood,
           style: filter.style,
@@ -355,7 +353,7 @@ export default function BooklogPage() {
     return () => {
       alive = false;
     };
-  }, [mockPosts, filterKey]); // ✅ 필터 바뀌면 재요청
+  }, [mockPosts, filterKey]); 
 
   return (
     <div className="min-h-screen bg-bg pb-24">
