@@ -1,3 +1,4 @@
+// src/pages/booklog/BooklogDetailPage.tsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import NavBar from "../../components/common/navbar/NavBarTop";
@@ -37,7 +38,8 @@ function timeAgo(iso: string) {
 }
 
 type Post = {
-  id: string;
+  id: string; // postId
+  authorId: string; // ✅ userId (authorId)
   username: string;
   email?: string;
   timeAgo: string;
@@ -92,8 +94,22 @@ export default function BooklogDetailPage() {
   const post: Post | null = useMemo(() => {
     if (!detail) return null;
 
+    // ✅ authorId는 userId로 잡기 (API 필드명에 맞춰 최대한 안전하게)
+    // - 1순위: detail.author.userId
+    // - 2순위: 혹시 authorId 라는 필드가 있으면 그것
+    // - fallback: "0"
+    const authorId =
+      String(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (detail as any)?.author?.userId ??
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (detail as any)?.author?.authorId ??
+          "0"
+      ) || "0";
+
     return {
       id: String(detail.postId),
+      authorId,
       username: detail.author.nickname,
       email: detail.author.email,
       timeAgo: timeAgo(detail.createdAt),
@@ -184,8 +200,9 @@ export default function BooklogDetailPage() {
     [recommendBooks]
   );
 
-  // 임시: 지금은 post.id를 userId처럼 사용
-  const profileUserId = post?.id ?? "0";
+  // ✅ post.id는 postId라서 프로필로 쓰면 안 됨 → authorId 사용
+  // fallback: detail.author.userId 또는 "0"
+  const profileUserId = post?.authorId ?? String((detail as any)?.author?.userId ?? "0");
 
   if (loading) {
     return (
@@ -316,9 +333,7 @@ export default function BooklogDetailPage() {
             ))}
           </div>
 
-          <p className="mt-3 text-body-03 leading-relaxed text-black">
-            {post.body}
-          </p>
+          <p className="mt-3 text-body-03 leading-relaxed text-black">{post.body}</p>
 
           <div className="mt-4 flex items-center justify-between text-caption-01 text-gray-600">
             <div>
@@ -354,9 +369,7 @@ export default function BooklogDetailPage() {
 
         {/* Orbital과 비슷한 도서 */}
         <section className="px-5 pt-5">
-          <h2 className="text-en-title-02 text-[#000000]">
-            Orbital과 비슷한 도서
-          </h2>
+          <h2 className="text-en-title-02 text-[#000000]">Orbital과 비슷한 도서</h2>
           <p className="mt-1 text-en-body-02 text-[#676665]">
             게시글에 언급된 도서와 비슷한 도서예요.
           </p>
@@ -379,9 +392,7 @@ export default function BooklogDetailPage() {
 
         {/* 비슷한 주제의 인기글 */}
         <section className="px-5 pt-8 pb-10">
-          <h2 className="text-en-title-02 text-[#000000]">
-            비슷한 주제의 인기글
-          </h2>
+          <h2 className="text-en-title-02 text-[#000000]">비슷한 주제의 인기글</h2>
           <p className="mt-1 text-en-body-02 text-[#676665]">
             게시글과 비슷한 내용의 게시글을 모아봤어요
           </p>
@@ -396,7 +407,15 @@ export default function BooklogDetailPage() {
                   tabIndex={0}
                   onClick={() => navigate(`/booklog/${rp.postId}`)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") navigate(`/booklog/${rp.postId}`);
+                    // ✅ Enter + Space 모두 지원 (Space는 스크롤 방지)
+                    if (e.key === "Enter") {
+                      navigate(`/booklog/${rp.postId}`);
+                      return;
+                    }
+                    if (e.key === " " || e.code === "Space") {
+                      e.preventDefault();
+                      navigate(`/booklog/${rp.postId}`);
+                    }
                   }}
                 >
                   <div className="min-w-0">
@@ -407,8 +426,8 @@ export default function BooklogDetailPage() {
                       {rp.excerpt}
                     </p>
                     <div className="mt-2 text-en-caption-02 text-gray-600">
-                      {timeAgo(rp.createdAt)} · 조회 {Number(rp.viewCount ?? 0)} ·
-                      저장 {Number(rp.bookmarkCount ?? 0)}
+                      {timeAgo(rp.createdAt)} · 조회 {Number(rp.viewCount ?? 0)} · 저장{" "}
+                      {Number(rp.bookmarkCount ?? 0)}
                     </div>
                   </div>
 
