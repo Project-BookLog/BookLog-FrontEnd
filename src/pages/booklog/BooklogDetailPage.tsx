@@ -15,12 +15,23 @@ import type { RecommendPost } from "../../types/booklogRecommendPosts.types";
 
 /** ---------- utils ---------- */
 function timeAgo(iso: string) {
-  const diff = Date.now() - new Date(iso).getTime();
+  const t = new Date(iso).getTime();
+
+  // ❌ 날짜 파싱 실패
+  if (isNaN(t)) return "알 수 없음";
+
+  const now = Date.now();
+
+  // ❌ 미래 시간 → 방금 전으로 처리 (diff 음수 방지)
+  const diff = Math.max(0, now - t);
+
   const min = Math.floor(diff / 60000);
   if (min < 1) return "방금 전";
   if (min < 60) return `${min}분 전`;
+
   const hour = Math.floor(min / 60);
   if (hour < 24) return `${hour}시간 전`;
+
   const day = Math.floor(hour / 24);
   return `${day}일 전`;
 }
@@ -45,24 +56,10 @@ type Post = {
 
 function MoreIcon({ className = "" }: { className?: string }) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path
-        d="M12 5.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z"
-        fill="currentColor"
-      />
-      <path
-        d="M12 10.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z"
-        fill="currentColor"
-      />
-      <path
-        d="M12 15.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z"
-        fill="currentColor"
-      />
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 5.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z" fill="currentColor" />
+      <path d="M12 10.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z" fill="currentColor" />
+      <path d="M12 15.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z" fill="currentColor" />
     </svg>
   );
 }
@@ -162,8 +159,8 @@ export default function BooklogDetailPage() {
       } catch (e) {
         console.error("북로그 상세 조회 실패", e);
       } finally {
-        if (!alive) return;
-        setLoading(false);
+        // ✅ finally에서 return 금지: mounted일 때만 setLoading(false)
+        if (alive) setLoading(false);
       }
     };
 
@@ -410,8 +407,8 @@ export default function BooklogDetailPage() {
                       {rp.excerpt}
                     </p>
                     <div className="mt-2 text-en-caption-02 text-gray-600">
-                      {timeAgo(rp.createdAt)} · 조회 {Number(rp.viewCount ?? 0)} · 저장{" "}
-                      {Number(rp.bookmarkCount ?? 0)}
+                      {timeAgo(rp.createdAt)} · 조회 {Number(rp.viewCount ?? 0)} ·
+                      저장 {Number(rp.bookmarkCount ?? 0)}
                     </div>
                   </div>
 
