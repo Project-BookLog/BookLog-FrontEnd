@@ -39,7 +39,7 @@ function timeAgo(iso: string) {
 
 type Post = {
   id: string; // postId
-  authorId: string; // ✅ userId (authorId)
+  authorId: string; // userId
   username: string;
   email?: string;
   timeAgo: string;
@@ -94,18 +94,8 @@ export default function BooklogDetailPage() {
   const post: Post | null = useMemo(() => {
     if (!detail) return null;
 
-    // ✅ authorId는 userId로 잡기 (API 필드명에 맞춰 최대한 안전하게)
-    // - 1순위: detail.author.userId
-    // - 2순위: 혹시 authorId 라는 필드가 있으면 그것
-    // - fallback: "0"
-    const authorId =
-      String(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (detail as any)?.author?.userId ??
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (detail as any)?.author?.authorId ??
-          "0"
-      ) || "0";
+    // ✅ BooklogAuthor의 userId를 신뢰 (detail만 nullable)
+    const authorId = String(detail?.author.userId ?? "0");
 
     return {
       id: String(detail.postId),
@@ -200,9 +190,8 @@ export default function BooklogDetailPage() {
     [recommendBooks]
   );
 
-  // ✅ post.id는 postId라서 프로필로 쓰면 안 됨 → authorId 사용
-  // fallback: detail.author.userId 또는 "0"
-  const profileUserId = post?.authorId ?? String((detail as any)?.author?.userId ?? "0");
+  // ✅ 프로필은 postId가 아니라 authorId로
+  const profileUserId = post?.authorId ?? "0";
 
   if (loading) {
     return (
