@@ -283,7 +283,7 @@ export default function RecordPage() {
   }, [date]);
 
   const onApply = async () => {
-        if (!canApply || submittingRef.current) return;
+    if (!canApply || submittingRef.current) return;
     submittingRef.current = true;
 
     try {
@@ -479,7 +479,7 @@ export default function RecordPage() {
 
           {!isEditMode && !hasValidUserBookId && (
             <div className="mt-2 text-caption-02 text-red-500">
-              userBookId가 없어서 저장할 수 없어요. (라우트 파라라미터 확인 필요)
+              userBookId가 없어서 저장할 수 없어요. (라우트 파라미터 확인 필요)
             </div>
           )}
         </div>
