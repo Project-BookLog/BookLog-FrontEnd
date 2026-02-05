@@ -1,4 +1,4 @@
-// src/pages/RecordPage.tsx
+// src/pages/MyLibrary/RecordPage.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
@@ -83,6 +83,7 @@ function ClearIcon({ className = "" }: { className?: string }) {
   );
 }
 
+/** ---------- Wheel Picker (3 rows, center aligned) ---------- */
 const ITEM_H = 45;
 const VISIBLE_ROWS = 3;
 const PADDING_ITEMS = 1;
@@ -266,6 +267,7 @@ export default function RecordPage() {
   }, [pagesRead]);
 
   const [submitting, setSubmitting] = useState(false);
+  const submittingRef = useRef(false);
 
   const canApply = Boolean(
     (isEditMode || hasValidUserBookId) &&
@@ -281,7 +283,8 @@ export default function RecordPage() {
   }, [date]);
 
   const onApply = async () => {
-    if (!canApply) return;
+        if (!canApply || submittingRef.current) return;
+    submittingRef.current = true;
 
     try {
       setSubmitting(true);
@@ -306,6 +309,7 @@ export default function RecordPage() {
           : "독서 기록 저장에 실패했어요. 잠시 후 다시 시도해 주세요."
       );
     } finally {
+      submittingRef.current = false;
       setSubmitting(false);
     }
   };
@@ -475,7 +479,7 @@ export default function RecordPage() {
 
           {!isEditMode && !hasValidUserBookId && (
             <div className="mt-2 text-caption-02 text-red-500">
-              userBookId가 없어서 저장할 수 없어요. (라우트 파라미터 확인 필요)
+              userBookId가 없어서 저장할 수 없어요. (라우트 파라라미터 확인 필요)
             </div>
           )}
         </div>
