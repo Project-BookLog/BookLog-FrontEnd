@@ -1,8 +1,10 @@
 // src/pages/RecordPage.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import PlusIcon from "../../assets/icons/plus.svg";
+
+import { createReadingLog, updateReadingLog } from "../../api/readingLogs";
 
 /** ---------- utils ---------- */
 function pad2(n: number) {
@@ -18,6 +20,9 @@ function weekdayKo(y: number, m: number, d: number) {
 }
 function formatKoreanDateWithWeekday(y: number, m: number, d: number) {
   return `${y}. ${m}. ${d}. ${weekdayKo(y, m, d)}요일`;
+}
+function toApiDate(y: number, m: number, d: number) {
+  return `${y}-${pad2(m)}-${pad2(d)}`;
 }
 
 /** ---------- UI parts ---------- */
@@ -38,7 +43,7 @@ function Pill({
         "h-[34px] rounded-[107.73px] px-3 py-2 transition",
         "text-en-body-02",
         active
-          ? "border border-[#3049C0] bg-[#E9EBF4] text-primary"
+          ? "border border-[#3049C0] bg-[#E9EBf4] text-primary"
           : "border border-transparent bg-gray-100 text-[#676665]",
       ].join(" ")}
     >
@@ -78,7 +83,6 @@ function ClearIcon({ className = "" }: { className?: string }) {
   );
 }
 
-/** ---------- Wheel Picker (3 rows, center aligned) ---------- */
 const ITEM_H = 45;
 const VISIBLE_ROWS = 3;
 const PADDING_ITEMS = 1;
@@ -196,7 +200,6 @@ function InlineDatePicker({
 
   useEffect(() => {
     onChange({ y, m, d });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [y, m, d]);
 
   const years = useMemo(() => {
@@ -229,15 +232,19 @@ type ReadStatus = "읽을 예정" | "읽는 중" | "완독" | "중단";
 export default function RecordPage() {
   const navigate = useNavigate();
   const { bookId } = useParams<{ bookId: string }>();
+  const [searchParams] = useSearchParams();
 
-  // ✅ 추가: 책종류 옵션
+  const userBookId = Number(bookId);
+  const hasValidUserBookId = Number.isFinite(userBookId) && userBookId > 0;
+
+  const logId = Number(searchParams.get("logId"));
+  const isEditMode = Number.isFinite(logId) && logId > 0;
+
   const bookTypeOptions: BookType[] = ["종이책", "전자책", "오디오책"];
   const statusOptions: ReadStatus[] = ["읽을 예정", "읽는 중", "완독", "중단"];
   const shelfOptions = ["서재 1", "서재 2", "서재 3"];
 
-  // ✅ 추가: 책종류 state
   const [bookType, setBookType] = useState<BookType | null>(null);
-
   const [status, setStatus] = useState<ReadStatus | null>(null);
   const [shelf, setShelf] = useState<string | null>(null);
 
@@ -249,24 +256,58 @@ export default function RecordPage() {
   const [date, setDate] = useState<{ y: number; m: number; d: number }>(today);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
 
-  const [pages, setPages] = useState<string>("");
+  const [pagesRead, setPagesRead] = useState<string>("");
+  const [totalPages, setTotalPages] = useState<string>("");
 
-  const isValidPages = useMemo(() => {
-    if (!pages) return false;
-    const n = Number(pages);
+  const isValidPagesRead = useMemo(() => {
+    if (!pagesRead) return false;
+    const n = Number(pagesRead);
     return Number.isFinite(n) && n > 0;
-  }, [pages]);
+  }, [pagesRead]);
 
-  // ✅ bookType도 있어야 적용 가능
-  const canApply = Boolean(bookType && status && shelf && isValidPages);
+  const [submitting, setSubmitting] = useState(false);
+
+  const canApply = Boolean(
+    (isEditMode || hasValidUserBookId) &&
+      bookType &&
+      status &&
+      shelf &&
+      isValidPagesRead &&
+      !submitting
+  );
 
   const dateLabel = useMemo(() => {
     return formatKoreanDateWithWeekday(date.y, date.m, date.d);
   }, [date]);
 
-  const onApply = () => {
+  const onApply = async () => {
     if (!canApply) return;
-    navigate(-1);
+
+    try {
+      setSubmitting(true);
+
+      const payload = {
+        readDate: toApiDate(date.y, date.m, date.d),
+        pagesRead: Number(pagesRead),
+      };
+
+      if (isEditMode) {
+        await updateReadingLog(logId, payload);
+      } else {
+        await createReadingLog(userBookId, payload);
+      }
+
+      navigate(-1);
+    } catch (e) {
+      console.error(isEditMode ? "updateReadingLog failed:" : "createReadingLog failed:", e);
+      alert(
+        isEditMode
+          ? "독서 기록 수정에 실패했어요. 잠시 후 다시 시도해 주세요."
+          : "독서 기록 저장에 실패했어요. 잠시 후 다시 시도해 주세요."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -349,13 +390,13 @@ export default function RecordPage() {
             <input
               type="text"
               inputMode="numeric"
-              value={pages}
+              value={pagesRead}
               onFocus={() => setDatePickerOpen(false)}
               onChange={(e) => {
-                setPages(e.target.value);
+                setPagesRead(e.target.value);
               }}
               onBlur={() => {
-                setPages((prev) => prev.replace(/[^\d]/g, ""));
+                setPagesRead((prev) => prev.replace(/[^\d]/g, ""));
               }}
               placeholder="오늘의 독서량을 남겨주세요."
               className={[
@@ -366,10 +407,10 @@ export default function RecordPage() {
               ].join(" ")}
             />
 
-            {pages.length > 0 && (
+            {pagesRead.length > 0 && (
               <button
                 type="button"
-                onClick={() => setPages("")}
+                onClick={() => setPagesRead("")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
                 aria-label="입력 지우기"
               >
@@ -378,21 +419,22 @@ export default function RecordPage() {
             )}
           </div>
 
+          {/* 5) 전체 페이지 수 (UI만) */}
           <div className="mt-6 mb-3 text-en-subtitle-01 text-black">전체 페이지 수</div>
 
           <div className="relative">
             <input
               type="text"
               inputMode="numeric"
-              value={pages}
+              value={totalPages}
               onFocus={() => setDatePickerOpen(false)}
               onChange={(e) => {
-                setPages(e.target.value);
+                setTotalPages(e.target.value);
               }}
               onBlur={() => {
-                setPages((prev) => prev.replace(/[^\d]/g, ""));
+                setTotalPages((prev) => prev.replace(/[^\d]/g, ""));
               }}
-              placeholder="오늘의 독서량을 남겨주세요."
+              placeholder="책의 전체 페이지 수를 입력해 주세요."
               className={[
                 "h-[41px] w-full rounded-[4px] px-4 pr-10 border bg-bg outline-none",
                 "border-gray-200 text-en-subtitle-02 text-black",
@@ -401,10 +443,10 @@ export default function RecordPage() {
               ].join(" ")}
             />
 
-            {pages.length > 0 && (
+            {totalPages.length > 0 && (
               <button
                 type="button"
-                onClick={() => setPages("")}
+                onClick={() => setTotalPages("")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
                 aria-label="입력 지우기"
               >
@@ -428,8 +470,14 @@ export default function RecordPage() {
               canApply ? "bg-[#3049C0] text-white" : "bg-[#E7E5E4] text-[#81807F]",
             ].join(" ")}
           >
-            적용
+            {submitting ? (isEditMode ? "수정 중..." : "저장 중...") : "적용"}
           </button>
+
+          {!isEditMode && !hasValidUserBookId && (
+            <div className="mt-2 text-caption-02 text-red-500">
+              userBookId가 없어서 저장할 수 없어요. (라우트 파라미터 확인 필요)
+            </div>
+          )}
         </div>
       </div>
     </div>
