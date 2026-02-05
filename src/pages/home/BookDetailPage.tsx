@@ -17,14 +17,15 @@ export const BookDetailPage = () => {
   const InfoRef = useRef<HTMLElement | null>(null);
   const BookLogRef = useRef<HTMLElement | null>(null);
   
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { bookId, userBookId } = useParams();
+  // const { bookId } = useParams();
+  const { userBookId } = useParams();
+
 
   const { data: userBook } = useGetBookDetail(Number(userBookId));
   if (!userBook) return;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const isInMyShelf = !!userBookId;
+ 
+  // const isInMyShelf = !!userBookId;
   // const displayBook = isInMyShelf ? userBook : book;
 
   const handleChangeTab = (nextTab: TabType) => {

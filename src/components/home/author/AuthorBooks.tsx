@@ -76,20 +76,6 @@ const DUMMY_BOOKS = [
 
 type FilterKey = "mood" | "style" | "immersion";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-interface Book {
-  bookId: number;
-  title: string;
-  thumbnailUrl: string;
-  authors: string;
-  author: string;
-  publisherName: string;
-  publisher: string;
-  createdAt: string;
-  mood?: string;
-  style?: string;
-  immersion?: string;
-}
 
 function AuthorBooks() {
   const navigate = useNavigate();

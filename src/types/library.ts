@@ -1,10 +1,11 @@
 import type { BOOK_ORDER } from "../enum/book";
-import type { Book, BookStatus } from "./book.types";
+import type { BookStatus } from "./book.types";
+import type { BookUi } from "./ui";
 
 export type Library = {
   name: string;
   isPublic: boolean;
-  books: Book[];
+  books: BookUi[];
   sort: BOOK_ORDER;
 };
 

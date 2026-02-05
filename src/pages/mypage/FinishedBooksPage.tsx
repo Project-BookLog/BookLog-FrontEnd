@@ -10,18 +10,18 @@ import { BookCard } from "../../components/myLibrary/BookCard";
 import { sortBooks } from "../../utils/sortBooks";
 
 export const FinishedBooksPage = ({ libraries }: { libraries: Library[] }) => {
-    const { id } = useAuth();
+    const { userId } = useAuth();
     const navigate = useNavigate();
     const library = libraries.find((lib) => lib.name === "전체 도서");
     const [sortOrder, setSortOrder] = useState<BOOK_ORDER>(library?.sort ?? BOOK_ORDER.LATEST);
     const [isSortDropDownOpen, setIsSortDropDownOpen] = useState(false);
 
-    if (!id) return null;
+    if (!userId) return null;
 
     const finishedBooks = useMemo(() => {
         if(!library) return [];
 
-        return library.books.filter((book) => book.bookId === 100);
+        return library.books.filter((book) => book.id === 100);
     }, [library]);
 
     const sortedBooks = useMemo(() => {
