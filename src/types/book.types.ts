@@ -14,8 +14,8 @@ export type UserBookDetail = {
   status: BookStatus;
   progressPercent: number;
   currentPage: number | null;
-  startDate: string | null;
-  endDate: string | null;
+  startDate: Date | string | null;
+  endDate: Date | string | null;
   format: BookFormat | null;
   pageCountSnapshot: number | null;
   bookId: number;
@@ -23,7 +23,7 @@ export type UserBookDetail = {
   contents: string;
   thumbnailUrl: string;
   publisherName: string;
-  publishedAt: string;
+  publishedAt: Date | string;
   kakaoUrl: string;
 }
 

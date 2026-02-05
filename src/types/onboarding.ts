@@ -23,7 +23,7 @@ export interface ResponseOnboardingAnswers {
     expressionTexture: ExpressionTexture;
     expressionDirection: ExpressionDirection;
     readingMoment: ReadingMoment;
-    updatedAt: string | null;
+    updatedAt: Date | string | null;
     isCompleted: boolean;
-    completedAt: string | null;
+    completedAt: Date | string | null;
 }
