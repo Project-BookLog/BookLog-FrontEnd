@@ -1,9 +1,12 @@
 // src/pages/user/UserProfilePage.tsx
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import { Share, Bookmark, BackIcon } from "../../assets/icons";
+
+import { getPublicUserShelvesPreview } from "../../api/publicUserShelves";
+import type { PublicUserShelf } from "../../types/publicShelves.types";
 
 type Tab = "library" | "blog";
 
@@ -12,15 +15,13 @@ type Book = {
   title: string;
   author: string;
   publisher: string;
-
-  // ✅ MyLibraryPage 스타일과 동일하게 쓸 수 있도록 확장 (없어도 됨)
   coverUrl?: string;
   CoverIcon?: React.ComponentType<{ className?: string }>;
 };
 
 type ShelfSection = {
-  id: string;
-  title: string;
+  id: string; // shelfId
+  title: string; // shelf name
   books: Book[];
 };
 
@@ -34,33 +35,58 @@ type BlogPost = {
 
 export default function UserProfilePage() {
   const navigate = useNavigate();
+  const { userId } = useParams<{ userId: string }>();
+
   const [tab, setTab] = useState<Tab>("library");
   const [isFollowing, setIsFollowing] = useState(false);
-  
-  const librarySections = useMemo<ShelfSection[]>(
-    () => [
-      {
-        id: "shelf1",
-        title: "서재 1",
-        books: [
-          { id: "b1", title: "책 제목", author: "저자명", publisher: "출판사" },
-          { id: "b2", title: "책 제목", author: "저자명", publisher: "출판사" },
-          { id: "b3", title: "책 제목", author: "저자명", publisher: "출판사" },
-        ],
-      },
-      {
-        id: "shelf2",
-        title: "서재 2",
-        books: [
-          { id: "b5", title: "책 제목", author: "저자명", publisher: "출판사" },
-          { id: "b6", title: "책 제목", author: "저자명", publisher: "출판사" },
-          { id: "b7", title: "책 제목", author: "저자명", publisher: "출판사" },
-        ],
-      },
-    ],
-    []
-  );
 
+  // ✅ 다른 유저 공개 서재(미리보기) 상태
+  const [librarySections, setLibrarySections] = useState<ShelfSection[]>([]);
+  const [shelvesLoading, setShelvesLoading] = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+
+    async function fetchPublicShelvesPreview() {
+      if (!userId) return;
+
+      try {
+        setShelvesLoading(true);
+
+        const res = await getPublicUserShelvesPreview(Number(userId), 3);
+
+        // ✅ DTO 형태로 받음: { totalCount, items }
+        const shelves: PublicUserShelf[] = res.data.items ?? [];
+
+        const mapped: ShelfSection[] = shelves.map((shelf) => ({
+          id: String(shelf.shelfId),
+          title: shelf.name,
+          books: (shelf.previewBooks ?? []).map((b) => ({
+            id: String(b.bookId),
+            title: b.title,
+            author: b.authorName,
+            publisher: b.publisherName,
+            coverUrl: b.thumbnailUrl,
+          })),
+        }));
+
+        if (alive) setLibrarySections(mapped);
+      } catch (e) {
+        console.error(e);
+        if (alive) setLibrarySections([]);
+      } finally {
+        if (alive) setShelvesLoading(false);
+      }
+    }
+
+    fetchPublicShelvesPreview();
+
+    return () => {
+      alive = false;
+    };
+  }, [userId]);
+
+  // ✅ 임시 북로그 데이터(나중에 API 연결 시 교체)
   const blogPosts = useMemo<BlogPost[]>(
     () => [
       {
@@ -88,7 +114,7 @@ export default function UserProfilePage() {
 
   return (
     <div className="min-h-screen bg-bg">
-      <NavBarTop title="유저 프로필" onBack={() => navigate("/booklog/:booklogId")} />
+      <NavBarTop title="유저 프로필" onBack={() => navigate(-1)} />
 
       {/* ✅ 상단 카드 */}
       <div className="bg-bg px-5 py-5">
@@ -180,13 +206,31 @@ export default function UserProfilePage() {
         {/* 컨텐츠 */}
         <div className="pt-6 pb-10">
           {tab === "library" ? (
-            hasLibrary ? (
+            shelvesLoading ? (
+              <div className="px-5">
+                <EmptyState
+                  title="서재를 불러오는 중이에요."
+                  desc={
+                    <>
+                      잠시만 기다려 주세요.
+                      <br />
+                      곧 공개 서재를 보여드릴게요.
+                    </>
+                  }
+                />
+              </div>
+            ) : hasLibrary ? (
               <div className="flex flex-col gap-7">
                 {librarySections.map((section) => (
                   <ShelfRow
                     key={section.id}
                     title={section.title}
-                    onViewAll={() => navigate(`/my-library/${section.title}`)}
+                    onViewAll={() => {
+                      if (!userId) return;
+                      navigate(`/users/${userId}/library/${section.id}`, {
+                        state: { shelfName: section.title, isPublic: true },
+                      });
+                    }}
                     items={section.books}
                   />
                 ))}
@@ -194,10 +238,10 @@ export default function UserProfilePage() {
             ) : (
               <div className="px-5">
                 <EmptyState
-                  title="저장된 도서가 없어요."
+                  title="공개된 서재가 없어요."
                   desc={
                     <>
-                      유저가 저장된 책들이 생기면
+                      유저가 서재를 공개하면
                       <br />
                       이곳에서 확인할 수 있어요.
                     </>
@@ -251,7 +295,8 @@ function ShelfRow<
   items: T[];
 }) {
   const top3 = items.slice(0, 3);
-  const GradationFrame = "w-[347px] shrink-0 self-stretch rounded-b-[6px] border-[1.2px] border-[rgba(255,255,255,0.7)] bg-[linear-gradient(153deg,rgba(48,73,192,0.28)_18%,rgba(120,138,222,0.28)_44.99%,rgba(120,138,222,0.31)_58.48%,rgba(48,73,192,0.35)_85.47%)] shadow-[0_6px_16px_rgba(48,73,192,0.15)] backdrop-blur-[2px]"
+  const GradationFrame =
+    "w-[347px] shrink-0 self-stretch rounded-b-[6px] border-[1.2px] border-[rgba(255,255,255,0.7)] bg-[linear-gradient(153deg,rgba(48,73,192,0.28)_18%,rgba(120,138,222,0.28)_44.99%,rgba(120,138,222,0.31)_58.48%,rgba(48,73,192,0.35)_85.47%)] shadow-[0_6px_16px_rgba(48,73,192,0.15)] backdrop-blur-[2px]";
 
   return (
     <section className="flex flex-col items-center gap-8 self-stretch">
@@ -275,7 +320,6 @@ function ShelfRow<
               key={book.id}
               className="flex w-[104px] h-[156px] items-center rounded-[4px] overflow-hidden bg-[#CDCCCB]"
             >
-              {/* ✅ img/src 제거: background-image로 커버 표시 */}
               {book.coverUrl ? (
                 <div
                   className="h-full w-full bg-center bg-cover"
@@ -293,7 +337,7 @@ function ShelfRow<
         </div>
 
         <div className="absolute top-[116px] flex w-[347px] h-[52px] justify-center items-center">
-          <span className={`${GradationFrame}`}/>
+          <span className={`${GradationFrame}`} />
         </div>
 
         <div className="flex items-center gap-[10px]">
