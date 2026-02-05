@@ -1,4 +1,4 @@
-// src/pages/user/UserProfilePage.tsx
+// src/pages/mypage/UserProfilePage.tsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -48,14 +48,20 @@ export default function UserProfilePage() {
     let alive = true;
 
     async function fetchPublicShelvesPreview() {
-      if (!userId) return;
+      const numericUserId = Number(userId);
+      if (!userId || !Number.isFinite(numericUserId)) {
+        if (alive) {
+          setLibrarySections([]);
+          setShelvesLoading(false);
+        }
+        return;
+      }
 
       try {
         setShelvesLoading(true);
 
-        const res = await getPublicUserShelvesPreview(Number(userId), 3);
+        const res = await getPublicUserShelvesPreview(numericUserId, 3);
 
-        // ✅ DTO 형태로 받음: { totalCount, items }
         const shelves: PublicUserShelf[] = res.data.items ?? [];
 
         const mapped: ShelfSection[] = shelves.map((shelf) => ({
@@ -86,7 +92,6 @@ export default function UserProfilePage() {
     };
   }, [userId]);
 
-  // ✅ 임시 북로그 데이터(나중에 API 연결 시 교체)
   const blogPosts = useMemo<BlogPost[]>(
     () => [
       {
@@ -112,9 +117,14 @@ export default function UserProfilePage() {
   const hasLibrary = librarySections.some((s) => s.books.length > 0);
   const hasBlog = blogPosts.length > 0;
 
+  const handleBack = () => {
+    if (window.history.length > 1) navigate(-1);
+    else navigate("/"); // 안전한 기본값
+  };
+
   return (
     <div className="min-h-screen bg-bg">
-      <NavBarTop title="유저 프로필" onBack={() => navigate(-1)} />
+      <NavBarTop title="유저 프로필" onBack={handleBack} />
 
       {/* ✅ 상단 카드 */}
       <div className="bg-bg px-5 py-5">
@@ -219,7 +229,7 @@ export default function UserProfilePage() {
                   }
                 />
               </div>
-            ) : hasLibrary ? (
+            ) : librarySections.some((s) => s.books.length > 0) ? (
               <div className="flex flex-col gap-7">
                 {librarySections.map((section) => (
                   <ShelfRow
@@ -275,7 +285,7 @@ export default function UserProfilePage() {
   );
 }
 
-/* ===== 서재 섹션 (MyLibraryPage와 동일한 구조/모양) ===== */
+/* ===== 서재 섹션 ===== */
 function ShelfRow<
   T extends {
     id: string;
