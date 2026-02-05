@@ -1,4 +1,4 @@
-import { privateApi } from "../api/axiosConfig";
+import { privateApi } from "./axiosConfig";
 import type { ReadingCalendarResponse } from "../types/myReading.types";
 
 export const getReadingCalendar = async (month?: string) => {

@@ -5,14 +5,14 @@ import { LoadingPage } from "../../pages/onboarding/LoadingPage";
 import { ErrorPage } from "../../pages/onboarding/ErrorPage";
 
 type CalendarDay = {
-  date: number;            // 1~31, 빈칸은 0
+  date: number;          
   hasBook: boolean;
   thumbnailUrl?: string;
 };
 
 type ReadingCalendarProps = {
-  year: number;  // 2026
-  month: number; // 1~12
+  year: number; 
+  month: number; 
 };
 
 const pad2 = (n: number) => n.toString().padStart(2, "0");
@@ -22,7 +22,6 @@ function ReadingCalendar({ year, month }: ReadingCalendarProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // ✅ API month 포맷: "YYYY-MM"fq
   const monthKey = useMemo(() => `${year}-${pad2(month)}`, [year, month]);
 
   useEffect(() => {
@@ -41,9 +40,9 @@ function ReadingCalendar({ year, month }: ReadingCalendarProps) {
         setError("독서 캘린더 불러오기 실패");
         setDaysDto([]);
       } finally {
-        // eslint-disable-next-line no-unsafe-finally
-        if (!alive) return;
-        setLoading(false);
+        if(alive) {
+          setLoading(false);
+        }
       }
     })();
 
@@ -52,7 +51,7 @@ function ReadingCalendar({ year, month }: ReadingCalendarProps) {
     };
   }, [monthKey]);
 
-  // ✅ "YYYY-MM-DD" -> thumbnailUrl 빠른 조회용 Map
+
   const thumbByDate = useMemo(() => {
     const m = new Map<string, string>();
     for (const d of daysDto) m.set(d.date, d.thumbnailUrl);
