@@ -1,29 +1,46 @@
 import { BOOK_ORDER } from "../enum/book";
-import type { Book } from "../types/book.types";
 
-const getTime = (date: string | Date) =>
-  typeof date === "string" ? new Date(date).getTime() : date.getTime();
-
-export const sortBooks = (
-  books: Book[],
-  sortOrder: BOOK_ORDER
-) => {
-  const booksCopy = [...books];
-
-  switch (sortOrder) {
-    case BOOK_ORDER.OLDEST:
-      return booksCopy.sort(
-        (a, b) => getTime(a.createdAt) - getTime(b.createdAt)
-      );
-    case BOOK_ORDER.LATEST:
-      return booksCopy.sort(
-        (a, b) => getTime(b.createdAt) - getTime(a.createdAt)
-      );
-    case BOOK_ORDER.TITLE:
-      return booksCopy.sort((a, b) => a.title.localeCompare(b.title));
-    case BOOK_ORDER.AUTHOR:
-      return booksCopy.sort((a, b) => a.author.localeCompare(b.author));
-    default:
-      return booksCopy;
-  }
+type SortableBook = {
+  createdAt?: string;
+  author?: string;
+  authors?: string[];
 };
+
+export function sortBooks<T extends SortableBook>(
+  books: T[],
+  order: BOOK_ORDER
+): T[] {
+  const sorted = [...books];
+
+  switch (order) {
+    case BOOK_ORDER.LATEST:
+      return sorted.sort((a, b) => {
+        if (!a.createdAt || !b.createdAt) return 0;
+        return (
+          new Date(b.createdAt).getTime() -
+          new Date(a.createdAt).getTime()
+        );
+      });
+
+    case BOOK_ORDER.OLDEST:
+      return sorted.sort((a, b) => {
+        if (!a.createdAt || !b.createdAt) return 0;
+        return (
+          new Date(a.createdAt).getTime() -
+          new Date(b.createdAt).getTime()
+        );
+      });
+
+    case BOOK_ORDER.AUTHOR:
+      return sorted.sort((a, b) => {
+        const authorA =
+          a.author ?? a.authors?.[0] ?? "";
+        const authorB =
+          b.author ?? b.authors?.[0] ?? "";
+        return authorA.localeCompare(authorB);
+      });
+
+    default:
+      return sorted;
+  }
+}

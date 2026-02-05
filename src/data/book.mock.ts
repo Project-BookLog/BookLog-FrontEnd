@@ -1,4 +1,4 @@
-import type { BookUi } from "../types/book.ui";
+import type { BookUi } from "../types/ui";
 
 export const BOOKS: (BookUi & {
   mood?: string;

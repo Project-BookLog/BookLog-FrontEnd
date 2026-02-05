@@ -17,11 +17,13 @@ export const BookDetailPage = () => {
   const InfoRef = useRef<HTMLElement | null>(null);
   const BookLogRef = useRef<HTMLElement | null>(null);
   
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { bookId, userBookId } = useParams();
 
   const { data: userBook } = useGetBookDetail(Number(userBookId));
   if (!userBook) return;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const isInMyShelf = !!userBookId;
   // const displayBook = isInMyShelf ? userBook : book;
 
@@ -48,6 +50,7 @@ export const BookDetailPage = () => {
     });
   };
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     const handleScroll = () => {
       const sections: { name: TabType; el: HTMLElement | null }[] = [

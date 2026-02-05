@@ -1,52 +1,46 @@
-import type { Author } from "../types/book.types";
-import { Dummy_author } from "../assets/icons";
-import type { Book } from "../types/book.types";
-import { Dummy_book } from "../assets/icons";
+import type { AuthorUi, AuthorBookUi } from "../types/ui";
 
-const SAMPLE_BOOKS: Book[] = [
+const SAMPLE_BOOKS: AuthorBookUi[] = [
   {
     id: 1,
     title: "책 제목 1",
     author: "작가 A",
     publisher: "출판사 A",
-    createdAt: "",
-    progress: 0,
-    CoverIcon: Dummy_book,
+    coverUrl: "https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/9788936434120.jpg",
   },
   {
     id: 2,
     title: "책 제목 2",
     author: "작가 A",
     publisher: "출판사 B",
-    createdAt: "",
-    progress: 0,
-    CoverIcon: Dummy_book,
+    coverUrl: "https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/9788936434120.jpg",
   },
 ];
 
-export const AUTHORS: Author[] = [
+
+export const AUTHORS: AuthorUi[] = [
   {
-    id: "1",
+    id: 1,
     name: "한강",
     role: "작가",
     country: "한국",
-    imageUrl: Dummy_author,
-    books: SAMPLE_BOOKS,   
+    imageUrl: "https://contents.kyobobook.co.kr/pmtn/2024/eBook/241015_nobel/bnJ_e01_04.png",
+    books: SAMPLE_BOOKS,
   },
   {
-    id: "2",
+    id: 2,
     name: "작가2",
     role: "작가",
     country: "한국",
-    imageUrl: Dummy_author,
-    books: SAMPLE_BOOKS,   
+    imageUrl: "https://contents.kyobobook.co.kr/pmtn/2024/eBook/241015_nobel/bnJ_e01_04.png",
+    books: SAMPLE_BOOKS,
   },
   {
-    id: "3",
+    id: 3,
     name: "작가3",
     role: "작가",
     country: "한국",
-    imageUrl: Dummy_author,
-    books: SAMPLE_BOOKS,   
+    imageUrl: "https://contents.kyobobook.co.kr/pmtn/2024/eBook/241015_nobel/bnJ_e01_04.png",
+    books: SAMPLE_BOOKS,
   },
 ];

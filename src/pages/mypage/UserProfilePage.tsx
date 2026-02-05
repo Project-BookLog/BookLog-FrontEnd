@@ -114,6 +114,7 @@ export default function UserProfilePage() {
     []
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const hasLibrary = librarySections.some((s) => s.books.length > 0);
   const hasBlog = blogPosts.length > 0;
 

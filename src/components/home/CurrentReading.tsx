@@ -81,7 +81,7 @@ const CurrentReading: React.FC = () => {
         >
 
           {BOOKS.map((book, index) => {
-            const CoverIcon = book.CoverIcon;
+            // const CoverIcon = book.CoverIcon;
             const isCenter = index === activeIndex;
 
             return (
@@ -105,9 +105,9 @@ const CurrentReading: React.FC = () => {
                         className="w-full h-full object-cover"
                         draggable={false}
                       />
-                    ) : CoverIcon ? (
+                    ) /*: CoverIcon ? (
                       <CoverIcon className="w-full h-full" />
-                    ) : (
+                    ) */: (
                       <span className="text-xs">No Image</span>
                     )}
                   </div>
