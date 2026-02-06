@@ -51,12 +51,14 @@ export default function StoppedBooksPage() {
     if (selectedBooks.length > 0) setIsConfirmModalOpen(true);
     else navigate(`/my-library/${shelfId}`, {
       state: { shelfName },
+      replace: true
     });
   }
 
   const handleCancel = () => {
     navigate(`/my-library/${shelfId}`, {
       state: { shelfName },
+      replace: true
     })
   };
 
@@ -69,9 +71,10 @@ export default function StoppedBooksPage() {
       },
       {
         onSuccess: () => {
-          showToast("삭제가 완료되었어요.");
+          showToast("선택한 책이 삭제되었어요.");
           navigate(`/my-library/${shelfId}`, {
             state: { shelfName },
+            replace: true
           });
         },
       }
@@ -137,7 +140,7 @@ export default function StoppedBooksPage() {
           <button
             className="flex w-[335px] px-[10px] py-4 justify-center items-center gap-[10px]
                        rounded-[12px]
-                       bg-primary active:bg-[#263A99] text-white
+                       bg-warning text-white
                        disabled:bg-gray-200 disabled:text-gray-600
                        cursor-pointer"
             disabled={isDisabled}

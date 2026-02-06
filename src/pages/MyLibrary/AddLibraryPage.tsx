@@ -70,7 +70,7 @@ export default function AddLibraryPage() {
 
   const handleConfirmLeave = () => {
     setIsConfirmOpen(false);
-    navigate(-1);
+    navigate("/my-library", { replace: true });
   };
 
   const handleComplete = () => {
@@ -82,7 +82,7 @@ export default function AddLibraryPage() {
       {
         onSuccess: () => {
           showToast("서재가 추가되었어요.");
-          navigate("/my-library");
+          navigate("/my-library", { replace: true });
         }
       }
     )

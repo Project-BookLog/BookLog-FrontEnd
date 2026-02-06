@@ -84,6 +84,7 @@ export default function EditPage() {
         shelfName: originalShelfName,
         isPublic: originalIsPublic,
       },
+      replace: true
     });
   };
 

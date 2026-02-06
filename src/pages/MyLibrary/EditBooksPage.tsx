@@ -71,12 +71,14 @@ export const EditBooksPage = () => {
         if (selectedBooks.length >= 0) setIsConfirmModalOpen(true);
         else navigate(`/my-library/${shelfId}`, {
             state: { shelfName },
+            replace: true
         });
     }
 
     const handleCancel = () => {
         navigate(`/my-library/${shelfId}`, {
           state: { shelfName },
+          replace: true
         })
     };
 
@@ -92,6 +94,7 @@ export const EditBooksPage = () => {
                     showToast("도서 목록이 편집되었어요.");
                     navigate(`/my-library/${shelfId}`, {
                         state: { shelfName },
+                        replace: true
                     });
                 },
             }
@@ -110,6 +113,7 @@ export const EditBooksPage = () => {
                     showToast("삭제가 완료되었어요.");
                     navigate(`/my-library/${shelfId}`, {
                         state: { shelfName },
+                        replace: true
                     });
                 },
             }
@@ -121,6 +125,7 @@ export const EditBooksPage = () => {
         showToast("서재 이동이 완료되었어요.");
         navigate(`/my-library/${shelfId}`, {
             state: { shelfName },
+            replace: true
         });
     }
 

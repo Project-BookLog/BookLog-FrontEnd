@@ -43,6 +43,7 @@ import ReadingCalendarPage from "./pages/mypage/ReadingCalenderPage";
 import ReadingRankingPage from "./pages/mypage/ReadingRankingPage";
 import UserProfilePage from "./pages/mypage/UserProfilePage";
 import { KakaoLoginRedirectPage } from "./pages/KakaoLoginRedirectPage";
+import { FinishedBooksPage } from "./pages/mypage/FinishedBooksPage";
 
 function GlobalToast() {
   const { message } = useToast();
@@ -62,7 +63,7 @@ function App() {
         {/* 1. 홈 */}
         <Route path="/" element={<HomePage />} />
         <Route path="/book/:bookId" element={<BookDetailPage />} />
-        <Route path="/book/:userBookId" element={<BookDetailPage />} />
+        <Route path="/my-library/book-detail/:userBookId" element={<BookDetailPage />} />
 
         {/* 필터 사용 라우트들에만 Provider 적용 */}
         <Route
@@ -121,6 +122,7 @@ function App() {
         <Route path="/setting" element={<Setting />} />
         <Route path="/mypage/readingcalendar" element={<ReadingCalendarPage />} />
         <Route path="/mypage/readingranking" element={<ReadingRankingPage />} />
+        <Route path="/mypage/finished" element={<FinishedBooksPage />} />
       </Routes>
 
       <GlobalToast />

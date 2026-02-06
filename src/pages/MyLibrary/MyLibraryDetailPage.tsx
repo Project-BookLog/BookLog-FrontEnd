@@ -70,7 +70,7 @@ export function MyLibraryDetailPage() {
         <div className="relative flex h-[62px] px-5 pt-5 pb-2 justify-between items-center self-stretch">
             <BackIcon
                 className="w-6 h-6 cursor-pointer"
-                onClick={() => navigate("/my-library")}
+                onClick={() => navigate("/my-library", { replace: true })}
             />
             <p className="text-black text-title-01">{shelfName}</p>
             <Kebab
@@ -136,7 +136,7 @@ export function MyLibraryDetailPage() {
                   <BookCard
                     key={book.bookId}
                     book={book}
-                    onClick={() => navigate(`/book/${book.userBookId}`, { state: {shelfName}})}/>
+                    onClick={() => navigate(`/my-library/book-detail/${book.userBookId}`, { state: {shelfName}})}/>
                 ))}
               </div>
             ) : (
@@ -145,7 +145,7 @@ export function MyLibraryDetailPage() {
                   <ReadingBookCard
                     key={book.bookId}
                     book={book}
-                    onClick={() => navigate(`/book/${book.userBookId}`, { state: {shelfName}})}/>
+                    onClick={() => navigate(`/my-library/book-detail/${book.userBookId}`, { state: {shelfName}})}/>
                 ))}
               </div>
             )
