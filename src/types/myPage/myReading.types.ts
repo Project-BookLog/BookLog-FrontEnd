@@ -1,3 +1,5 @@
+
+
 export type ReadingCalendarDayDto = {
   date: string; // "2026-01-01"
   thumbnailUrl: string;

@@ -7,30 +7,14 @@ import ReadingCalendar from "../../components/mypage/ReadingCalendar";
 import NavbarBottom from "../../components/common/navbar/NavBarBottom";
 import { useNavigate } from "react-router-dom";
 import { useMemo } from "react";
+import { getCurrentMonthString, getCurrentYearMonth } from "../../utils/date";
 
 function MyPage() {
   const navigate = useNavigate();
 
-  const currentDate = useMemo(() => {
-    const now = new Date();
-    return {
-      year: now.getFullYear(),    
-      month: now.getMonth() + 1,   
-    };
-  }, []);
+  const monthString = useMemo(() => getCurrentMonthString(), []);
+  const { year, month } = useMemo(() => getCurrentYearMonth(), []);
 
-  const handleSettingClick = () => {
-    navigate("/setting");
-  };
-
-  const handleCalendarClick = () => {
-    navigate("/mypage/readingcalendar"); 
-  };
-
-  const handleRankingClick = () => {
-    navigate("/mypage/readingranking"); 
-  };
-  
 
   return (
     <div className="min-h-screen bg-bg">
@@ -38,7 +22,7 @@ function MyPage() {
         <header className="mt-4 px-5 flex h-15 items-center justify-between">
           <p className="text-head">마이페이지</p>
           <button
-            onClick={handleSettingClick}
+            onClick={() => navigate("/setting")}
             className="p-1 hover:opacity-70 transition-opacity"
             aria-label="설정"
           >
@@ -63,7 +47,7 @@ function MyPage() {
             <p className="text-title-02">독서 랭킹</p>
             <button
               type="button"
-              onClick={handleRankingClick}
+              onClick={() => navigate("/mypage/readingranking")}
               className="flex items-center gap-0.5 text-gray-500 text-body-03"
             >
               <span>전체보기</span>
@@ -71,7 +55,7 @@ function MyPage() {
             </button>
           </div>
 
-          <TopReadingRanking />
+          <TopReadingRanking month={monthString} />
         </section>
 
 
@@ -81,7 +65,7 @@ function MyPage() {
             <p className="text-title-02">독서 캘린더</p>
             <button
               type="button"
-              onClick={handleCalendarClick}
+              onClick={() => navigate("/readingcalendar")}
               className="flex items-center gap-0.5 text-gray-500 text-body-03"
             >
               <span>전체보기</span>
@@ -89,10 +73,7 @@ function MyPage() {
             </button>
           </div>
 
-          <ReadingCalendar 
-            year={currentDate.year} 
-            month={currentDate.month} 
-          />
+          <ReadingCalendar year={year} month={month} />
         </section>
 
         <NavbarBottom />
@@ -103,3 +84,4 @@ function MyPage() {
 }
 
 export default MyPage;
+

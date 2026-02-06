@@ -5,8 +5,8 @@ import { LoadingPage } from "../onboarding/LoadingPage";
 import { ErrorPage } from "../onboarding/ErrorPage";
 import EditPhotoModal from "../../components/mypage/EditPhotoModal";
 import { XIcon, Pencil } from "../../assets/icons";
-import { getMyProfile, updateMyProfile, updateMyProfileAvatar } from "../../api/myProfile";
-import type { UpdateProfileDto } from "../../types/user.types";
+import { getMyProfile, updateMyProfile, updateMyProfileAvatar } from "../../api/mypage/myProfile";
+import type { UpdateProfileDto } from "../../types/myPage/user.types";
 
 function EditProfile() {
   const navigate = useNavigate();

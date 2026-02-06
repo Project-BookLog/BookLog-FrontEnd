@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Dummy_author, Share } from "../../assets/icons";
-import type { User } from "../../types/user.types"
+import type { User } from "../../types/myPage/user.types"
 
 type UserInfoCardProps = {
   user: User;
