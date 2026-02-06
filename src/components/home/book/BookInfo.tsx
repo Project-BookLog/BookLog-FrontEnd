@@ -2,7 +2,7 @@ import { useState } from "react";
 import { BackIcon } from "../../../assets/icons";
 import type { UserBookDetail } from "../../../types";
 
-function BookInfo({book}: {book: UserBookDetail}) {
+function BookInfo() {
   const [descExpanded, setDescExpanded] = useState(false);
   const [tocExpanded, setTocExpanded] = useState(false);
 
@@ -28,7 +28,7 @@ function BookInfo({book}: {book: UserBookDetail}) {
                 (descExpanded ? "book-desc-expanded" : "book-desc-clamp")
               }
             >
-              {book.contents}
+              책 내용
             </p>
           </div>
         </div>

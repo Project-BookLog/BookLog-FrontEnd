@@ -63,7 +63,7 @@ function App() {
         {/* 1. 홈 */}
         <Route path="/" element={<HomePage />} />
         <Route path="/book/:bookId" element={<BookDetailPage />} />
-        <Route path="/book/:userBookId" element={<BookDetailPage />} />
+        <Route path="/my-library/book-detail/:userBookId" element={<BookDetailPage />} />
 
         {/* 필터 사용 라우트들에만 Provider 적용 */}
         <Route
