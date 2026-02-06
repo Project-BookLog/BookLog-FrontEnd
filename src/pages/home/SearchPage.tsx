@@ -12,11 +12,8 @@ import BookResults from "../../components/home/search/BookResults";
 import AuthorResults from "../../components/home/search/AuthorResults";
 
 import { useSearch } from "../../context/SearchContext";
-import {
-  saveSearchKeyword,
-  getRecentSearchKeywords,
-} from "../../api/search";
-import type { RecentSearchKeyword } from "../../types/search.types";
+import { saveSearchKeyword, getRecentSearchKeywords, getRecommendedSearchKeywords} from "../../api/search";
+import type { RecentSearchKeyword, RecommendedKeyword } from "../../types/search.types";
 import { LoadingPage } from "../onboarding/LoadingPage";
 import { ErrorPage } from "../onboarding/ErrorPage";
 
@@ -31,6 +28,9 @@ export default function SearchPage() {
 
   const [recentKeywords, setRecentKeywords] = useState<
     RecentSearchKeyword[]
+  >([]);
+  const [recommendedKeywords, setRecommendedKeywords] = useState<
+    RecommendedKeyword[]
   >([]);
 
   const searchKeyword = search.keyword;
@@ -80,6 +80,18 @@ export default function SearchPage() {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await getRecommendedSearchKeywords();
+        setRecommendedKeywords(data.keywords);
+      } catch (e) {
+        console.warn("추천 검색어 조회 실패", e);
+      }
+    })();
+  }, []);
+
 
 
   const handleSearch = useCallback(() => {
@@ -231,7 +243,21 @@ export default function SearchPage() {
             </section>
 
             <section className="px-5">
-              <RecommendedSearches items={["검색어1", "검색어2"]} />
+              <RecommendedSearches
+                items={recommendedKeywords.map((k) => k.keyword)}
+                onClickItem={(keyword) => {
+                  search.setKeyword(keyword);
+
+                  startTransition(() => {
+                    search.searchBoth(keyword);
+                  });
+
+                  const params = new URLSearchParams(searchParams);
+                  params.set("q", keyword);
+                  navigate(`/search?${params.toString()}`, { replace: true });
+                }}
+              />
+
             </section>
           </>
         ) : (
