@@ -19,11 +19,20 @@ function TopReadingRanking({ month }: Props) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLoading(true);
-    getTopReadingRanking(month)
-      .then((res) => setUsers(res.top3))
-      .finally(() => setLoading(false));
+   let ignore = false;
+   // eslint-disable-next-line react-hooks/set-state-in-effect
+   setLoading(true);
+   getTopReadingRanking(month)
+     .then((res) => {
+       if (!ignore) setUsers(res.top3);
+     })
+     .catch(() => {
+       if (!ignore) setUsers([]);
+     })
+     .finally(() => {
+       if (!ignore) setLoading(false);
+     });
+   return () => { ignore = true; };
   }, [month]);
 
   if (loading) return <LoadingPage />;

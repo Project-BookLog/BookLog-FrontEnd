@@ -8,35 +8,34 @@ interface Props {
 
 const ReadingRankingList = ({ month }: Props) => {
   const [users, setUsers] = useState<ReadingUser[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [cursor, setCursor] = useState<number | null>(null);
   const [hasNext, setHasNext] = useState(true);
   const [loading, setLoading] = useState(false);
 
+
+ const load = async (cursorValue?: number | null, reset = false) => {
+   if (loading) return;
+
+   setLoading(true);
+   try {
+     const res = await getReadingRankingList(month, cursorValue ?? undefined);
+     setUsers((prev) => (reset ? res.items : [...prev, ...res.items]));
+     setCursor(res.nextCursor);
+     setHasNext(res.hasNext);
+   } catch {
+     setHasNext(false);
+   } finally {
+     setLoading(false);
+   }
+  };
+
   useEffect(() => {
-    resetAndLoad();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+   setUsers([]);
+   setCursor(null);
+   setHasNext(true);
+   load(null, true);
   }, [month]);
-
-  const resetAndLoad = async () => {
-    setUsers([]);
-    setCursor(null);
-    setHasNext(true);
-    await load();
-  };
-
-  const load = async () => {
-    if (loading || !hasNext) return;
-
-    setLoading(true);
-    try {
-      const res = await getReadingRankingList(month, cursor ?? undefined);
-      setUsers((prev) => [...prev, ...res.items]);
-      setCursor(res.nextCursor);
-      setHasNext(res.hasNext);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (users.length === 0 && !loading) {
     return null; 
