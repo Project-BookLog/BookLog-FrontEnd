@@ -1,5 +1,5 @@
-import type { ResponseMyProfileDto, UpdateProfileDto } from "../types/user.types";
-import { privateApi } from "./axiosConfig";
+import type { ResponseMyProfileDto, UpdateProfileDto } from "../../types/myPage/user.types";
+import { privateApi } from "../axiosConfig";
 
 
 export const getMyProfile = async(): Promise<ResponseMyProfileDto> => {

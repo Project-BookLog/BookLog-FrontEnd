@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { getDaysInMonth, getFirstDayWeekday } from "../../utils/date";
-import { getReadingCalendar } from "../../api/myReading";
+import { getReadingCalendar } from "../../api/mypage/myReading";
 import { LoadingPage } from "../../pages/onboarding/LoadingPage";
 import { ErrorPage } from "../../pages/onboarding/ErrorPage";
 
