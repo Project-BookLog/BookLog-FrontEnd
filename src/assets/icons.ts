@@ -33,7 +33,7 @@ import ArrowDown from "./icons/ArrowDown.svg?react";
 import ArrowRight from "./icons/ArrowRight.svg?react";
 import Vector from "./icons/Vector.svg?react";
 import Plus from "./icons/Plus.svg?react";
-import Bookmark from "./icons/bookmark.svg?react";
+import Bookmark from "./icons/Bookmark.svg?react";
 import Frame from "./icons/Frame.svg?react"
 
 
