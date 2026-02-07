@@ -1,6 +1,6 @@
 //더미
-import Dummy_book from "./icons/dummy_book.svg?react";
-import Dummy_author from "./icons/dummy_author.svg?react";
+import Dummy_book from "./icons/Dummy_book.svg?react";
+import Dummy_author from "./icons/Dummy_author.svg?react";
 
 //로고
 import Logo2 from "./icons/Logo2.svg?react";
