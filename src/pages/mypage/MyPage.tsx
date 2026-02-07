@@ -65,7 +65,7 @@ function MyPage() {
             <p className="text-title-02">독서 캘린더</p>
             <button
               type="button"
-              onClick={() => navigate("/readingcalendar")}
+              onClick={() => navigate("/mypage/readingcalendar")}
               className="flex items-center gap-0.5 text-gray-500 text-body-03"
             >
               <span>전체보기</span>
