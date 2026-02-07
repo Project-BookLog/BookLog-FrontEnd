@@ -3,7 +3,7 @@ import { BackIcon } from "../../assets/icons"
 import NavbarBottom from "../../components/common/navbar/NavBarBottom"
 import { useGetShelves } from "../../hooks/queries/useGetShelves"
 
-function MyLibraryPage () {
+export function MyLibraryPage () {
 
     const { data: shelves = [] } = useGetShelves();
     const navigate = useNavigate();
@@ -82,5 +82,3 @@ function MyLibraryPage () {
         </div>
     )
 }
-
-export default MyLibraryPage;
