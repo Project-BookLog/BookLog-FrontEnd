@@ -27,7 +27,7 @@ import BookPickPage from "./pages/booklog/BookPickPage";
 import BookWritePage from "./pages/booklog/BookWritePage";
 
 // 3. 서재
-import { MyLibraryPage } from "./pages/myLibrary/MyLibraryPage";
+import MyLibraryPage from "./pages/myLibrary/MyLibraryPage";
 import { MyLibraryDetailPage } from "./pages/myLibrary/MyLibraryDetailPage";
 import { EditBooksPage } from "./pages/myLibrary/EditBooksPage";
 import AddLibraryPage from "./pages/myLibrary/AddLibraryPage";
