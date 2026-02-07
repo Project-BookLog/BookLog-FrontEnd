@@ -14,7 +14,7 @@ function Ranking() {
       <div className="-mx-6 overflow-x-auto no-scrollbar">
         <div className="flex space-x-2 px-5 ">
           {BOOKS.map((book, idx) => {
-            const { id, title, author, publisher, CoverIcon } = book; 
+            const { id, title, author, publisher, coverUrl } = book; 
             return (
               <div
                 key={id}
@@ -24,7 +24,7 @@ function Ranking() {
               >
                 {/* 책 이미지 */}
                 <div className="w-full h-32.5 rounded-lg overflow-hidden flex items-center justify-center">
-                  <CoverIcon className="w-full" />
+                  <img src={coverUrl} alt={title} className="w-full object-cover" />
                 </div>
 
                 {/* 책 정보 */}

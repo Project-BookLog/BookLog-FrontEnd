@@ -9,7 +9,7 @@ interface Props {
 const ReadingRankingList = ({ month }: Props) => {
   const [users, setUsers] = useState<ReadingUser[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [cursor, setCursor] = useState<number | null>(null);
+  const [_cursor, setCursor] = useState<number | null>(null);
   const [hasNext, setHasNext] = useState(true);
   const [loading, setLoading] = useState(false);
 

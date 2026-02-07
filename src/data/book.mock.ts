@@ -1,8 +1,8 @@
-// data/book.mock.ts
-import { Dummy_book } from "../assets/icons";
-import type { Book } from "../types/book.types";
+import type { UIBook } from "../types/ui";
 
-export const BOOKS: (Book & {
+const Dummy_book = "https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/9788936434120.jpg";
+
+export const BOOKS: (UIBook & {
   mood?: string;
   style?: string;
   immersion?: string;
@@ -14,7 +14,7 @@ export const BOOKS: (Book & {
     publisher: "출판사",
     createdAt: "2020-01-01",
     progress: 30,
-    CoverIcon: Dummy_book,
+    coverUrl: Dummy_book,
     mood: "어두운",
     style: "섬세한",
     immersion: "짙은 여운",
@@ -26,7 +26,7 @@ export const BOOKS: (Book & {
     publisher: "2출판사",
     createdAt: "2021-01-01",
     progress: 40,
-    CoverIcon: Dummy_book,
+    coverUrl: Dummy_book,
     mood: "따뜻한",
     style: "담백한",
     immersion: "기분 전환",
@@ -38,7 +38,7 @@ export const BOOKS: (Book & {
     publisher: "3출판사",
     createdAt: "2022-01-01",
     progress: 56,
-    CoverIcon: Dummy_book,
+    coverUrl: Dummy_book,
     mood: "몽환적인",
     style: "화려한",
     immersion: "압도적 몰입",
@@ -50,7 +50,7 @@ export const BOOKS: (Book & {
     publisher: "4출판사",
     createdAt: "2023-01-01",
     progress: 38,
-    CoverIcon: Dummy_book,
+    coverUrl: Dummy_book,
     mood: "서늘한",
     style: "직설적",
     immersion: "지적인 탐구",
@@ -62,7 +62,7 @@ export const BOOKS: (Book & {
     publisher: "5출판사",
     createdAt: "2024-01-01",
     progress: 38,
-    CoverIcon: Dummy_book,
+    coverUrl: Dummy_book,
     mood: "잔잔한",
     style: "간결한",
     immersion: "기분 전환",
@@ -74,7 +74,7 @@ export const BOOKS: (Book & {
     publisher: "6출판사",
     createdAt: "2025-01-01",
     progress: 38,
-    CoverIcon: Dummy_book,
+    coverUrl: Dummy_book,
     mood: "유쾌한",
     style: "은유적",
     immersion: "압도적 몰입",
