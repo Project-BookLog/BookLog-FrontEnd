@@ -114,7 +114,7 @@ export default function UserProfilePage() {
     []
   );
 
-  const hasLibrary = librarySections.some((s) => s.books.length > 0);
+  // const hasLibrary = librarySections.some((s) => s.books.length > 0);
   const hasBlog = blogPosts.length > 0;
 
   const handleBack = () => {

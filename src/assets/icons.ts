@@ -1,6 +1,6 @@
 //더미
-import Dummy_book from "./icons/dummy_book.svg?react";
-import Dummy_author from "./icons/dummy_author.svg?react";
+import Dummy_book from "./icons/Dummy_book.svg?react"; 
+import Dummy_author from "./icons/Dummy_author.svg?react";
 
 //로고
 import Logo2 from "./icons/Logo2.svg?react";
@@ -33,7 +33,7 @@ import ArrowDown from "./icons/ArrowDown.svg?react";
 import ArrowRight from "./icons/ArrowRight.svg?react";
 import Vector from "./icons/Vector.svg?react";
 import Plus from "./icons/Plus.svg?react";
-import Bookmark from "./icons/bookmark.svg?react";
+import Bookmark from "./icons/Bookmark.svg?react";
 import Frame from "./icons/Frame.svg?react"
 
 
@@ -82,6 +82,4 @@ export {
   KakaoTalk,
 
   Onboarding_warm, Onboarding_calm, Onboarding_cool, Onboarding_dreamlike, Onboarding_pleasant, Onboarding_dark
-
-
 };
