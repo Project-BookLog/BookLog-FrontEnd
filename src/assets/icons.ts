@@ -1,5 +1,5 @@
 //더미
-import Dummy_book from "./icons/Dummy_book.svg?react";
+import Dummy_book from "./icons/Dummy_book.svg?react"; 
 import Dummy_author from "./icons/Dummy_author.svg?react";
 
 //로고
@@ -82,6 +82,4 @@ export {
   KakaoTalk,
 
   Onboarding_warm, Onboarding_calm, Onboarding_cool, Onboarding_dreamlike, Onboarding_pleasant, Onboarding_dark
-
-
 };
