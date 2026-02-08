@@ -9,7 +9,7 @@ import BestSeller from "../components/home/BestSeller";
 import NavbarBottom from "../components/common/navbar/NavBarBottom";
 
 import { getHome } from "../api/home/home";
-import type { RealTimeRankingBook } from "../types/home/home.types";
+import type { BestsellerSection, RealTimeRankingBook } from "../types/home/home.types";
 
 const TABS = ["홈", "실시간 랭킹", "분위기별", "문체별", "몰입도별"] as const;
 type TapType = (typeof TABS)[number];
@@ -17,6 +17,9 @@ type TapType = (typeof TABS)[number];
 function HomePage() {
   const [activeTab, setActiveTab] = useState<TapType>("홈");
   const [rankingBooks, setRankingBooks] = useState<RealTimeRankingBook[]>([]);
+  const [moodBestsellers, setMoodBestsellers] = useState<BestsellerSection[]>([]);
+  const [writingStyleBestsellers, setWritingStyleBestsellers] = useState<BestsellerSection[]>([]);
+  const [immersionBestsellers, setImmersionBestsellers] = useState<BestsellerSection[]>([]);
 
   const likeSectionRef = useRef<HTMLDivElement | null>(null);
   const rankingRef = useRef<HTMLDivElement | null>(null);
@@ -67,8 +70,12 @@ function HomePage() {
   useEffect(() => {
     getHome().then((res) => {
       setRankingBooks(res.realTimeRanking.rankings);
+      setMoodBestsellers(res.moodBestsellers);
+      setWritingStyleBestsellers(res.writingStyleBestsellers);
+      setImmersionBestsellers(res.immersionBestsellers);
     });
   }, []);
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -148,6 +155,7 @@ function HomePage() {
             type="mood"
             title="분위기별 베스트셀러"
             subtitle="내 취향에 맞는 분위기별 책을 골라 읽어보세요!"
+            sections={moodBestsellers}
           />
         </section>
 
@@ -156,6 +164,7 @@ function HomePage() {
             type="writingStyle"
             title="문체별 베스트셀러"
             subtitle="내 취향에 맞는 문체별 책을 골라 읽어보세요!"
+            sections={writingStyleBestsellers}
           />
         </section>
 
@@ -164,6 +173,7 @@ function HomePage() {
             type="immersion"
             title="몰입도별 베스트셀러"
             subtitle="내 취향에 맞는 몰입도별 책을 골라 읽어보세요!"
+            sections={immersionBestsellers}
           />
         </section>
       </main>

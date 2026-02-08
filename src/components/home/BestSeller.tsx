@@ -1,25 +1,30 @@
 import { useState } from "react";
-import { BOOKS } from "../../data/book.mock";
+// import { BOOKS } from "../../data/book.mock";
+import type { BestsellerSection } from "../../types/home/home.types";
 
-const TABS = {
+const TAGS = {
   mood: ["잔잔한", "묵직한", "따뜻한", "서늘한", "몽환적"],
   writingStyle: ["간결한", "묘사적인", "사유적인", "대화형", "실험적"],
   immersion: ["순한 몰입", "완전집중형", "몰입도 높은", "길이 짧은"],
 };
 
 type SectionType = "mood" | "writingStyle" | "immersion";
-interface BestSellerSectionProps {
+interface BestSellerProps {
   type: SectionType;
   title: string;
   subtitle: string;
+  sections: BestsellerSection[];
 }
 
-function BestSeller({ type, title, subtitle }: BestSellerSectionProps) {
+function BestSeller({ type, title, subtitle, sections }: BestSellerProps) {
   const [active, setActive] = useState(0);
-  const categories = TABS[type];
+  const tags = TAGS[type];
+  const activeTag = tags[active];
+  const activeSection = sections.find(
+    (sections) => sections.tagName === activeTag
+  );
 
-
-  const books = BOOKS;
+  const books = activeSection?.books ?? [];
   
   return (
     <section className="space-y-3">
@@ -32,7 +37,7 @@ function BestSeller({ type, title, subtitle }: BestSellerSectionProps) {
       {/* 태그*/}
       <div className="overflow-x-auto no-scrollbar pl-5">
         <div className="flex flex-nowrap gap-2 text-body-01-m">
-          {categories.map((label, index) => (
+          {tags.map((label, index) => (
             <button
               key={label}
               onClick={() => setActive(index)}
@@ -54,19 +59,28 @@ function BestSeller({ type, title, subtitle }: BestSellerSectionProps) {
         <div className="grid grid-rows-3 auto-cols-[220px] grid-flow-col gap-y-3 gap-x-1.5 py-2">
         {books.map((book) => (
           <div
-            key={book.id}
+            key={book.bookId}
             className="w-[220px] items-center flex gap-3"
           >
             {/* 책 표지 */}
-            <div className="w-20 h-26 overflow-hidden rounded flex items-center justify-center">
-              <img src={book.coverUrl} alt={book.title} className="w-full  object-cover" />
+            <div className="w-[80px] h-[104px] flex-shrink-0 overflow-hidden rounded flex items-center justify-center bg-gray-200">
+              {book.coverImageUrl ? (
+                <img
+                  src={book.coverImageUrl}
+                  alt={book.title}
+                  className="block w-full h-full object-cover"
+                />
+              ) : (
+                <div className="block w-full h-full bg-gray-200" />
+              )}
             </div>
+
 
             {/* 책 정보 */}
             <div className="mt-2 flex items-start space-x-2">
               <div className="w-3">
                 <p className="text-subtitle-02-sb text-black truncate">
-                  {book.id}
+                  {book.bookId}
                 </p>
               </div>
               <div>

@@ -1,4 +1,3 @@
-// import { BOOKS } from "../../data/book.mock";
 import type { RealTimeRankingBook } from "../../types/home/home.types";
 interface RankingProps {
   books: RealTimeRankingBook[];
@@ -19,7 +18,6 @@ function Ranking({ books }: RankingProps) {
       <div className="-mx-6 overflow-x-auto no-scrollbar">
         <div className="flex space-x-2 px-5 ">
           {books.map((book, idx) => {
-            // const { id, title, author, publisher, coverUrl } = book; 
             return (
               <div
                 key={book.bookId}
@@ -38,7 +36,6 @@ function Ranking({ books }: RankingProps) {
                   ) : (
                     <div className="w-full h-full bg-gray-200" />
                   )}
-
                 </div>
 
                 {/* 책 정보 */}
