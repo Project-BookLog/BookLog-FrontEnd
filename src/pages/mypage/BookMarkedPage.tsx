@@ -1,11 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import type { BookLog } from "../../types/booklog.types";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import { MyBookLogCard } from "../../components/mypage/MyBookLogCard";
+import { BOOKLOGS } from "../../data/booklog.mock";
 
-export const BookMarkedPage = ({ booklogs }: {booklogs: BookLog[]}) => {
+export const BookMarkedPage = () => {
 
     const navigate = useNavigate();
+
+    const booklogs = BOOKLOGS;
 
     return (
         <div className="min-h-screen w-full bg-bg flex flex-col">

@@ -4,18 +4,25 @@ import { validateSignin, type UserLoginInformation } from "../../utils/validate"
 import { useAuth } from "../../context/AuthContext";
 import { useEffect } from "react";
 import { KakaoTalk, LogoBooklog, SymbolLogo } from "../../assets/icons";
+import { useGetOnboardingProfile } from "../../hooks/queries/useGetOnboardingProfile";
 
 export const LoginPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location.state?.from || "/onboarding";
+    const from = location.state?.from || "/";
     const { login, accessToken } = useAuth();
+    const { data: onboardingProfile, isLoading, isError } = useGetOnboardingProfile();
 
     useEffect(() => {
-        if(accessToken) {
-            navigate("/onboarding");
+        if (!accessToken) return;
+        if (isLoading) return;
+        if(isError) return;
+        if (onboardingProfile?.isCompleted) {
+            navigate(from, { replace: true });
+        } else {
+            navigate("/onboarding", { replace: true });
         }
-    }, [navigate, accessToken]);
+    }, [accessToken, isLoading, isError, onboardingProfile, navigate,]);
 
     const {values, errors, getInputProps} = useForm<UserLoginInformation>({
         initialValue: {
@@ -29,7 +36,6 @@ export const LoginPage = () => {
         e.preventDefault()
         try {
             await login(values);
-            navigate(from, { replace: true });
         } catch (err) {
             console.error("로그인 실패:", err);
         }

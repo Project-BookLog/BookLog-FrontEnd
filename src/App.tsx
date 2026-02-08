@@ -44,6 +44,8 @@ import ReadingRankingPage from "./pages/mypage/ReadingRankingPage";
 import UserProfilePage from "./pages/mypage/UserProfilePage";
 import { KakaoLoginRedirectPage } from "./pages/KakaoLoginRedirectPage";
 import { FinishedBooksPage } from "./pages/mypage/FinishedBooksPage";
+import { MyBookLogPage } from "./pages/mypage/MyBookLogPage";
+import { BookMarkedPage } from "./pages/mypage/BookMarkedPage";
 
 function GlobalToast() {
   const { message } = useToast();
@@ -123,6 +125,8 @@ function App() {
         <Route path="/mypage/readingcalendar" element={<ReadingCalendarPage />} />
         <Route path="/mypage/readingranking" element={<ReadingRankingPage />} />
         <Route path="/mypage/finished" element={<FinishedBooksPage />} />
+        <Route path="/mypage/my-booklog" element={<MyBookLogPage/>} />
+        <Route path="/mypage/bookmarked" element={<BookMarkedPage/>} />
       </Routes>
 
       <GlobalToast />

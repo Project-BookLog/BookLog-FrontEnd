@@ -10,6 +10,7 @@ interface AuthContextType {
     refreshToken: string | null;
     login: (signInData: RequestLoginDto) => Promise<void>;
     logout: () => Promise<void>;
+    setTokens: (tokens: { accessToken: string; refreshToken: string }) => Promise<void>;
     userId: number | undefined;
     nickname: string | undefined;
 }
@@ -19,6 +20,7 @@ export const AuthContext = createContext<AuthContextType>({
     refreshToken: null,
     login: async () => {},
     logout: async () => {},
+    setTokens: async () => {},
     userId: undefined,
     nickname: undefined,
 });
@@ -107,8 +109,27 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         }
     };
 
+    const setTokens = async ({accessToken, refreshToken,}: {accessToken: string; refreshToken: string;}) => {
+        try {
+            setAccessTokenInStorage(accessToken);
+            setRefreshTokenInStorage(refreshToken);
+
+            setAccessToken(accessToken);
+            setRefreshToken(refreshToken);
+
+            const myInfo = await getMyProfile();
+            setUserId(myInfo?.userId);
+            setUserIdInStorage(myInfo?.userId);
+            setNickname(myInfo?.nickname);
+            setNicknameInStorage(myInfo?.nickname);
+        } catch (error) {
+            console.error("토큰 설정 오류", error);
+            throw error;
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ accessToken, refreshToken, login, logout, userId, nickname }}>
+        <AuthContext.Provider value={{ accessToken, refreshToken, login, logout, setTokens, userId, nickname }}>
             {children}
         </AuthContext.Provider>
     );

@@ -128,7 +128,6 @@ export default function EditPage() {
               <input
                 value={shelfName}
                 onChange={(e) => setShelfName(e.target.value)}
-                placeholder="입력한 서재 명칭 텍스트"
                 className="flex-1 bg-bg text-subtitle-02-m text-gray-900 placeholder:text-gray-900 outline-none whitespace-nowrap overflow-x-auto overflow-y-hidden"
               />
 
