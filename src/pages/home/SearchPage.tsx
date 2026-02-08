@@ -32,14 +32,16 @@ export default function SearchPage() {
   const [recommendedKeywords, setRecommendedKeywords] = useState<
     RecommendedKeyword[]
   >([]);
-
-  const searchKeyword = search.keyword;
-  const hasSearched = Boolean(searchKeyword);
+  
 
   const [isPending, startTransition] = useTransition();
 
   const q = searchParams.get("q") ?? "";
   const tabParam = searchParams.get("tab");
+
+  const submittedKeyword = q ?? "";
+  const searchKeyword = search.keyword;
+  const hasSearched = Boolean(submittedKeyword);
 
   const activeTab: TabType =
     tabParam === "book"
@@ -49,24 +51,24 @@ export default function SearchPage() {
       : "전체";
 
 
-   useEffect(() => {
-     if (isInitRef.current) return;
-     if (!q) return;
+    useEffect(() => {
+      if (isInitRef.current) return;
+      if (!q) return;
 
-     startTransition(() => {
-       search.setKeyword(q);
-      search.searchBoth(q);
-      if (activeTab === "도서") {
-        search.searchBooks({ query: q });
-      } else if (activeTab === "작가") {
-        search.searchAuthors({ query: q });
-      } else {
-        search.searchBoth(q);
-      }
-     });
+      search.setKeyword(q);
+      
+      startTransition(() => {
+        if (activeTab === "도서") {
+          search.searchBooks({ query: q });
+        } else if (activeTab === "작가") {
+          search.searchAuthors({ query: q });
+        } else {
+          search.searchBoth(q);
+        }
+      });
 
-     isInitRef.current = true;
-  }, [q, search, activeTab]);
+      isInitRef.current = true;
+    }, [q, search, activeTab]);
 
 
 
