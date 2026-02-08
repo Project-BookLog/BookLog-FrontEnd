@@ -27,13 +27,13 @@ import BookPickPage from "./pages/booklog/BookPickPage";
 import BookWritePage from "./pages/booklog/BookWritePage";
 
 // 3. 서재
-import { MyLibraryPage } from "./pages/MyLibrary/MyLibraryPage";
-import { MyLibraryDetailPage } from "./pages/MyLibrary/MyLibraryDetailPage";
-import { EditBooksPage } from "./pages/MyLibrary/EditBooksPage";
-import AddLibraryPage from "./pages/MyLibrary/AddLibraryPage";
-import EditPage from "./pages/MyLibrary/EditPage";
-import RecordPage from "./pages/MyLibrary/RecordPage";
-import StoppedBooksPage from "./pages/MyLibrary/StoppedBooksPage";
+import { MyLibraryPage } from "./pages/myLibrary/MyLibraryPage";
+import { MyLibraryDetailPage } from "./pages/myLibrary/MyLibraryDetailPage";
+import { EditBooksPage } from "./pages/myLibrary/EditBooksPage";
+import AddLibraryPage from "./pages/myLibrary/AddLibraryPage";
+import EditPage from "./pages/myLibrary/EditPage";
+import RecordPage from "./pages/myLibrary/RecordPage";
+import StoppedBooksPage from "./pages/myLibrary/StoppedBooksPage";
 
 // 4. 마이페이지
 import MyPage from "./pages/mypage/MyPage";
@@ -44,6 +44,9 @@ import ReadingRankingPage from "./pages/mypage/ReadingRankingPage";
 import UserProfilePage from "./pages/mypage/UserProfilePage";
 import { KakaoLoginRedirectPage } from "./pages/KakaoLoginRedirectPage";
 import { FinishedBooksPage } from "./pages/mypage/FinishedBooksPage";
+import { MyBookLogPage } from "./pages/mypage/MyBookLogPage";
+import { BOOKLOGS } from "./data/booklog.mock";
+import { BookMarkedPage } from "./pages/mypage/BookMarkedPage";
 
 function GlobalToast() {
   const { message } = useToast();
@@ -123,6 +126,8 @@ function App() {
         <Route path="/mypage/readingcalendar" element={<ReadingCalendarPage />} />
         <Route path="/mypage/readingranking" element={<ReadingRankingPage />} />
         <Route path="/mypage/finished" element={<FinishedBooksPage />} />
+        <Route path="/mypage/my-booklog" element={<MyBookLogPage booklogs={BOOKLOGS}/>} />
+        <Route path="/mypage/bookmarked" element={<BookMarkedPage booklogs={BOOKLOGS}/>} />
       </Routes>
 
       <GlobalToast />

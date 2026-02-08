@@ -1,27 +1,20 @@
-
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useLocalStorage } from "../hooks/useLocalStorage";
-import { LOCAL_STORAGE_KEY } from "../constants/key";
+import { useAuth } from "../context/AuthContext";
 
 export const KakaoLoginRedirectPage = () => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-
-  const { setItem: setAccessToken } = useLocalStorage(LOCAL_STORAGE_KEY.accessToken);
-  const { setItem: setRefreshToken } = useLocalStorage(LOCAL_STORAGE_KEY.refreshToken);
+  const { setTokens } = useAuth();
 
   useEffect(() => {
     const accessToken = params.get("accessToken");
     const refreshToken = params.get("refreshToken");
 
     if (accessToken && refreshToken) {
-      setAccessToken(accessToken);
-      setRefreshToken(refreshToken);
-      navigate("/onboarding", { replace: true });
-    } else {
-      navigate("/login", { replace: true });
+      setTokens({ accessToken, refreshToken });
     }
+    navigate("/login", { replace: true });
   }, []);
 
   return <div>로그인 처리 중...</div>;
