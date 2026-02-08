@@ -1,0 +1,33 @@
+export interface RealTimeRankingBook {
+  bookId: number;
+  title: string;
+  author: string | null;
+  publisher: string | null;
+  coverImageUrl: string | null;
+  ranking: number;
+}
+
+export interface BestsellerBook {
+  bookId: number;
+  title: string;
+  author: string | null;
+  publisher: string | null;
+  coverImageUrl: string | null;
+  ranking: number | null;
+}
+
+export interface BestsellerSection {
+  tagName: string;
+  books: BestsellerBook[];
+}
+
+
+export interface HomeResponse {
+  realTimeRanking: {
+    sectionTitle: string;
+    rankings: RealTimeRankingBook[];
+  };
+  moodBestsellers: BestsellerSection[];
+  writingStyleBestsellers: BestsellerSection[];
+  immersionBestsellers: BestsellerSection[];
+}

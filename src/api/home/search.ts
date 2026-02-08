@@ -1,6 +1,6 @@
-import type { AuthorSearchResponse, BookSearchResponse } from "../types/book.types";
-import { privateApi } from "./axiosConfig";
-import type { AuthorSearchParams, BookSearchParams, SearchBothParams, RecentSearchResponse, RecommendedSearchResponse } from "../types/search.types";
+import type { AuthorSearchResponse, BookSearchResponse } from "../../types/book.types";
+import { privateApi } from "../axiosConfig";
+import type { AuthorSearchParams, BookSearchParams, SearchBothParams, RecentSearchResponse, RecommendedSearchResponse } from "../../types/home/search.types";
 
 export const saveSearchKeyword = async (keyword: string): Promise<void> => {
   if (!keyword.trim()) return;

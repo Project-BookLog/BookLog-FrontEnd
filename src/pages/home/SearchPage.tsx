@@ -12,8 +12,8 @@ import BookResults from "../../components/home/search/BookResults";
 import AuthorResults from "../../components/home/search/AuthorResults";
 
 import { useSearch } from "../../context/SearchContext";
-import { saveSearchKeyword, getRecentSearchKeywords, getRecommendedSearchKeywords} from "../../api/search";
-import type { RecentSearchKeyword, RecommendedKeyword } from "../../types/search.types";
+import { saveSearchKeyword, getRecentSearchKeywords, getRecommendedSearchKeywords} from "../../api/home/search";
+import type { RecentSearchKeyword, RecommendedKeyword } from "../../types/home/search.types";
 import { LoadingPage } from "../onboarding/LoadingPage";
 import { ErrorPage } from "../onboarding/ErrorPage";
 

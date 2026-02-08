@@ -7,12 +7,22 @@ import CurrentReading from "../components/home/CurrentReading";
 import Ranking from "../components/home/Ranking";
 import BestSeller from "../components/home/BestSeller";
 import NavbarBottom from "../components/common/navbar/NavBarBottom";
+import { ErrorPage } from "./onboarding/ErrorPage";
+
+import { getHome } from "../api/home/home";
+import type { BestsellerSection, RealTimeRankingBook } from "../types/home/home.types";
 
 const TABS = ["홈", "실시간 랭킹", "분위기별", "문체별", "몰입도별"] as const;
 type TapType = (typeof TABS)[number];
 
 function HomePage() {
   const [activeTab, setActiveTab] = useState<TapType>("홈");
+  const [rankingBooks, setRankingBooks] = useState<RealTimeRankingBook[]>([]);
+  const [moodBestsellers, setMoodBestsellers] = useState<BestsellerSection[]>([]);
+  const [writingStyleBestsellers, setWritingStyleBestsellers] = useState<BestsellerSection[]>([]);
+  const [immersionBestsellers, setImmersionBestsellers] = useState<BestsellerSection[]>([]);
+  
+  const [isError, setIsError] = useState(false);
 
   const likeSectionRef = useRef<HTMLDivElement | null>(null);
   const rankingRef = useRef<HTMLDivElement | null>(null);
@@ -61,6 +71,19 @@ function HomePage() {
 
 
   useEffect(() => {
+    getHome().then((res) => {
+      setRankingBooks(res.realTimeRanking.rankings);
+      setMoodBestsellers(res.moodBestsellers);
+      setWritingStyleBestsellers(res.writingStyleBestsellers);
+      setImmersionBestsellers(res.immersionBestsellers);
+    }).catch((err) => {
+      setIsError(true);
+      console.error("홈 데이터 불러오기 실패:", err);
+    });
+  }, []);
+
+
+  useEffect(() => {
     const handleScroll = () => {
       const sections: { name: TapType; el: HTMLDivElement | null }[] = [
         { name: "홈", el: likeSectionRef.current },
@@ -98,6 +121,8 @@ function HomePage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [activeTab]); 
 
+  if (isError) return <ErrorPage />;
+  
   return (
     <div className="min-h-screen bg-bg">
       {/* navbar */}
@@ -129,14 +154,16 @@ function HomePage() {
         </section>
 
         <section ref={rankingRef} className="scroll-mt-15 mb-12">
-          <Ranking />
+          <Ranking books={rankingBooks} />
         </section>
+
 
         <section ref={moodRef} className="scroll-mt-15 mb-12">
           <BestSeller
             type="mood"
             title="분위기별 베스트셀러"
             subtitle="내 취향에 맞는 분위기별 책을 골라 읽어보세요!"
+            sections={moodBestsellers}
           />
         </section>
 
@@ -145,6 +172,7 @@ function HomePage() {
             type="writingStyle"
             title="문체별 베스트셀러"
             subtitle="내 취향에 맞는 문체별 책을 골라 읽어보세요!"
+            sections={writingStyleBestsellers}
           />
         </section>
 
@@ -153,6 +181,7 @@ function HomePage() {
             type="immersion"
             title="몰입도별 베스트셀러"
             subtitle="내 취향에 맞는 몰입도별 책을 골라 읽어보세요!"
+            sections={immersionBestsellers}
           />
         </section>
       </main>
