@@ -8,13 +8,16 @@ export const KakaoLoginRedirectPage = () => {
   const { setTokens } = useAuth();
 
   useEffect(() => {
-    const accessToken = params.get("accessToken");
-    const refreshToken = params.get("refreshToken");
+    const handleKakaoLogin = async () => {
+      const accessToken = params.get("accessToken");
+      const refreshToken = params.get("refreshToken");
 
-    if (accessToken && refreshToken) {
-      setTokens({ accessToken, refreshToken });
+      if (accessToken && refreshToken) {
+        await setTokens({ accessToken, refreshToken });
+      }
+      navigate("/login", { replace: true });
     }
-    navigate("/login", { replace: true });
+    handleKakaoLogin();
   }, []);
 
   return <div>로그인 처리 중...</div>;

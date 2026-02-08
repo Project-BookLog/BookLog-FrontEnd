@@ -110,17 +110,22 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     };
 
     const setTokens = async ({accessToken, refreshToken,}: {accessToken: string; refreshToken: string;}) => {
-        setAccessTokenInStorage(accessToken);
-        setRefreshTokenInStorage(refreshToken);
+        try {
+            setAccessTokenInStorage(accessToken);
+            setRefreshTokenInStorage(refreshToken);
 
-        setAccessToken(accessToken);
-        setRefreshToken(refreshToken);
+            setAccessToken(accessToken);
+            setRefreshToken(refreshToken);
 
-        const myInfo = await getMyProfile();
-        setUserId(myInfo?.userId);
-        setUserIdInStorage(myInfo?.userId);
-        setNickname(myInfo?.nickname);
-        setNicknameInStorage(myInfo?.nickname);
+            const myInfo = await getMyProfile();
+            setUserId(myInfo?.userId);
+            setUserIdInStorage(myInfo?.userId);
+            setNickname(myInfo?.nickname);
+            setNicknameInStorage(myInfo?.nickname);
+        } catch (error) {
+            console.error("토큰 설정 오류", error);
+            throw error;
+        }
     };
 
     return (

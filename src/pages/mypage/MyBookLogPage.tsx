@@ -1,12 +1,14 @@
 import { useNavigate } from "react-router-dom"
 import NavBarTop from "../../components/common/navbar/NavBarTop"
-import type { BookLog } from "../../types/booklog.types";
 import { MyBookLogCard } from "../../components/mypage/MyBookLogCard";
+import { BOOKLOGS } from "../../data/booklog.mock";
 
-export const MyBookLogPage = ({ booklogs }: {booklogs: BookLog[]}) => {
+export const MyBookLogPage = () => {
 
     const navigate = useNavigate();
     
+    const booklogs = BOOKLOGS;
+
     return (
         <div className="min-h-screen w-full bg-bg flex flex-col">
             <NavBarTop

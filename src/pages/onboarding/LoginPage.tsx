@@ -11,17 +11,18 @@ export const LoginPage = () => {
     const location = useLocation();
     const from = location.state?.from || "/";
     const { login, accessToken } = useAuth();
-    const { data: onboardingProfile, isLoading } = useGetOnboardingProfile();
+    const { data: onboardingProfile, isLoading, isError } = useGetOnboardingProfile();
 
     useEffect(() => {
         if (!accessToken) return;
         if (isLoading) return;
+        if(isError) return;
         if (onboardingProfile?.isCompleted) {
             navigate(from, { replace: true });
         } else {
             navigate("/onboarding", { replace: true });
         }
-    }, [accessToken, isLoading, onboardingProfile, navigate,]);
+    }, [accessToken, isLoading, isError, onboardingProfile, navigate,]);
 
     const {values, errors, getInputProps} = useForm<UserLoginInformation>({
         initialValue: {

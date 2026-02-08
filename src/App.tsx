@@ -45,7 +45,6 @@ import UserProfilePage from "./pages/mypage/UserProfilePage";
 import { KakaoLoginRedirectPage } from "./pages/KakaoLoginRedirectPage";
 import { FinishedBooksPage } from "./pages/mypage/FinishedBooksPage";
 import { MyBookLogPage } from "./pages/mypage/MyBookLogPage";
-import { BOOKLOGS } from "./data/booklog.mock";
 import { BookMarkedPage } from "./pages/mypage/BookMarkedPage";
 
 function GlobalToast() {
@@ -126,8 +125,8 @@ function App() {
         <Route path="/mypage/readingcalendar" element={<ReadingCalendarPage />} />
         <Route path="/mypage/readingranking" element={<ReadingRankingPage />} />
         <Route path="/mypage/finished" element={<FinishedBooksPage />} />
-        <Route path="/mypage/my-booklog" element={<MyBookLogPage booklogs={BOOKLOGS}/>} />
-        <Route path="/mypage/bookmarked" element={<BookMarkedPage booklogs={BOOKLOGS}/>} />
+        <Route path="/mypage/my-booklog" element={<MyBookLogPage/>} />
+        <Route path="/mypage/bookmarked" element={<BookMarkedPage/>} />
       </Routes>
 
       <GlobalToast />
