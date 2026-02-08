@@ -205,6 +205,7 @@ export default function SearchPage() {
             onChange={search.setKeyword}
             onSearch={handleSearch}
             placeholder="도서 검색하기"
+            hideIcon={hasSearched}
           />
         }
       />
