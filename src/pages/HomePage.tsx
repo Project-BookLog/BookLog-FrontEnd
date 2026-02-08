@@ -102,12 +102,8 @@ function HomePage() {
     <div className="min-h-screen bg-bg">
       {/* navbar */}
       <NavBarTop
-        leftContent={
-          <div className="flex gap-x-[10px]">
-            <LogoBooklog className="h-[30px]" />
-            <Alarm className="w-6 h-6 mt-1" />
-          </div>
-        }
+        leftSlot={<LogoBooklog className="h-[30px]" />}
+        rightSlot={<Alarm className="w-6 h-6 mt-1" />}
       />
 
       {/* tab*/}

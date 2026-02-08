@@ -1,4 +1,4 @@
-import { Reset } from "../../../assets/icons";
+// import { Reset } from "../../../assets/icons";
 
 type RecommendedSearchesProps = {
   title?: string;
@@ -20,11 +20,9 @@ function RecommendedSearches({
           {title}
         </span>
 
-        <button
-          type="button"
-        >
+        {/* <button type="button" >
           <Reset className="w-5 h-5 text-gray-600" />
-        </button>
+        </button> */}
       </div>
 
       <div className="flex flex-wrap gap-2">
