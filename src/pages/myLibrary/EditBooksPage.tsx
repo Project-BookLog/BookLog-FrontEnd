@@ -10,6 +10,7 @@ import { LIBRARY_TABS } from "../../constants/libraryTabs"
 import { useDeleteBookList } from "../../hooks/mutations/useDeleteBookList"
 import { useGetBookList } from "../../hooks/queries/useGetBookList"
 import { useGetShelves } from "../../hooks/queries/useGetShelves"
+import { usePatchBookDetail } from "../../hooks/mutations/usePatchBookDetail"
 
 export const EditBooksPage = () => {
 
@@ -28,11 +29,12 @@ export const EditBooksPage = () => {
     const [selectedBooks, setSelectedBooks] = useState<number[]>([]);
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
     const [isMoveModalOpen, setIsMoveModalOpen] = useState<boolean>(false);
-    const [targetLibraryName, setTargetLibraryName] = useState<string | null>(null);
+    const [targetShelfId, setTargetShelfId] = useState<number | null>(null);
 
     const { mutate: deleteBooks } = useDeleteBookList();
     const { data: books } = useGetBookList(parsedShelfId, status);
     const { data: shelves } = useGetShelves();
+    const { mutateAsync: patchBookDetail }  = usePatchBookDetail();
     const { showToast } = useToast();
 
     const editableBooks = books?.items ?? [];
@@ -120,13 +122,36 @@ export const EditBooksPage = () => {
         );
     };
 
-    const handleMoveBooks = () => {
-        console.log("이동할 책 ID:", selectedBooks);
-        showToast("서재 이동이 완료되었어요.");
-        navigate(`/my-library/${shelfId}`, {
-            state: { shelfName },
-            replace: true
-        });
+    const handleMoveBooks = async () => {
+        if (!targetShelfId) return;
+
+        try {
+            await Promise.all(
+                selectedBooks.map((userBookId) => patchBookDetail({userBookId, body: {shelfId: targetShelfId}}))
+            );
+
+            await new Promise<void>((resolve, reject) => {
+                deleteBooks(
+                    {
+                        body: { ids: selectedBooks },
+                        shelfId: parsedShelfId,
+                        status,
+                    },
+                    {
+                        onSuccess: () => resolve(),
+                        onError: () => reject(),
+                    }
+                );
+            });
+
+            showToast("서재 이동이 완료되었어요.");
+            navigate(`/my-library/${shelfId}`, {
+                state: { shelfName },
+                replace: true
+            });
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     useEffect(() => {
@@ -270,7 +295,7 @@ export const EditBooksPage = () => {
                 <div
                     className="absolute inset-0 z-50 min-h-screen flex items-center justify-center bg-b-op15 backdrop-blur-[2px]"
                     onClick={() => {
-                        setTargetLibraryName(null);
+                        setTargetShelfId(null);
                         setIsMoveModalOpen(false);
                     }}
                 >
@@ -287,10 +312,10 @@ export const EditBooksPage = () => {
                                     <button
                                         key={shelf.name}
                                         className="flex py-4 justify-between items-center self-stretch cursor-pointer"
-                                        onClick={() => setTargetLibraryName(shelf.name)}
+                                        onClick={() => setTargetShelfId(shelf.shelfId)}
                                     >
                                         <p className="text-gray-900 text-subtitle-02-m">{shelf.name}</p>
-                                        {targetLibraryName === shelf.name && <CheckIcon className="w-5 h-5"/>}
+                                        {targetShelfId === shelf.shelfId && <CheckIcon className="w-5 h-5"/>}
                                     </button>
                                     {index !== moveTargetShelves.length - 1 && (
                                         <div className="w-[227px] h-[1px] bg-gray-100"></div>
@@ -307,7 +332,7 @@ export const EditBooksPage = () => {
                             </button>
                             <button
                                 className="flex w-[120px] px-[10px] py-[14px] justify-center items-center gap-[10px] rounded-[8px] bg-primary text-center text-white text-subtitle-02-sb cursor-pointer"
-                                disabled={targetLibraryName === null}
+                                disabled={targetShelfId === null}
                                 onClick={handleMoveBooks}
                             >
                                 적용
