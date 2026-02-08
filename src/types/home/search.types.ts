@@ -1,4 +1,4 @@
-import type { Author, Book } from "./book.types";
+import type { Author, Book } from "../book.types";
 
 export interface RecentSearchKeyword {
   id: number;

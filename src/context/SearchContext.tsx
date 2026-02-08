@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
 import type { Book, Author } from "../types/book.types";
-import { searchBooks, searchAuthors, searchBoth } from "../api/search";
-import type { BookSearchParams, AuthorSearchParams, SearchBothParams, SearchContextType } from "../types/search.types";
+import { searchBooks, searchAuthors, searchBoth } from "../api/home/search";
+import type { BookSearchParams, AuthorSearchParams, SearchBothParams, SearchContextType } from "../types/home/search.types";
 
 const SearchContext = createContext<SearchContextType | null>(null);
 

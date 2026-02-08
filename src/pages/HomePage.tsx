@@ -8,11 +8,15 @@ import Ranking from "../components/home/Ranking";
 import BestSeller from "../components/home/BestSeller";
 import NavbarBottom from "../components/common/navbar/NavBarBottom";
 
+import { getHome } from "../api/home/home";
+import type { RealTimeRankingBook } from "../types/home/home.types";
+
 const TABS = ["홈", "실시간 랭킹", "분위기별", "문체별", "몰입도별"] as const;
 type TapType = (typeof TABS)[number];
 
 function HomePage() {
   const [activeTab, setActiveTab] = useState<TapType>("홈");
+  const [rankingBooks, setRankingBooks] = useState<RealTimeRankingBook[]>([]);
 
   const likeSectionRef = useRef<HTMLDivElement | null>(null);
   const rankingRef = useRef<HTMLDivElement | null>(null);
@@ -59,6 +63,12 @@ function HomePage() {
     }
   };
 
+
+  useEffect(() => {
+    getHome().then((res) => {
+      setRankingBooks(res.realTimeRanking.rankings);
+    });
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -129,8 +139,9 @@ function HomePage() {
         </section>
 
         <section ref={rankingRef} className="scroll-mt-15 mb-12">
-          <Ranking />
+          <Ranking books={rankingBooks} />
         </section>
+
 
         <section ref={moodRef} className="scroll-mt-15 mb-12">
           <BestSeller
