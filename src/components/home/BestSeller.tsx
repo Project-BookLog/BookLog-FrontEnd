@@ -59,7 +59,7 @@ function BestSeller({ type, title, subtitle }: BestSellerSectionProps) {
           >
             {/* 책 표지 */}
             <div className="w-20 h-26 overflow-hidden rounded flex items-center justify-center">
-              <book.CoverIcon className="w-full  object-cover" />
+              <img src={book.coverUrl} alt={book.title} className="w-full  object-cover" />
             </div>
 
             {/* 책 정보 */}

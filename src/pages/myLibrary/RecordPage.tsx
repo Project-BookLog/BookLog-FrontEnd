@@ -1,8 +1,7 @@
-// src/pages/MyLibrary/RecordPage.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
-import PlusIcon from "../../assets/icons/plus.svg";
+import PlusIcon from "../../assets/icons/Plus.svg";
 
 import { createReadingLog, updateReadingLog } from "../../api/readingLogs";
 
@@ -107,6 +106,7 @@ function WheelColumn({
     const idx = values.indexOf(value);
     if (idx < 0) return;
     const top = idx * ITEM_H;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     el.scrollTo({ top, behavior: "instant" as any });
   }, [values, value]);
 
@@ -130,6 +130,7 @@ function WheelColumn({
 
     el.addEventListener("scroll", handle, { passive: true });
     return () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       el.removeEventListener("scroll", handle as any);
       if (t) window.clearTimeout(t);
     };
@@ -189,6 +190,7 @@ function InlineDatePicker({
   const [d, setD] = useState(value.d);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setY(value.y);
     setM(value.m);
     setD(value.d);
@@ -196,6 +198,7 @@ function InlineDatePicker({
 
   useEffect(() => {
     const maxD = daysInMonth(y, m);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (d > maxD) setD(maxD);
   }, [y, m, d]);
 

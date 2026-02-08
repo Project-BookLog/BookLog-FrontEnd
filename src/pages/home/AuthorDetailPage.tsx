@@ -5,7 +5,7 @@ import AuthorProfile from "../../components/home/author/AuthorProfile";
 import AuthorAwards from "../../components/home/author/AuthorAwards";
 import AuthorBooks from "../../components/home/author/AuthorBooks";
 import AuthorBookBrief from "../../components/home/author/AuthorBookBrief";
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 
 const TABS = ["프로필", "수상경력", "도서"] as const;
 type TabType = (typeof TABS)[number];
@@ -17,8 +17,7 @@ export const AuthorDetailPage = () => {
   const AwardRef = useRef<HTMLElement | null>(null);
   const BookRef = useRef<HTMLElement | null>(null);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { authorid } = useParams<{ authorid: string }>();
+  // const { authorid } = useParams<{ authorid: string }>();
   // console.log(authorid);
 
   const handleChangeTab = (nextTab: TabType) => {

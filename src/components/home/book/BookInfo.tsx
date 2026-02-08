@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { BackIcon } from "../../../assets/icons";
-import type { UserBookDetail } from "../../../types";
 
 function BookInfo() {
   const [descExpanded, setDescExpanded] = useState(false);

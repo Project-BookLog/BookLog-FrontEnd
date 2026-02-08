@@ -12,10 +12,15 @@ export const KakaoLoginRedirectPage = () => {
       const accessToken = params.get("accessToken");
       const refreshToken = params.get("refreshToken");
 
-      if (accessToken && refreshToken) {
-        await setTokens({ accessToken, refreshToken });
+      try {
+        if (accessToken && refreshToken) {
+          await setTokens({ accessToken, refreshToken });
+        }
+      } catch (e) {
+        console.error("토큰 설정 실패:", e);
+      } finally {
+        navigate("/login", { replace: true });
       }
-      navigate("/login", { replace: true });
     }
     handleKakaoLogin();
   }, []);

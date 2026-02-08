@@ -4,8 +4,8 @@ import Tab from "../../components/common/Tab";
 import BookRecommeded from "../../components/home/book/BookRecommended";
 import BookInfo from "../../components/home/book/BookInfo";
 import BookLogCarousel from "../../components/home/book/BookLogCarousel";
-import { useParams } from "react-router-dom";
-import { useGetBookDetail } from "../../hooks/queries/useGetBookDetail";
+// import { useParams } from "react-router-dom";
+// import { useGetBookDetail } from "../../hooks/queries/useGetBookDetail";
 import { Dummy_book } from "../../assets/icons";
 
 const TABS = ["책 추천", "책 정보", "북로그"] as const;
@@ -18,7 +18,7 @@ export const BookDetailPage = () => {
   const InfoRef = useRef<HTMLElement | null>(null);
   const BookLogRef = useRef<HTMLElement | null>(null);
  
-  const { bookid } = useParams<{ bookid: string }>();
+  // const { bookid } = useParams<{ bookid: string }>();
   // const { bookId, userBookId } = useParams();
 
   // const { data: userBook } = useGetBookDetail(Number(userBookId));
