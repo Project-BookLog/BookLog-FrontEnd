@@ -1,6 +1,21 @@
+import { useEffect, useState } from "react";
+import { getReadingStatus } from "../../api/mypage/myReading";
+import type { ReadingStatusResponse } from "../../types/myPage/myReading.types";
+import { getCurrentMonthString } from "../../utils/date";
 
 function ReadingStatus() {
-  const tags = ["몽환적인", "사유적인, 묘사적인", "몰입도 높은"] as const;
+  const [status, setStatus] = useState<ReadingStatusResponse | null>(null);
+
+  useEffect(() => {
+    const month = getCurrentMonthString(); 
+    getReadingStatus(month).then(setStatus);
+  }, []);
+
+
+  if (!status) return null; 
+
+  const { progressPercent, dayProgress, aiSummary, topMoodTags } = status;
+ 
   return (
     <div className="bg-bg">        
       {/* 제목 영역 */}
@@ -12,30 +27,28 @@ function ReadingStatus() {
       <section className="w-full bg-gray-100 rounded-[12px] p-4">
         {/* subitle */}
         <div className="flex justify-between items-center">
-          <div className="w-full text-subtitle-01-sb">이번 달 독서 현황 35%</div>
-          <div className="text-caption-01 bg-white justify-center rounded-full px-3 py-1 h-[25px]">11/31</div>
+          <div className="w-full text-subtitle-01-sb">이번 달 독서 현황 {progressPercent}%</div>
+          <div className="text-caption-01 bg-white justify-center rounded-full px-3 py-1 h-[25px]">{dayProgress.currentDay}/{dayProgress.lastDay}</div>
         </div>
 
         {/* content */}
         <div className="mt-2 mb-3">
-          <p className="text-caption-02 text-gray-600">몽환적인 묘사와 깊은 사유에 몰입해온 11일간의 여정.<br />Yoon님만의 선명한 문학적 취향을 완성해가고 있어요.</p>
+          <p className="text-caption-02 text-gray-600">{aiSummary}</p>
         </div>
 
         {/* tag */}
-        <div>
+        {topMoodTags.length > 0 && (
           <div className="flex flex-wrap gap-[6px]">
-            {tags.map((i) => {
-            return (
-              <button
-                key={i}
+            {topMoodTags.map((tag) => (
+              <span
+                key={tag}
                 className="bg-lightblue-3 text-body-03 text-primary rounded-full px-[14px] py-[5px]"
               >
-                {i}
-              </button>
-            );
-          })}
+                {tag}
+              </span>
+            ))}
           </div>
-        </div>
+        )}
       </section>
     </div>
   );
