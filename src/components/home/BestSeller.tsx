@@ -1,11 +1,10 @@
 import { useState } from "react";
-// import { BOOKS } from "../../data/book.mock";
 import type { BestsellerSection } from "../../types/home/home.types";
 
 const TAGS = {
   mood: ["잔잔한", "묵직한", "따뜻한", "서늘한", "몽환적"],
   writingStyle: ["간결한", "묘사적인", "사유적인", "대화형", "실험적"],
-  immersion: ["순한 몰입", "완전집중형", "몰입도 높은", "길이 짧은"],
+  immersion: ["기분 전환", "지적인 탐구", "압도적 몰입", "짙은 여운"],
 };
 
 type SectionType = "mood" | "writingStyle" | "immersion";
@@ -16,12 +15,31 @@ interface BestSellerProps {
   sections: BestsellerSection[];
 }
 
+const truncateText = (
+  text: string | null,
+  visibleLength: number,
+  fallback = "-"
+) => {
+  if (!text) return fallback;
+
+  if (text.length <= visibleLength) return text;
+
+  return text.slice(0, visibleLength - 1) + "...";
+};
+
+const formatAuthor = (author: string | null) => {
+  if (!author) return "-";
+
+  const firstAuthor = author.split(",")[0].trim();
+  return truncateText(firstAuthor, 5);
+};
+
 function BestSeller({ type, title, subtitle, sections }: BestSellerProps) {
   const [active, setActive] = useState(0);
   const tags = TAGS[type];
   const activeTag = tags[active];
   const activeSection = sections.find(
-    (sections) => sections.tagName === activeTag
+    (section) => section.tagName === activeTag
   );
 
   const books = activeSection?.books ?? [];
@@ -59,7 +77,7 @@ function BestSeller({ type, title, subtitle, sections }: BestSellerProps) {
         <div className="grid grid-rows-3 auto-cols-[220px] grid-flow-col gap-y-3 gap-x-1.5 py-2">
         {books.map((book) => (
           <div
-            key={book.bookId}
+            key={book.bookId} //ranking 값 생기면 교체예정 
             className="w-[220px] items-center flex gap-3"
           >
             {/* 책 표지 */}
@@ -80,15 +98,15 @@ function BestSeller({ type, title, subtitle, sections }: BestSellerProps) {
             <div className="mt-2 flex items-start space-x-2">
               <div className="w-3">
                 <p className="text-subtitle-02-sb text-black truncate">
-                  {book.bookId}
+                  {book.ranking ?? "-"}
                 </p>
               </div>
               <div>
                 <p className="text-subtitle-02-sb truncate">
-                  {book.title}
+                  {truncateText(book.title, 10)}
                 </p>
                 <p className="text-caption-02 text-gray-700 truncate">
-                  {book.author}<span className="text-gray-500"> | </span>{book.publisher}
+                  {formatAuthor(book.author)}<span className="text-gray-500"> | </span>{truncateText(book.publisher, 5)}
                 </p>
               </div>
             </div>

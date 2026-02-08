@@ -3,6 +3,30 @@ interface RankingProps {
   books: RealTimeRankingBook[];
 }
 
+const truncateText = (
+  text: string | null,
+  visibleLength: number,
+  fallback = "-"
+) => {
+  if (!text) return fallback;
+
+  // visibleLength까지는 그대로
+  if (text.length <= visibleLength) return text;
+
+  // 초과 시: (visibleLength - 1) + ...
+  return text.slice(0, visibleLength - 1) + "...";
+};
+
+
+const formatAuthor = (author: string | null) => {
+  if (!author) return "-";
+
+  const firstAuthor = author.split(",")[0].trim();
+  return truncateText(firstAuthor, 4);
+};
+
+
+
 function Ranking({ books }: RankingProps) {
   return (
     <section className="px-5">
@@ -44,9 +68,9 @@ function Ranking({ books }: RankingProps) {
                     <p className="text-subtitle-02-sb text-black truncate">{book.ranking}</p>
                   </div>
                   <div>
-                    <p className="text-subtitle-02-sb text-black truncate">{book.title}</p>
+                    <p className="text-subtitle-02-sb text-black truncate">{truncateText(book.title, 7)}</p>
                     <p className="text-caption-02 text-gray-700 truncate">
-                      {book.author ?? "저자 정보 없음"}<span className="text-gray-500"> | </span>{book.publisher ?? "출판사 정보 없음"}
+                      {formatAuthor(book.author)?? "-"}<span className="text-gray-500"> | </span>{truncateText(book.publisher, 4) ?? "-"}
                     </p>
                   </div>
                 </div>

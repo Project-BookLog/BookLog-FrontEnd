@@ -7,6 +7,7 @@ import CurrentReading from "../components/home/CurrentReading";
 import Ranking from "../components/home/Ranking";
 import BestSeller from "../components/home/BestSeller";
 import NavbarBottom from "../components/common/navbar/NavBarBottom";
+import { ErrorPage } from "./onboarding/ErrorPage";
 
 import { getHome } from "../api/home/home";
 import type { BestsellerSection, RealTimeRankingBook } from "../types/home/home.types";
@@ -73,6 +74,9 @@ function HomePage() {
       setMoodBestsellers(res.moodBestsellers);
       setWritingStyleBestsellers(res.writingStyleBestsellers);
       setImmersionBestsellers(res.immersionBestsellers);
+    }).catch((err) => {
+      <ErrorPage />;
+      console.error("홈 데이터 불러오기 실패:", err);
     });
   }, []);
 
