@@ -21,6 +21,8 @@ function HomePage() {
   const [moodBestsellers, setMoodBestsellers] = useState<BestsellerSection[]>([]);
   const [writingStyleBestsellers, setWritingStyleBestsellers] = useState<BestsellerSection[]>([]);
   const [immersionBestsellers, setImmersionBestsellers] = useState<BestsellerSection[]>([]);
+  
+  const [isError, setIsError] = useState(false);
 
   const likeSectionRef = useRef<HTMLDivElement | null>(null);
   const rankingRef = useRef<HTMLDivElement | null>(null);
@@ -75,7 +77,7 @@ function HomePage() {
       setWritingStyleBestsellers(res.writingStyleBestsellers);
       setImmersionBestsellers(res.immersionBestsellers);
     }).catch((err) => {
-      <ErrorPage />;
+      setIsError(true);
       console.error("홈 데이터 불러오기 실패:", err);
     });
   }, []);
@@ -119,6 +121,8 @@ function HomePage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [activeTab]); 
 
+  if (isError) return <ErrorPage />;
+  
   return (
     <div className="min-h-screen bg-bg">
       {/* navbar */}
