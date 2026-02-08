@@ -58,7 +58,6 @@ export default function SearchPage() {
       search.setKeyword(q);
       
       startTransition(() => {
-      search.searchBoth(q);
         if (activeTab === "도서") {
           search.searchBooks({ query: q });
         } else if (activeTab === "작가") {
