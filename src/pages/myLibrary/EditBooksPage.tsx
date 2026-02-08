@@ -139,7 +139,7 @@ export const EditBooksPage = () => {
                     },
                     {
                         onSuccess: () => resolve(),
-                        onError: () => reject(),
+                        onError: (error) => reject(error),
                     }
                 );
             });
