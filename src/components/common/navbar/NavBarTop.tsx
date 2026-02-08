@@ -7,7 +7,7 @@ type NavBarProps = {
   rightText?: string;
   rightSlot?: ReactNode;
   back?: boolean;
-  leftContent?: ReactNode;
+  leftSlot?: ReactNode;
   centerSlot?: ReactNode;
   onBack?: () => void;
 };
@@ -18,12 +18,12 @@ function NavBarTop({
   rightText,
   rightSlot,
   back = true,
-  leftContent,
+  leftSlot,
   centerSlot,
   onBack,
 }: NavBarProps) {
   const renderLeft = () => {
-    if (leftContent) return leftContent;
+    if (leftSlot) return leftSlot;
     if (!back) return null;
 
     return (
