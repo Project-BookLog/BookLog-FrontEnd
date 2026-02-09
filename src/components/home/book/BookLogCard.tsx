@@ -15,7 +15,7 @@ function BookLogCard({
 
   //이미지컷 
   const totalImages = images.length;
-  const visibleImages = totalImages <= 4 ? images : images.slice(0, 3);
+  const visibleImages = totalImages <= 4 ? [...images].sort((a, b) => a.order - b.order) : [...images].sort((a, b) => a.order - b.order).slice(0, 3);
   const remainCount = totalImages > 4 ? totalImages - 3 : 0;
 
 
