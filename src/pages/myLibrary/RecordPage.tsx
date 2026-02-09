@@ -359,22 +359,20 @@ export default function RecordPage() {
         });
       }
 
+      const totalPagesNumber = Number(totalPages);
+      if (Number.isFinite(totalPagesNumber) && totalPagesNumber > 0) {
+        await patchTotalPages({ userBookId: parsedUserBookId, pageCountSnapshot: totalPagesNumber});
+      }
+      
       const payload: CreateReadingLogRequest = {
         readDate: toApiDate(date.y, date.m, date.d),
-        pagesRead: Number(pagesRead),
+        currentPage: Number(pagesRead),
       };
 
       if (isEditMode) {
         await updateReadingLog(logId, payload);
       } else {
         await createReadingLog(parsedUserBookId, payload);
-      }
-
-      if (!userBookDetail?.pageCountSnapshot && totalPages) {
-        const totalPagesNumber = Number(totalPages);
-        if (Number.isFinite(totalPagesNumber) && totalPagesNumber > 0) {
-          await patchTotalPages({ userBookId: parsedUserBookId, pageCountSnapshot: totalPagesNumber});
-        }
       }
 
       showToast("독서 기록이 적용되었어요.")
