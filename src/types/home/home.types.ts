@@ -1,3 +1,12 @@
+export interface CurrentReadingBook {
+  userBookId: number;
+  title: string;
+  thumbnailUrl: string | null;
+  authorName: string;
+  publisherName: string;
+  progressPercent: number;
+}
+
 export interface RealTimeRankingBook {
   bookId: number;
   title: string;

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { BestsellerSection } from "../../types/home/home.types";
+import { useNavigate } from "react-router-dom";
 
 const TAGS = {
   mood: ["잔잔한", "묵직한", "따뜻한", "서늘한", "몽환적"],
@@ -34,15 +35,22 @@ const formatAuthor = (author: string | null) => {
   return truncateText(firstAuthor, 5);
 };
 
+
 function BestSeller({ type, title, subtitle, sections }: BestSellerProps) {
+  const navigate = useNavigate();
+  
   const [active, setActive] = useState(0);
   const tags = TAGS[type];
   const activeTag = tags[active];
   const activeSection = sections.find(
     (section) => section.tagName === activeTag
-  );
+  )
 
   const books = activeSection?.books ?? [];
+
+  const handleClickBook = (bookId: number) => {
+    navigate(`/book/${bookId}`);
+  }
   
   return (
     <section className="space-y-3">
@@ -77,7 +85,8 @@ function BestSeller({ type, title, subtitle, sections }: BestSellerProps) {
         <div className="grid grid-rows-3 auto-cols-[220px] grid-flow-col gap-y-3 gap-x-1.5 py-2">
         {books.map((book) => (
           <div
-            key={book.bookId} //ranking 값 생기면 교체예정 
+            key={book.bookId} //ranking 값 생기면 교체예정
+            onClick={() => handleClickBook(book.bookId)} 
             className="w-[220px] items-center flex gap-3"
           >
             {/* 책 표지 */}
@@ -103,7 +112,7 @@ function BestSeller({ type, title, subtitle, sections }: BestSellerProps) {
               </div>
               <div>
                 <p className="text-subtitle-02-sb truncate">
-                  {truncateText(book.title, 10)}
+                  {truncateText(book.title, 8)}
                 </p>
                 <p className="text-caption-02 text-gray-700 truncate">
                   {formatAuthor(book.author)}<span className="text-gray-500"> | </span>{truncateText(book.publisher, 5)}
