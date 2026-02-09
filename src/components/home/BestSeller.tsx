@@ -2,8 +2,8 @@ import { useState } from "react";
 import type { BestsellerSection } from "../../types/home/home.types";
 
 const TAGS = {
-  mood: ["잔잔한", "묵직한", "따뜻한", "서늘한", "몽환적"],
-  writingStyle: ["간결한", "묘사적인", "사유적인", "대화형", "실험적"],
+  mood: ["따뜻한", "잔잔한", "유쾌한", "어두운", "서늘한"],
+  writingStyle: ["간결한", "화려한", "담백한", "섬세한", "직설적"],
   immersion: ["기분 전환", "지적인 탐구", "압도적 몰입", "짙은 여운"],
 };
 
