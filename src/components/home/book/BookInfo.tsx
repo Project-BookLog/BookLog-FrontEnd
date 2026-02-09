@@ -81,7 +81,7 @@ function BookInfo({book}: BookInfoProps) {
 
           <div className="flex">
             <span className="w-20">출판 연도</span>
-            <span>{book.publishedDate.slice(0, 4) || "-"}</span>
+            <span>{book.publishedDate?.slice(0, 4) || "-"}</span>
           </div>
         </div>
       </section>
