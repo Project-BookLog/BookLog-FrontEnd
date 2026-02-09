@@ -62,6 +62,12 @@ export interface AuthorSearchResponse {
   items: Author[];
 }
 
+export interface RequestPatchUserBookDto {
+  shelfId?: number;
+  status?: BookStatus;
+  format?: BookFormat;
+}
+
 export type BookStatus = "TO_READ" | "READING" | "COMPLETED" | "STOPPED";
 
 export type BookFormat = "PAPER" | "EBOOK" | "AUDIO"

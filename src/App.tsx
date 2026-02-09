@@ -87,7 +87,7 @@ function App() {
           <Route path="/booklog" element={<BooklogPage />} />
           <Route path="/booklog/pick" element={<BookPickPage />} />
           <Route path="/booklog/filter" element={<BooklogFilterPage />} />
-          <Route path="/booklog/:booklogId" element={<BooklogDetailPage />} />
+          <Route path="/booklog/:postId" element={<BooklogDetailPage />} />
         </Route>
 
         {/* 북로그 글쓰기 전용 필터 Provider */}

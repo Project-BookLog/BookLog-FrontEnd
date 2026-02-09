@@ -18,6 +18,7 @@ export function useDeleteBookList () {
             deleteBookList(body, shelfId, status),
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: [QUERY_KEY.books],});
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEY.shelves] });
         },
     })
 }
