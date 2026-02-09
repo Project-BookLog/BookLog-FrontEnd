@@ -1,13 +1,13 @@
 import { privateApi } from "../axiosConfig";
-import type { MyPageProfile } from "../../types/myPage/user.types";
+import type { UserProfileCard } from "../../types/myPage/user.types";
 
 interface MyPageResponse {
   data: {
-    profile: MyPageProfile;
+    profile: UserProfileCard;
   };
 }
 
-export const getMyProfileCard = async (): Promise<MyPageProfile> => {
+export const getMyProfileCard = async (): Promise<UserProfileCard> => {
   const res = await privateApi.get<MyPageResponse>("/me/mypage");
   return res.data.data.profile;
 };

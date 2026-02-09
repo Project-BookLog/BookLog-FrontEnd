@@ -10,14 +10,17 @@ import { getCurrentMonthString, getCurrentYearMonth } from "../../utils/date";
 
 import { getMyProfileCard } from "../../api/mypage/myProfileCard";
 import type { UserProfileCard } from "../../types/myPage/user.types";
+import { ErrorPage } from "../onboarding/ErrorPage";
 
 function MyPage() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfileCard | null>(null);
-  // const [loading, setLoading] = useState(true);
+
   const monthString = useMemo(() => getCurrentMonthString(), []);
   const { year, month } = useMemo(() => getCurrentYearMonth(), []);
 
+  // const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -26,6 +29,7 @@ function MyPage() {
         setProfile(profileData);
       } catch (error) {
         console.error("Failed to fetch profile:", error);
+        setError(true);
       } finally {
         // setLoading(false);
       }
@@ -49,7 +53,11 @@ function MyPage() {
         </header>
 
         <section className=" px-5">
-          {profile && <UserInfoCard user={profile} />}
+          { error ? (
+            <ErrorPage />
+          ) : profile ? (
+            <UserInfoCard user={profile} />
+          ) : null}
         </section>
 
         <div className="mt-8 h-2 w-full bg-gray-100" />
