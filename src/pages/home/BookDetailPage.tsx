@@ -100,6 +100,7 @@ export const BookDetailPage = () => {
 
   if (isBookLoading) return <LoadingPage />;
   if (isUserBook && isUserBookLoading) return <LoadingPage />;
+  if (!isUserBook && isUserBooksLoading) return <LoadingPage />;
   if (!book) return null;
 
   const authors = book.authors
@@ -174,7 +175,7 @@ export const BookDetailPage = () => {
           <div className="mt-6 space-y-4">
             <div>
               <button className="px-2 py-1 h-6 rounded-sm bg-lightblue-1 text-caption-02 text-primary">
-                {!isUserBook ? "도서" : USER_BOOK_STATUS_LABEL[userBook!.status]}
+                {!isUserBook ? "도서" : userBook?.status ? USER_BOOK_STATUS_LABEL[userBook.status] : "-"}
               </button>
             </div>
             <div>
@@ -195,22 +196,22 @@ export const BookDetailPage = () => {
           <div className="flex w-[350px] h-[66px] mx-auto justify-center items-center gap-[18px] mt-5 rounded-[4px] bg-gray-100">
             <div className="flex w-[51px] flex-col items-center gap-[6px] shrink-0">
               <p className="self-stretch text-center text-gray-500 text-caption-02">시작 날짜</p>
-              <p className="self-stretch text-center text-gray-800 text-caption-01">{userBook?.startDate !== null ? userBook?.startDate : "-"}</p>
+              <p className="self-stretch text-center text-gray-800 text-caption-01">{userBook?.startDate ?? "-"}</p>
             </div>
             <span className="w-[1px] h-8 shrink-0 bg-gray-200"/>
             <div className="flex w-[51px] flex-col items-center gap-[6px] shrink-0">
               <p className="self-stretch text-center text-gray-500 text-caption-02">종료 날짜</p>
-              <p className="self-stretch text-center text-gray-800 text-caption-01">{userBook?.endDate !== null ? userBook?.endDate : "-"}</p>
+              <p className="self-stretch text-center text-gray-800 text-caption-01">{userBook?.endDate ?? "-"}</p>
             </div>
             <span className="w-[1px] h-8 shrink-0 bg-gray-200"/>
             <div className="flex w-[51px] flex-col items-center gap-[6px] shrink-0">
               <p className="self-stretch text-center text-gray-500 text-caption-02">종류</p>
-              <p className="self-stretch text-center text-gray-800 text-caption-01">{userBook?.format !== null ? BOOK_FORMAT_LABEL[userBook!.format] : "-"}</p>
+              <p className="self-stretch text-center text-gray-800 text-caption-01">{userBook?.format ? BOOK_FORMAT_LABEL[userBook.format] : "-"}</p>
             </div>
             <span className="w-[1px] h-8 shrink-0 bg-gray-200"/>
             <div className="flex w-[51px] flex-col items-center gap-[6px] shrink-0">
               <p className="self-stretch text-center text-gray-500 text-caption-02">페이지 수</p>
-              <p className="self-stretch text-center text-gray-800 text-caption-01">{userBook?.pageCountSnapshot !== null ? `${userBook?.pageCountSnapshot}쪽`: "-"}</p>
+              <p className="self-stretch text-center text-gray-800 text-caption-01">{userBook?.pageCountSnapshot != null ? `${userBook?.pageCountSnapshot}쪽`: "-"}</p>
             </div>
           </div>
         )}
