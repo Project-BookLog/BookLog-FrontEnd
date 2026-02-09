@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { BackIcon } from "../../../assets/icons";
+import type { BookDetailResponse } from "../../../types/home/detail.types";
 
-function BookInfo() {
+interface BookInfoProps {
+  book: BookDetailResponse;
+}
+
+function BookInfo({book}: BookInfoProps) {
   const [descExpanded, setDescExpanded] = useState(false);
   const [tocExpanded, setTocExpanded] = useState(false);
 
@@ -27,7 +32,7 @@ function BookInfo() {
                 (descExpanded ? "book-desc-expanded" : "book-desc-clamp")
               }
             >
-              책 내용
+              {book.description || "-"}
             </p>
           </div>
         </div>
@@ -66,17 +71,17 @@ function BookInfo() {
         <div className="space-y-2 text-gray-500 text-body-03">
           <div className="flex">
             <span className="w-20">출판사</span>
-            <span>곰 출판</span>
+            <span>{book.publisherName || "-"}</span>
           </div>
 
           <div className="flex">
             <span className="w-20">ISBN</span>
-            <span>9791189327156</span>
+            <span>{book.isbn13 || book.isbn10 || "-"}</span>
           </div>
 
           <div className="flex">
             <span className="w-20">출판 연도</span>
-            <span>2021</span>
+            <span>{book.publishedDate?.slice(0, 4) || "-"}</span>
           </div>
         </div>
       </section>

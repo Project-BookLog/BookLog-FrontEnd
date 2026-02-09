@@ -8,7 +8,7 @@ import EditBookCard from "../../components/myLibrary/EditBookCard"
 import { useToast } from "../../context/ToastContext"
 import { LIBRARY_TABS } from "../../constants/libraryTabs"
 import { useDeleteBookList } from "../../hooks/mutations/useDeleteBookList"
-import { useGetBookList } from "../../hooks/queries/useGetBookList"
+import { useGetUserBookList } from "../../hooks/queries/useGetUserBookList"
 import { useGetShelves } from "../../hooks/queries/useGetShelves"
 import { usePatchBookDetail } from "../../hooks/mutations/usePatchBookDetail"
 
@@ -32,7 +32,7 @@ export const EditBooksPage = () => {
     const [targetShelfId, setTargetShelfId] = useState<number | null>(null);
 
     const { mutate: deleteBooks } = useDeleteBookList();
-    const { data: books } = useGetBookList(parsedShelfId, status);
+    const { data: books } = useGetUserBookList(parsedShelfId, status);
     const { data: shelves } = useGetShelves();
     const { mutateAsync: patchBookDetail }  = usePatchBookDetail();
     const { showToast } = useToast();
@@ -155,6 +155,7 @@ export const EditBooksPage = () => {
     }
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSelectedBooks([]);
     }, [activeTab, shelfId]);
 

@@ -5,14 +5,14 @@ import { BOOK_ORDER, sortOptions } from "../../enum/book";
 import { ArrowDown } from "../../assets/icons";
 import { SortDropDown } from "../../components/common/dropdown/SortDropDown";
 import { BookCard } from "../../components/myLibrary/BookCard";
-import { useGetBookList } from "../../hooks/queries/useGetBookList";
+import { useGetUserBookList } from "../../hooks/queries/useGetUserBookList";
 
 export const FinishedBooksPage = () => {
     const navigate = useNavigate();
     const [sortOrder, setSortOrder] = useState<BOOK_ORDER>(BOOK_ORDER.LATEST);
     const [isSortDropDownOpen, setIsSortDropDownOpen] = useState(false);
 
-    const { data: books } = useGetBookList(undefined, "COMPLETED", sortOrder);
+    const { data: books } = useGetUserBookList(undefined, "COMPLETED", sortOrder);
     const bookItems = books?.items ?? [];
     
     const currentSortLabel = sortOptions.find(

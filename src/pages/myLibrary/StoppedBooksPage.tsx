@@ -5,7 +5,7 @@ import { EditCheckBox } from "../../components/myLibrary/EditCheckBox";
 import EditBookCard from "../../components/myLibrary/EditBookCard";
 import { useToast } from "../../context/ToastContext";
 import { useDeleteBookList } from "../../hooks/mutations/useDeleteBookList";
-import { useGetBookList } from "../../hooks/queries/useGetBookList";
+import { useGetUserBookList } from "../../hooks/queries/useGetUserBookList";
 import { ConfirmModal } from "../../components/common/ConfirmModal";
 
 export default function StoppedBooksPage() {
@@ -22,7 +22,7 @@ export default function StoppedBooksPage() {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
 
   const { mutate: deleteBooks } = useDeleteBookList();
-  const { data: books } = useGetBookList(parsedShelfId, "STOPPED");
+  const { data: books } = useGetUserBookList(parsedShelfId, "STOPPED");
   const { showToast } = useToast();
 
   const stoppedBooks = books?.items ?? [];

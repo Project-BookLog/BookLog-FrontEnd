@@ -8,7 +8,7 @@ import { BOOK_ORDER, sortOptions } from "../../enum/book";
 import { SortDropDown } from "../../components/common/dropdown/SortDropDown";
 import { LibraryActionDropDown, type LibraryAction } from "../../components/common/dropdown/LibraryActionDropDown";
 import { LIBRARY_TABS } from "../../constants/libraryTabs";
-import { useGetBookList } from "../../hooks/queries/useGetBookList";
+import { useGetUserBookList } from "../../hooks/queries/useGetUserBookList";
 
 export function MyLibraryDetailPage() {
 
@@ -28,7 +28,7 @@ export function MyLibraryDetailPage() {
 
   const status = activeTab === "ALL" ? undefined : (activeTab as "TO_READ" | "READING" | "COMPLETED");
 
-  const { data: books } = useGetBookList( parsedShelfId, status, sortOrder);
+  const { data: books } = useGetUserBookList( parsedShelfId, status, sortOrder);
   const bookItems = books?.items ?? [];
 
   const actions: LibraryAction[] = [
