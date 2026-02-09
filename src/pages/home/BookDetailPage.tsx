@@ -61,7 +61,7 @@ export const BookDetailPage = () => {
     }
   }, [bookIdNumber, matchedUserBook, isUserBooksLoading, navigate]);
 
-  
+
   useEffect(() => {
     const handleScroll = () => {
       const sections: { name: TabType; el: HTMLElement | null }[] = [
