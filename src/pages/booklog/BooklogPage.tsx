@@ -1,297 +1,27 @@
-// src/pages/booklog/BooklogPage.tsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import BookTag from "../../components/booklog/BookTag";
 import FilterBar from "../../components/booklog/FilterBar";
 import NavbarBottom from "../../components/common/navbar/NavBarBottom";
-import { Bookmark, Reset } from "../../assets/icons";
+import { Reset } from "../../assets/icons";
 import { useFilter } from "../../hooks/useFilter";
+import PostCard from "../../components/booklog/PostCard";
 
-import { getBooklogsFeed } from "../../api/booklogFeed";
-import { useToggleBooklogBookmark } from "../../hooks/mutations/useToggleBooklogBookmark";
+import { getBooklogsFeed } from "../../api/booklog/booklogFeed";
+import type { BooklogFeedItem } from "../../types/booklog/feed.types";
 
-/* =============================
- *  ✅ 안전한 ID 생성기 (crypto.randomUUID fallback)
- * ============================= */
-function generateId(): string {
-  try {
-    if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-      return crypto.randomUUID();
-    }
-  } catch {
-    // ignore
-  }
-  return `${Date.now().toString(36)}-${Math.random()
-    .toString(36)
-    .slice(2, 10)}`;
-}
+import { LoadingPage } from "../onboarding/LoadingPage";
+import { ErrorPage } from "../onboarding/ErrorPage";
 
-/* =============================
- *  ✅ 최소 응답 타입 (any 제거)
- * ============================= */
-type ItemUser = {
-  nickname?: string;
-  name?: string;
-};
-
-type Item = {
-  id?: string | number;
-  postId?: string | number;
-  booklogId?: string | number;
-
-  username?: string;
-  userName?: string;
-  user?: ItemUser;
-
-  body?: string;
-  content?: string;
-  text?: string;
-
-  tags?: unknown[] | string;
-  tagList?: unknown[] | string;
-  moods?: unknown[] | string;
-
-  bookTitle?: string;
-  bookAuthor?: string;
-  book?: { title?: string; author?: string };
-  book_name?: string;
-  author?: string;
-
-  views?: number | string;
-  viewCount?: number | string;
-
-  bookmarkCount?: number | string;
-  scrapCount?: number | string;
-  likeCount?: number | string;
-
-  // ✅ 북마크 여부(백엔드에서 내려주면 사용)
-  bookmarkedByMe?: boolean;
-  isBookmarked?: boolean;
-
-  imageUrls?: unknown[];
-  images?: unknown[];
-  imageCount?: number;
-
-  timeAgo?: string;
-  createdAgo?: string;
-  createdAt?: string;
-};
-
-type FeedResponse = { items: Item[] };
-type FeedReturn = Item[] | FeedResponse;
-
-function TagPill({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center rounded bg-[#E9EBF4] px-2 py-1 text-caption-02 font-medium text-[#3049C0]">
-      {children}
-    </span>
-  );
-}
-
-function BooklogContentImage({
-  isBook = false,
-  label = "img",
-  bookTitle,
-  bookAuthor,
-}: {
-  isBook?: boolean;
-  label?: string;
-  bookTitle?: string;
-  bookAuthor?: string;
-}) {
-  return (
-    <div className="relative h-[140px] w-[140px] shrink-0 overflow-hidden rounded-[8px] bg-[#CDCCCB]">
-      <div className="absolute inset-0 grid place-items-center text-caption-01 text-[#4B4B4B]">
-        {isBook ? "책 img" : label}
-      </div>
-
-      {isBook && (
-        <div className="absolute left-[10px] bottom-[10px]">
-          <BookTag
-            title={bookTitle ?? "책 제목"}
-            author={bookAuthor ?? "저자명 저"}
-          />
-        </div>
-      )}
-    </div>
-  );
-}
-
-type Post = {
-  id: string;
-  username: string;
-  timeAgo: string;
-  views: number;
-  bookmarkCount: number;
-  body: string;
-  tags: string[];
-  bookTitle: string;
-  bookAuthor: string;
-  imageCount?: number;
-
-  // ✅ 내가 북마크 했는지 (있으면 초기값으로 사용)
-  bookmarkedByMe?: boolean;
-};
-
-function PostCard({ post }: { post: Post }) {
-  const navigate = useNavigate();
-
-  // ✅ 서버/피드에서 내려온 값이 있으면 그걸 초기값으로
-  const [bookmarked, setBookmarked] = useState<boolean>(
-    post.bookmarkedByMe ?? false
-  );
-  const [bookmarkCount, setBookmarkCount] = useState<number>(post.bookmarkCount);
-  const [isToggling, setIsToggling] = useState(false);
-  const { mutateAsync: toggleBooklogBookmark } = useToggleBooklogBookmark();
-
-  // ✅ 카드가 바뀌면(리스트 갱신 등) 로컬 상태도 동기화
-  useEffect(() => {
-    setBookmarked(post.bookmarkedByMe ?? false);
-    setBookmarkCount(post.bookmarkCount);
-  }, [post.id, post.bookmarkCount, post.bookmarkedByMe]);
-
-  const goDetail = () => {
-    navigate(`/booklog/${post.id}`, { state: { post } });
-  };
-
-  const extraImages = Array.from({ length: Math.max(1, post.imageCount ?? 1) });
-
-  return (
-    <article
-      className="w-full cursor-pointer"
-      role="button"
-      tabIndex={0}
-      onClick={goDetail}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") goDetail();
-      }}
-    >
-      <div className="flex items-start justify-between px-4">
-        <div className="flex items-center gap-3">
-          <div className="grid h-[35px] w-[35px] place-items-center rounded-full bg-[#CDCCCB] text-caption-02 text-[#4B4B4B]">
-            이미지
-          </div>
-
-          <div className="min-w-0">
-            <div className="text-body-01-sb text-black">{post.username}</div>
-            <div className="mt-0.5 text-caption-02 text-[#81807F]">
-              {post.timeAgo} · 조회 {post.views}
-            </div>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={async (e) => {
-            e.stopPropagation();
-            if (isToggling) return;
-
-            try {
-              setIsToggling(true);
-              const data = await toggleBooklogBookmark({ postId: Number(post.id) });
-              setBookmarked(data.bookmarkedByMe);
-              setBookmarkCount(data.bookmarkCount);
-            } catch (err) {
-              console.error("북로그 북마크 토글 실패:", err);
-            } finally {
-              setIsToggling(false);
-            }
-          }}
-          className="flex items-center gap-1 pt-1"
-          aria-label="북마크"
-        >
-          <Bookmark
-            className="h-5 w-5"
-            style={{
-              color: bookmarked ? "#3049C0" : "#9B9A97",
-              fill: bookmarked ? "currentColor" : "none",
-              stroke: bookmarked ? "#3049C0" : "#9B9A97",
-            }}
-          />
-
-          <span className="text-caption-01 text-[#9B9A97]">
-            {bookmarkCount}
-          </span>
-        </button>
-      </div>
-
-      <div className="mt-4">
-        <div className="flex gap-3 overflow-x-auto px-4 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <div className="pl-[45px]">
-            <BooklogContentImage
-              isBook
-              bookTitle={post.bookTitle}
-              bookAuthor={post.bookAuthor}
-            />
-          </div>
-
-          {extraImages.map((_, idx) => (
-            <BooklogContentImage key={idx} label="img" />
-          ))}
-
-          <div className="w-4 shrink-0" />
-        </div>
-      </div>
-
-      <div className="px-4 pl-[60px]">
-        <p className="mt-3 line-clamp-2 text-caption-01 text-[#4D4D4C]">
-          {post.body}
-        </p>
-
-        <div className="mt-3 flex flex-wrap gap-2">
-          {post.tags.map((t) => (
-            <TagPill key={t}>{t}</TagPill>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-6 mb-5 h-[1px] w-full bg-[#E7E5E4]" />
-    </article>
-  );
-}
-
-/* =============================
- * 페이지
- * ============================= */
 export default function BooklogPage() {
   const navigate = useNavigate();
 
+  // ✅ filter도 같이 꺼내야 filterKey 만들 수 있음
   const { filter, resetFilter } = useFilter("booklog");
 
-  const [posts, setPosts] = useState<Post[]>([]);
-
-  const mockPosts = useMemo<Post[]>(
-    () => [
-      {
-        id: "1",
-        username: "User Name",
-        timeAgo: "3분 전",
-        views: 27,
-        bookmarkCount: 20,
-        body: "이 책은 어쩌구 다른 유저의 북로그 내용 ...",
-        tags: ["잔잔한, 따뜻한", "사유적", "생각이 필요한"],
-        bookTitle: "책 제목",
-        bookAuthor: "저자명 저",
-        imageCount: 1,
-        bookmarkedByMe: false,
-      },
-      {
-        id: "2",
-        username: "User Name",
-        timeAgo: "3분 전",
-        views: 27,
-        bookmarkCount: 20,
-        body: "이 책은 어쩌구 다른 유저의 북로그 내용 …",
-        tags: ["잔잔한, 따뜻한", "사유적", "생각이 필요한"],
-        bookTitle: "책 제목",
-        bookAuthor: "저자명 저",
-        imageCount: 3,
-        bookmarkedByMe: false,
-      },
-    ],
-    []
-  );
+  const [items, setItems] = useState<BooklogFeedItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
   const filterKey = useMemo(() => JSON.stringify(filter), [filter]);
 
@@ -300,97 +30,32 @@ export default function BooklogPage() {
 
     (async () => {
       try {
-        const data = (await getBooklogsFeed({
-          mood: filter.mood,
-          style: filter.style,
-          immersion: filter.immersion,
-        })) as FeedReturn;
+        setIsLoading(true);
+        setIsError(false);
 
-        const isValidFeed =
-          Array.isArray(data) || Array.isArray((data as FeedResponse)?.items);
+        const data = await getBooklogsFeed(0, 20);
 
-        const list: Item[] = Array.isArray(data)
-          ? data
-          : Array.isArray((data as FeedResponse)?.items)
-          ? (data as FeedResponse).items
-          : [];
-
-        if (import.meta.env.DEV) {
-          console.log("✅ feed params(filter):", filter);
-          console.log("feed raw data:", data);
-          console.log("feed list length:", list.length);
-          console.log("isValidFeed:", isValidFeed);
+        if (alive) {
+          setItems(data.items ?? []);
         }
-
-        const mapped: Post[] = list.map((it: Item) => {
-          const username =
-            it.username ??
-            it.userName ??
-            it.user?.nickname ??
-            it.user?.name ??
-            "User Name";
-
-          const body = it.body ?? it.content ?? it.text ?? "";
-
-          const tagsRaw = it.tags ?? it.tagList ?? it.moods ?? [];
-          const tags: string[] = Array.isArray(tagsRaw)
-            ? tagsRaw.map((t) => String(t))
-            : typeof tagsRaw === "string"
-            ? tagsRaw
-                .split(",")
-                .map((s) => s.trim())
-                .filter(Boolean)
-            : [];
-
-          const bookTitle =
-            it.bookTitle ?? it.book?.title ?? it.book_name ?? "책 제목";
-
-          const bookAuthor =
-            it.bookAuthor ?? it.book?.author ?? it.author ?? "저자명 저";
-
-          const views = Number(it.views ?? it.viewCount ?? 0) || 0;
-
-          const bookmarkCount =
-            Number(it.bookmarkCount ?? it.scrapCount ?? it.likeCount ?? 0) || 0;
-
-          const imageCount =
-            (Array.isArray(it.imageUrls) && it.imageUrls.length) ||
-            (Array.isArray(it.images) && it.images.length) ||
-            it.imageCount ||
-            1;
-
-          const timeAgo =
-            it.timeAgo ?? it.createdAgo ?? it.createdAt ?? "방금 전";
-
-          const bookmarkedByMe =
-            it.bookmarkedByMe ?? it.isBookmarked ?? false;
-
-          return {
-            id: String(it.id ?? it.postId ?? it.booklogId ?? generateId()),
-            username,
-            timeAgo,
-            views,
-            bookmarkCount,
-            body,
-            tags,
-            bookTitle,
-            bookAuthor,
-            imageCount,
-            bookmarkedByMe,
-          };
-        });
-
-        if (alive) setPosts(isValidFeed ? mapped : mockPosts);
       } catch (e) {
         console.error("북로그 피드 조회 실패:", e);
-        if (alive) setPosts(mockPosts);
+        if (alive) {
+          setItems([]);
+          setIsError(true);
+        }
+      } finally {
+        if (alive) setIsLoading(false);
       }
     })();
 
     return () => {
       alive = false;
     };
-  }, [mockPosts, filterKey, filter, resetFilter]);
+  }, [filterKey]);
+
+  if (isLoading) return <LoadingPage />;
+  if (isError) return <ErrorPage />;
 
   return (
     <div className="min-h-screen bg-bg pb-24">
@@ -417,8 +82,8 @@ export default function BooklogPage() {
         </div>
 
         <main className="mt-6">
-          {posts.map((p) => (
-            <PostCard key={p.id} post={p} />
+          {items.map((it) => (
+            <PostCard key={it.postId} item={it} />
           ))}
         </main>
 
