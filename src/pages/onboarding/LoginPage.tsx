@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useForm from "../../hooks/useForm";
 import { validateSignin, type UserLoginInformation } from "../../utils/validate";
 import { useAuth } from "../../context/AuthContext";
@@ -8,8 +8,6 @@ import { useGetOnboardingProfile } from "../../hooks/queries/useGetOnboardingPro
 
 export const LoginPage = () => {
     const navigate = useNavigate();
-    const location = useLocation();
-    const from = location.state?.from || "/";
     const { login, accessToken } = useAuth();
     const { data: onboardingProfile, isLoading, isError } = useGetOnboardingProfile();
 
@@ -18,7 +16,7 @@ export const LoginPage = () => {
         if (isLoading) return;
         if(isError) return;
         if (onboardingProfile?.isCompleted) {
-            navigate(from, { replace: true });
+            navigate("/", { replace: true });
         } else {
             navigate("/onboarding", { replace: true });
         }
