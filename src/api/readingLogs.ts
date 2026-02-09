@@ -3,7 +3,7 @@ import { privateApi } from "./axiosConfig";
 
 export type CreateReadingLogRequest = {
   readDate: string; // "YYYY-MM-DD"
-  pagesRead: number;
+  currentPage: number;
 };
 
 export type CreateReadingLogResponse = {
@@ -24,13 +24,6 @@ export function createReadingLog(
   );
 }
 
-export type UpdateReadingLogRequest = {
-  readDate: string; // "YYYY-MM-DD"
-  pagesRead: number;
-};
-
-export type UpdateReadingLogResponse = unknown;
-
-export function updateReadingLog(logId: number, body: UpdateReadingLogRequest) {
-  return privateApi.patch<UpdateReadingLogResponse>(`/reading-logs/${logId}`, body);
+export function updateReadingLog(logId: number, body: CreateReadingLogRequest) {
+  return privateApi.patch<CreateReadingLogResponse>(`/reading-logs/${logId}`, body);
 }

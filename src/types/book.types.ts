@@ -68,6 +68,12 @@ export interface RequestPatchUserBookDto {
   format?: BookFormat;
 }
 
+export interface RequestPostUserBookDto {
+  bookId: number;
+  shelfId?: number;
+  status?: BookStatus;
+}
+
 export type BookStatus = "TO_READ" | "READING" | "COMPLETED" | "STOPPED";
 
 export type BookFormat = "PAPER" | "EBOOK" | "AUDIO"

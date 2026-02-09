@@ -1,9 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import PlusIcon from "../../assets/icons/Plus.svg";
 
-import { createReadingLog, updateReadingLog } from "../../api/readingLogs";
+import { createReadingLog, updateReadingLog, type CreateReadingLogRequest } from "../../api/readingLogs";
+import type { BookFormat, BookStatus } from "../../types";
+import { usePatchBookDetail } from "../../hooks/mutations/usePatchBookDetail";
+import { useGetShelves } from "../../hooks/queries/useGetShelves";
+import { useGetUserBookDetail } from "../../hooks/queries/useGetUserBookDetail";
+import { useToast } from "../../context/ToastContext";
+import { ConfirmModal } from "../../components/common/ConfirmModal";
+import { usePatchUserBookTotalPage } from "../../hooks/mutations/usePatchUserBookTotalPage";
 
 /** ---------- utils ---------- */
 function pad2(n: number) {
@@ -233,24 +240,72 @@ function InlineDatePicker({
 type BookType = "종이책" | "전자책" | "오디오책";
 type ReadStatus = "읽을 예정" | "읽는 중" | "완독" | "중단";
 
+const READ_STATUS_MAP: Record<ReadStatus, BookStatus> = {
+  "읽을 예정": "TO_READ",
+  "읽는 중": "READING",
+  "완독": "COMPLETED",
+  "중단": "STOPPED",
+};
+
+const STATUS_REVERSE_MAP: Record<BookStatus, ReadStatus> = {
+  TO_READ: "읽을 예정",
+  READING: "읽는 중",
+  COMPLETED: "완독",
+  STOPPED: "중단",
+}
+
+const BOOK_TYPE_MAP: Record<BookType, BookFormat> = {
+  "종이책": "PAPER",
+  "전자책": "EBOOK",
+  "오디오책": "AUDIO",
+};
+
+const FORMAT_REVERSE_MAP: Record<BookFormat, BookType> = {
+  PAPER: "종이책",
+  EBOOK: "전자책",
+  AUDIO: "오디오책",
+}
+
 export default function RecordPage() {
   const navigate = useNavigate();
-  const { bookId } = useParams<{ bookId: string }>();
+  const { userBookId } = useParams<{ userBookId: string }>();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const defaultShelfId = location.state?.shelfId;
+  const { showToast } = useToast();
 
-  const userBookId = Number(bookId);
-  const hasValidUserBookId = Number.isFinite(userBookId) && userBookId > 0;
+  const parsedUserBookId = Number(userBookId);
+  const hasValidUserBookId = Number.isFinite(parsedUserBookId) && parsedUserBookId > 0;
 
   const logId = Number(searchParams.get("logId"));
   const isEditMode = Number.isFinite(logId) && logId > 0;
 
   const bookTypeOptions: BookType[] = ["종이책", "전자책", "오디오책"];
   const statusOptions: ReadStatus[] = ["읽을 예정", "읽는 중", "완독", "중단"];
-  const shelfOptions = ["서재 1", "서재 2", "서재 3"];
 
+  const { data: shelves = [] } = useGetShelves();
+  const { data: userBookDetail } = useGetUserBookDetail(parsedUserBookId);
+  const { mutateAsync: patchUserBook } = usePatchBookDetail();
+  const { mutateAsync: patchTotalPages } = usePatchUserBookTotalPage();
   const [bookType, setBookType] = useState<BookType | null>(null);
   const [status, setStatus] = useState<ReadStatus | null>(null);
-  const [shelf, setShelf] = useState<string | null>(null);
+  const [selectedShelfId, setSelectedShelfId] = useState<number | null>(defaultShelfId);
+  const [pagesRead, setPagesRead] = useState<string>("");
+  const [totalPages, setTotalPages] = useState<string>("");
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!userBookDetail) return;
+
+    if (userBookDetail.status) { setStatus(STATUS_REVERSE_MAP[userBookDetail.status]); }
+
+    if (userBookDetail.format) { setBookType(FORMAT_REVERSE_MAP[userBookDetail.format]); }
+
+    if (userBookDetail.currentPage != null) { setPagesRead(String(userBookDetail.currentPage)); }
+
+    if (userBookDetail.pageCountSnapshot != null) { setTotalPages(String(userBookDetail.pageCountSnapshot)); }
+
+  }, [userBookDetail]);
 
   const today = useMemo(() => {
     const t = new Date();
@@ -260,14 +315,14 @@ export default function RecordPage() {
   const [date, setDate] = useState<{ y: number; m: number; d: number }>(today);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
 
-  const [pagesRead, setPagesRead] = useState<string>("");
-  const [totalPages, setTotalPages] = useState<string>("");
-
   const isValidPagesRead = useMemo(() => {
     if (!pagesRead) return false;
     const n = Number(pagesRead);
     return Number.isFinite(n) && n > 0;
   }, [pagesRead]);
+
+  const totalPagesNumber = Number(totalPages);
+  const isValidTotalPages = Number.isFinite(totalPagesNumber) && totalPagesNumber > 0;
 
   const [submitting, setSubmitting] = useState(false);
   const submittingRef = useRef(false);
@@ -276,8 +331,9 @@ export default function RecordPage() {
     (isEditMode || hasValidUserBookId) &&
       bookType &&
       status &&
-      shelf &&
+      Number.isFinite(selectedShelfId) &&
       isValidPagesRead &&
+      isValidTotalPages &&
       !submitting
   );
 
@@ -292,17 +348,34 @@ export default function RecordPage() {
     try {
       setSubmitting(true);
 
-      const payload = {
+      if (hasValidUserBookId && bookType && status && selectedShelfId) {
+        await patchUserBook({
+          userBookId: parsedUserBookId,
+          body: {
+            shelfId: selectedShelfId,
+            status: READ_STATUS_MAP[status],
+            format: BOOK_TYPE_MAP[bookType],
+          },
+        });
+      }
+
+      const totalPagesNumber = Number(totalPages);
+      if (Number.isFinite(totalPagesNumber) && totalPagesNumber > 0) {
+        await patchTotalPages({ userBookId: parsedUserBookId, pageCountSnapshot: totalPagesNumber});
+      }
+      
+      const payload: CreateReadingLogRequest = {
         readDate: toApiDate(date.y, date.m, date.d),
-        pagesRead: Number(pagesRead),
+        currentPage: Number(pagesRead),
       };
 
       if (isEditMode) {
         await updateReadingLog(logId, payload);
       } else {
-        await createReadingLog(userBookId, payload);
+        await createReadingLog(parsedUserBookId, payload);
       }
 
+      showToast("독서 기록이 적용되었어요.")
       navigate(-1);
     } catch (e) {
       console.error(isEditMode ? "updateReadingLog failed:" : "createReadingLog failed:", e);
@@ -319,7 +392,7 @@ export default function RecordPage() {
 
   return (
     <div className="min-h-screen bg-bg">
-      <NavBarTop title="독서 기록" onBack={() => navigate(-1)} />
+      <NavBarTop title="독서 기록" onBack={() => setIsConfirmModalOpen(true)} />
 
       <div className="px-5 pb-28 pt-4">
         {/* ✅ 0) 책종류 */}
@@ -356,12 +429,12 @@ export default function RecordPage() {
         <div className="mb-6">
           <div className="mb-3 text-en-subtitle-01 text-black">저장할 책장</div>
           <div className="flex flex-wrap gap-2 items-center">
-            {shelfOptions.map((opt) => (
+            {shelves.filter((shelf) => shelf.name !== "전체 도서").map((shelf) => (
               <Pill
-                key={opt}
-                label={opt}
-                active={shelf === opt}
-                onClick={() => setShelf(opt)}
+                key={shelf.shelfId}
+                label={shelf.name}
+                active={selectedShelfId === shelf.shelfId}
+                onClick={() => setSelectedShelfId(shelf.shelfId)}
               />
             ))}
             <PlusPill onClick={() => {}} />
@@ -487,6 +560,18 @@ export default function RecordPage() {
           )}
         </div>
       </div>
+
+      {isConfirmModalOpen && 
+        <ConfirmModal
+          isOpen={isConfirmModalOpen}
+          title="독서 기록을 중단할까요?"
+          description="작업 취소한 내용은 복구할 수 없어요."
+          confirmText="중단"
+          cancelText="취소"
+          onConfirm={() => navigate(-1)}
+          onClose={() => setIsConfirmModalOpen(false)}
+        />
+      }
     </div>
   );
 }
