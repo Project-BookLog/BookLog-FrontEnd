@@ -1,5 +1,5 @@
 import { privateApi } from "../axiosConfig";
-import type { BookDetailResponse, BookRelatedBooklog, BookRelatedBooklogsApiResponse } from '../../types/home/detail.types';
+import type { BookDetailResponse, BookRelatedBooklogsApiResponse } from '../../types/home/detail.types';
 
 export const getBookDetail = async (bookId: number) => {
   const { data } = await privateApi.get<BookDetailResponse>(
@@ -23,9 +23,9 @@ export const getBookRelatedBooklogs = async (
 
   return {
     hasNext: data.hasNext,
-    items: data.items.map(item => ({
-      ...item,
-      content: (item).excerpt, // excerpt → content
-    })) as BookRelatedBooklog[],
+   items: data.items.map(({ excerpt, ...rest }) => ({
+     ...rest,
+     content: excerpt ?? rest.content,
+   })),
   };
 };

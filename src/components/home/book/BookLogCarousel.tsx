@@ -5,14 +5,14 @@ import type { BookRelatedBooklog } from "../../../types/home/detail.types";
 import BookLogCard from "./BookLogCard";
 
 import { LoadingPage } from "../../../pages/onboarding/LoadingPage";
-// import { ErrorPage } from "../../../pages/onboarding/ErrorPage";
+import { ErrorPage } from "../../../pages/onboarding/ErrorPage";
 
 
 function BookLogCarousel() {
   const { bookId } = useParams<{ bookId: string }>();
   const [logs, setLogs] = useState<BookRelatedBooklog []>([]);
   const [isLoading, setIsLoading] = useState(true);
-console.log("BookDetailPage render", { isLoading, bookId });
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     if (!bookId) return;
@@ -22,10 +22,13 @@ console.log("BookDetailPage render", { isLoading, bookId });
         console.log(res.items);
         setLogs(res.items);
       })
+      .catch(() => setIsError(true))
       .finally(() => setIsLoading(false));
   }, [bookId]);
 
+
   if (isLoading) return <LoadingPage />;
+  if (isError) return <ErrorPage />;
 
 
   return (
