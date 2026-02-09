@@ -7,7 +7,7 @@ export const KakaoLoginRedirectPage = () => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const { setTokens } = useAuth();
-  const { data: onboardingProfile, refetch } = useGetOnboardingProfile();
+  const { refetch } = useGetOnboardingProfile();
 
   useEffect(() => {
     const handleKakaoLogin = async () => {
