@@ -9,7 +9,7 @@ import { Bookmark, Reset } from "../../assets/icons";
 import { useFilter } from "../../hooks/useFilter";
 
 import { getBooklogsFeed } from "../../api/booklogFeed";
-import { toggleBooklogBookmark } from "../../api/booklogBookmark";
+import { useToggleBooklogBookmark } from "../../hooks/mutations/useToggleBooklogBookmark";
 
 /* =============================
  *  ✅ 안전한 ID 생성기 (crypto.randomUUID fallback)
@@ -143,6 +143,7 @@ function PostCard({ post }: { post: Post }) {
   );
   const [bookmarkCount, setBookmarkCount] = useState<number>(post.bookmarkCount);
   const [isToggling, setIsToggling] = useState(false);
+  const { mutateAsync: toggleBooklogBookmark } = useToggleBooklogBookmark();
 
   // ✅ 카드가 바뀌면(리스트 갱신 등) 로컬 상태도 동기화
   useEffect(() => {
@@ -188,7 +189,7 @@ function PostCard({ post }: { post: Post }) {
 
             try {
               setIsToggling(true);
-              const { data } = await toggleBooklogBookmark(Number(post.id));
+              const data = await toggleBooklogBookmark({ postId: Number(post.id) });
               setBookmarked(data.bookmarkedByMe);
               setBookmarkCount(data.bookmarkCount);
             } catch (err) {

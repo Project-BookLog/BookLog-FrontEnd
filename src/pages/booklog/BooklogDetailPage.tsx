@@ -14,7 +14,7 @@ import type { RecommendBook } from "../../types/booklogRecommend.types";
 import { getBooklogRecommendPosts } from "../../api/booklogRecommendPosts";
 import type { RecommendPost } from "../../types/booklogRecommendPosts.types";
 
-import { toggleBooklogBookmark } from "../../api/booklogBookmark";
+import { useToggleBooklogBookmark } from "../../hooks/mutations/useToggleBooklogBookmark";
 
 /** ---------- utils ---------- */
 function timeAgo(iso: string) {
@@ -83,6 +83,7 @@ export default function BooklogDetailPage() {
   const [bookmarked, setBookmarked] = useState(false);
   const [bookmarkCount, setBookmarkCount] = useState(0);
   const [isToggling, setIsToggling] = useState(false);
+  const { mutateAsync: toggleBooklogBookmark } = useToggleBooklogBookmark();
 
   // ✅ API로 받아온 원본 데이터
   const [detail, setDetail] = useState<BooklogDetailResponse | null>(null);
@@ -343,11 +344,10 @@ export default function BooklogDetailPage() {
 
                 try {
                   setIsToggling(true);
-                  const { data } = await toggleBooklogBookmark(Number(postId));
+                  const data = await toggleBooklogBookmark({ postId: Number(postId) });
                   setBookmarked(data.bookmarkedByMe);
                   setBookmarkCount(data.bookmarkCount);
 
-                  // ✅ detail도 같이 최신화(다른 곳에서 detail.bookmarkCount를 참조할 수도 있어서)
                   setDetail((prev) =>
                     prev
                       ? {

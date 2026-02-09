@@ -18,9 +18,9 @@ export const KakaoLoginRedirectPage = () => {
         }
       } catch (e) {
         console.error("토큰 설정 실패:", e);
-      } finally {
-        navigate("/login", { replace: true });
       }
+      
+      navigate("/login", { replace: true });
     }
     handleKakaoLogin();
   }, []);
