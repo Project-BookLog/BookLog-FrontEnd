@@ -4,12 +4,29 @@ import Tab from "../../components/common/Tab";
 import BookRecommeded from "../../components/home/book/BookRecommended";
 import BookInfo from "../../components/home/book/BookInfo";
 import BookLogCarousel from "../../components/home/book/BookLogCarousel";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useGetBookDetail } from "../../hooks/queries/useGetBookDetail";
 import { LoadingPage } from "../onboarding/LoadingPage";
+import { usePostUserBook } from "../../hooks/mutations/usePostUserBook";
+import { useGetUserBookDetail } from "../../hooks/queries/useGetUserBookDetail";
+import type { BookFormat, BookStatus } from "../../types";
+import { useGetUserBookList } from "../../hooks/queries/useGetUserBookList";
 
 const TABS = ["책 추천", "책 정보", "북로그"] as const;
 type TabType = (typeof TABS)[number];
+
+const USER_BOOK_STATUS_LABEL: Record<BookStatus, string> = {
+  TO_READ: "읽을 예정",
+  READING: "읽는 중",
+  COMPLETED: "완독",
+  STOPPED: "중단",
+};
+
+const BOOK_FORMAT_LABEL: Record<BookFormat, string> = {
+  PAPER: "종이책",
+  EBOOK: "전자책",
+  AUDIO: "오디오북"
+}
 
 export const BookDetailPage = () => {
   const [tab, setTab] = useState<TabType>("책 추천");
@@ -17,20 +34,34 @@ export const BookDetailPage = () => {
   const RecommendedRef = useRef<HTMLElement | null>(null);
   const InfoRef = useRef<HTMLElement | null>(null);
   const BookLogRef = useRef<HTMLElement | null>(null);
+  const location = useLocation();
+  const shelfName = location.state?.shelfName;
+  const shelfId = location.state?.shelfId;
  
-  const { bookId } = useParams<{ bookId: string }>();
-  const { data: book, isLoading } = useGetBookDetail(Number(bookId));
+  const { bookId, userBookId } = useParams<{ bookId?: string; userBookId?: string }>();
+  const isUserBook = !!userBookId;
+  const { data: userBook, isLoading: isUserBookLoading } = useGetUserBookDetail(Number(userBookId));
+  const resolvedBookId = bookId ? Number(bookId) : userBook?.bookId;
+  const { data: book, isLoading: isBookLoading } = useGetBookDetail(resolvedBookId as number);
+  const { mutate: saveBook, isPending: isSaveBookPending } = usePostUserBook();
+  const bookIdNumber = bookId ? Number(bookId) : undefined;
+  const { data: userBooks, isLoading: isUserBooksLoading } = useGetUserBookList();
+  const navigate = useNavigate();
 
-  
-  // const { bookId, userBookId } = useParams();
+  const matchedUserBook = userBooks?.items.find(
+    (item) => item.bookId === bookIdNumber
+  );
 
-  // const { data: userBook } = useGetBookDetail(Number(userBookId));
-  // if (!userBook) return;
+  useEffect(() => {
+    if (!bookIdNumber) return;
+    if (isUserBooksLoading) return;
 
-  // const isInMyShelf = !!userBookId;
-  // const displayBook = isInMyShelf ? userBook : book;
+    if (matchedUserBook) {
+      navigate(`/my-library/book-detail/${matchedUserBook.userBookId}`,{ replace: true });
+    }
+  }, [bookIdNumber, matchedUserBook, isUserBooksLoading, navigate]);
 
-    useEffect(() => {
+  useEffect(() => {
     const handleScroll = () => {
       const sections: { name: TabType; el: HTMLElement | null }[] = [
         { name: "책 추천", el: RecommendedRef.current },
@@ -66,7 +97,8 @@ export const BookDetailPage = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [tab]);
 
-  if (isLoading) return <LoadingPage />;
+  if (isBookLoading) return <LoadingPage />;
+  if (isUserBook && isUserBookLoading) return <LoadingPage />;
   if (!book) return null;
 
   const authors = book.authors
@@ -103,6 +135,16 @@ export const BookDetailPage = () => {
     });
   };
 
+  const handleSaveBook = () => {
+    if (!bookId) return;
+    saveBook({bookId: book.bookId});
+  }
+
+  const handleGoToRecordPage = () => {
+    if (!userBookId) return;
+    navigate(`/my-library/record/${userBookId}`, { state: {shelfName, shelfId}});
+  }
+
   return (
     <div className="min-h-screen bg-bg">
       <NavBarTop
@@ -131,7 +173,7 @@ export const BookDetailPage = () => {
           <div className="mt-6 space-y-4">
             <div>
               <button className="px-2 py-1 h-6 rounded-sm bg-lightblue-1 text-caption-02 text-primary">
-                도서
+                {!isUserBook ? "도서" : USER_BOOK_STATUS_LABEL[userBook!.status]}
               </button>
             </div>
             <div>
@@ -147,6 +189,30 @@ export const BookDetailPage = () => {
             </div>
           </div>
         </div>
+
+        {isUserBook && (
+          <div className="flex w-[350px] h-[66px] mx-auto justify-center items-center gap-[18px] mt-5 rounded-[4px] bg-gray-100">
+            <div className="flex w-[51px] flex-col items-center gap-[6px] shrink-0">
+              <p className="self-stretch text-center text-gray-500 text-caption-02">시작 날짜</p>
+              <p className="self-stretch text-center text-gray-800 text-caption-01">{userBook?.startDate !== null ? userBook?.startDate : "-"}</p>
+            </div>
+            <span className="w-[1px] h-8 shrink-0 bg-gray-200"/>
+            <div className="flex w-[51px] flex-col items-center gap-[6px] shrink-0">
+              <p className="self-stretch text-center text-gray-500 text-caption-02">종료 날짜</p>
+              <p className="self-stretch text-center text-gray-800 text-caption-01">{userBook?.endDate !== null ? userBook?.endDate : "-"}</p>
+            </div>
+            <span className="w-[1px] h-8 shrink-0 bg-gray-200"/>
+            <div className="flex w-[51px] flex-col items-center gap-[6px] shrink-0">
+              <p className="self-stretch text-center text-gray-500 text-caption-02">종류</p>
+              <p className="self-stretch text-center text-gray-800 text-caption-01">{userBook?.format !== null ? BOOK_FORMAT_LABEL[userBook!.format] : "-"}</p>
+            </div>
+            <span className="w-[1px] h-8 shrink-0 bg-gray-200"/>
+            <div className="flex w-[51px] flex-col items-center gap-[6px] shrink-0">
+              <p className="self-stretch text-center text-gray-500 text-caption-02">페이지 수</p>
+              <p className="self-stretch text-center text-gray-800 text-caption-01">{userBook?.pageCountSnapshot !== null ? `${userBook?.pageCountSnapshot}쪽`: "-"}</p>
+            </div>
+          </div>
+        )}
 
         {/* 탭 */}
         <div className="sticky top-0 z-10 bg-bg">
@@ -179,9 +245,22 @@ export const BookDetailPage = () => {
       </main>
 
       <div className="px-6 mb-4">
-        <button className="w-full h-13 rounded-lg bg-black text-white text-subtitle-02-sb">
-          서재에 저장
-        </button>
+        {!isUserBook ? (
+          <button
+            className="w-full h-13 rounded-lg bg-black text-white text-subtitle-02-sb"
+            onClick={handleSaveBook}
+            disabled={isSaveBookPending}
+          >
+            서재에 저장
+          </button>
+        ) : (
+          <button
+            className="w-full h-13 rounded-lg bg-primary text-white text-subtitle-02-sb"
+            onClick={handleGoToRecordPage}
+          >
+            독서 기록
+          </button>
+        )}
       </div>
     </div>
   );
