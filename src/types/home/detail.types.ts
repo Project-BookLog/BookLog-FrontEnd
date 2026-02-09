@@ -16,3 +16,37 @@ export interface BookDetailResponse {
     profileImageUrl: string | null;
   }[];
 }
+
+//도서상세 - 북로그
+export type BookRelatedBooklogsApiResponse = {
+  items: (BookRelatedBooklog & { excerpt?: string })[];
+  hasNext: boolean;
+};
+
+export type BookRelatedBooklogAuthor = {
+  userId: number;
+  nickname: string;
+  profileImageUrl: string;
+  followedByMe: boolean;
+};
+
+export type BookRelatedBooklogImage = {
+  imageId: number;
+  imageUrl: string;
+  order: number;
+};
+
+export type BookRelatedBooklogTag = {
+  tagId: number;
+  name: string;
+  category: "MOOD" | "IMMERSION" | "STYLE";
+};
+
+export type BookRelatedBooklog = {
+  postId: number;
+  author: BookRelatedBooklogAuthor;
+  content: string;
+  images: BookRelatedBooklogImage[];
+  tags: BookRelatedBooklogTag[];
+  createdAt: string;
+};
