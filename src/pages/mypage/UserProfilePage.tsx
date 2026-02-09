@@ -1,5 +1,5 @@
 // src/pages/mypage/UserProfilePage.tsx
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import NavBarTop from "../../components/common/navbar/NavBarTop";
@@ -7,6 +7,11 @@ import { Share, Bookmark, BackIcon } from "../../assets/icons";
 
 import { getPublicUserShelvesPreview } from "../../api/publicUserShelves";
 import type { PublicUserShelf } from "../../types/publicShelves.types";
+
+import { getUserProfile } from "../../api/userProfile";
+import type { UserProfileResponse } from "../../types/userProfile.types";
+
+import { followUser, unfollowUser } from "../../api/follow";
 
 type Tab = "library" | "blog";
 
@@ -38,12 +43,65 @@ export default function UserProfilePage() {
   const { userId } = useParams<{ userId: string }>();
 
   const [tab, setTab] = useState<Tab>("library");
+
+  const [profile, setProfile] = useState<UserProfileResponse | null>(null);
+  const [profileLoading, setProfileLoading] = useState(true);
+
   const [isFollowing, setIsFollowing] = useState(false);
 
-  // ✅ 다른 유저 공개 서재(미리보기) 상태
+  const followLockRef = useRef(false);
+  const [followSubmitting, setFollowSubmitting] = useState(false);
+
   const [librarySections, setLibrarySections] = useState<ShelfSection[]>([]);
   const [shelvesLoading, setShelvesLoading] = useState(true);
 
+  // =========================
+  // 1) 프로필 fetch
+  // =========================
+  useEffect(() => {
+    let alive = true;
+
+    async function fetchProfile() {
+      const numericUserId = Number(userId);
+
+      if (!userId || !Number.isFinite(numericUserId)) {
+        if (alive) {
+          setProfile(null);
+          setIsFollowing(false);
+          setProfileLoading(false);
+        }
+        return;
+      }
+
+      try {
+        setProfileLoading(true);
+        const res = await getUserProfile(numericUserId);
+
+        if (!alive) return;
+
+        setProfile(res.data);
+        setIsFollowing(res.data.isFollowing);
+      } catch (e) {
+        console.error(e);
+        if (alive) {
+          setProfile(null);
+          setIsFollowing(false);
+        }
+      } finally {
+        if (alive) setProfileLoading(false);
+      }
+    }
+
+    fetchProfile();
+
+    return () => {
+      alive = false;
+    };
+  }, [userId]);
+
+  // =========================
+  // 2) 공개 서재 미리보기 fetch
+  // =========================
   useEffect(() => {
     let alive = true;
 
@@ -92,6 +150,68 @@ export default function UserProfilePage() {
     };
   }, [userId]);
 
+  // =========================
+  // 3) 팔로우/언팔로우 핸들러
+  // =========================
+  const handleFollowToggle = async () => {
+    const numericUserId = Number(userId);
+    if (!userId || !Number.isFinite(numericUserId)) return;
+    if (!profile) return;
+
+    if (followLockRef.current) return;
+    followLockRef.current = true;
+
+    const prevIsFollowing = isFollowing;
+    const prevFollowerCount = profile.followerCount;
+
+    // 낙관적 업데이트
+    const nextIsFollowing = !prevIsFollowing;
+    setIsFollowing(nextIsFollowing);
+    setProfile((p) =>
+      p
+        ? {
+            ...p,
+            followerCount: Math.max(
+              0,
+              prevFollowerCount + (nextIsFollowing ? 1 : -1)
+            ),
+          }
+        : p
+    );
+
+    try {
+      setFollowSubmitting(true);
+
+      const res = nextIsFollowing
+        ? await followUser(numericUserId)
+        : await unfollowUser(numericUserId);
+
+      if (res?.data) {
+        setIsFollowing(res.data.isFollowing);
+        setProfile((p) =>
+          p
+            ? {
+                ...p,
+                followerCount: res.data.followerCount ?? p.followerCount,
+                followingCount: res.data.followingCount ?? p.followingCount,
+              }
+            : p
+        );
+      }
+    } catch (e) {
+      console.error(e);
+
+      // 실패 시 롤백
+      setIsFollowing(prevIsFollowing);
+      setProfile((p) =>
+        p ? { ...p, followerCount: prevFollowerCount } : p
+      );
+    } finally {
+      setFollowSubmitting(false);
+      followLockRef.current = false;
+    }
+  };
+
   const blogPosts = useMemo<BlogPost[]>(
     () => [
       {
@@ -114,13 +234,22 @@ export default function UserProfilePage() {
     []
   );
 
-  // const hasLibrary = librarySections.some((s) => s.books.length > 0);
   const hasBlog = blogPosts.length > 0;
 
   const handleBack = () => {
     if (window.history.length > 1) navigate(-1);
-    else navigate("/"); // 안전한 기본값
+    else navigate("/");
   };
+
+  const nickname = profile?.nickname ?? "User name";
+  const email = profile?.email ?? "UserIDcode@naver.com";
+
+  const followerCount = profile?.followerCount ?? 0;
+  const followingCount = profile?.followingCount ?? 0;
+
+  const completedBookCount = profile?.completedBookCount ?? 0; // 독서 완독
+  const bookmarkCount = profile?.bookmarkCount ?? 0; // 저장된 책/북마크
+  const booklogCount = profile?.booklogCount ?? 0; // 작성한 북로그
 
   return (
     <div className="min-h-screen bg-bg">
@@ -129,23 +258,32 @@ export default function UserProfilePage() {
       {/* ✅ 상단 카드 */}
       <div className="bg-bg px-5 py-5">
         <div className="flex items-center gap-[10px]">
-          <div className="grid h-[73px] w-[73px] place-items-center rounded-full bg-[#CDCCCB]">
-            <span className="text-caption-01 text-black">img</span>
+          {/* 프로필 이미지 */}
+          <div className="grid h-[73px] w-[73px] place-items-center overflow-hidden rounded-full bg-[#CDCCCB]">
+            {profile?.profileImageUrl ? (
+              <img
+                src={profile.profileImageUrl}
+                alt={`${nickname} profile`}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <span className="text-caption-01 text-black">img</span>
+            )}
           </div>
 
           <div className="flex-1">
-            <div className="text-title-02 text-[#000000]">User name</div>
-            <div className="mt-1 text-caption-01 text-[#81807F]">
-              UserIDcode@naver.com
+            <div className="text-title-02 text-[#000000]">
+              {profileLoading ? "불러오는 중..." : nickname}
             </div>
+            <div className="mt-1 text-caption-01 text-[#81807F]">{email}</div>
 
             <div className="mt-2 flex items-center gap-3">
               <span className="text-caption-02 text-[#262626]">
-                팔로워 <span className="text-[#262626]">31</span>
+                팔로워 <span className="text-[#262626]">{followerCount}</span>
               </span>
               <span className="h-[4px] w-[4px] rounded-full bg-[#E7E5E4]" />
               <span className="text-caption-02 text-[#262626]">
-                팔로잉 <span className="text-[#262626]">57</span>
+                팔로잉 <span className="text-[#262626]">{followingCount}</span>
               </span>
             </div>
           </div>
@@ -155,17 +293,19 @@ export default function UserProfilePage() {
         <div className="mt-5 grid grid-cols-3 text-center">
           <div className="px-3">
             <div className="text-caption-02 text-[#676665]">독서 완독</div>
-            <div className="mt-2 text-title-02 text-black">28</div>
+            <div className="mt-2 text-title-02 text-black">
+              {completedBookCount}
+            </div>
           </div>
 
           <div className="px-6 border-x border-gray-100">
             <div className="text-caption-02 text-[#676665]">저장된 책</div>
-            <div className="mt-2 text-title-02 text-black">107</div>
+            <div className="mt-2 text-title-02 text-black">{bookmarkCount}</div>
           </div>
 
           <div className="px-3">
             <div className="text-caption-02 text-[#676665]">작성한 북로그</div>
-            <div className="mt-2 text-title-02 text-black">15</div>
+            <div className="mt-2 text-title-02 text-black">{booklogCount}</div>
           </div>
         </div>
 
@@ -173,13 +313,14 @@ export default function UserProfilePage() {
         <div className="mt-5 flex items-center gap-3">
           <button
             type="button"
-            onClick={() => setIsFollowing((prev) => !prev)}
+            onClick={handleFollowToggle}
             className={[
               "h-[45px] flex-1 rounded-[12px] text-subtitle-02-sb transition-colors",
               isFollowing
                 ? "bg-[#E7E5E4] text-black"
                 : "bg-[#3049C0] text-[#FFFFFF]",
             ].join(" ")}
+            disabled={profileLoading || !profile || followSubmitting}
           >
             {isFollowing ? "팔로잉" : "팔로우"}
           </button>
