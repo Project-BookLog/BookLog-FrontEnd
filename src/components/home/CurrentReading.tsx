@@ -18,7 +18,7 @@ const CurrentReading: React.FC<Props> = ({ username }) => {
   const [activeIndex, setActiveIndex] = useState(0); 
 
   const handleClickBook = (userBookId: number) => {
-    navigate(`/book/${userBookId}`);
+    navigate(`/my-library/book-detail/${userBookId}`);
   }
 
   useEffect(() => {
@@ -72,7 +72,7 @@ const CurrentReading: React.FC<Props> = ({ username }) => {
     _: number,
     state: CarouselInternalState
   ) => {
-    const index = state.currentSlide % books.length;
+    const index = ((state.currentSlide - 1) % books.length + books.length) % books.length;
     setActiveIndex(index);
   };
 
