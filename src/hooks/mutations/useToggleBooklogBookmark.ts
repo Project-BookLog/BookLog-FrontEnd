@@ -14,6 +14,9 @@ export function useToggleBooklogBookmark() {
       const previousData = queryClient.getQueryData<any>([QUERY_KEY.booklogs]);
 
       queryClient.setQueryData([QUERY_KEY.booklogs], (oldData: any) => {
+        
+        if (!oldData) return oldData;
+
         return {
           ...oldData,
           pages: oldData.pages.map((page: any) => ({

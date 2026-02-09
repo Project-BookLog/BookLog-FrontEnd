@@ -1,6 +1,6 @@
 import { Bookmark } from "../../assets/icons"
 import { useToggleBooklogBookmark } from "../../hooks/mutations/useToggleBooklogBookmark";
-import type { MyBooklogItem } from "../../types/myPage/myBooklig"
+import type { MyBooklogItem } from "../../types/myPage/myBooklog"
 
 type MyBookCardProps = {
     booklog: MyBooklogItem,
@@ -19,7 +19,7 @@ export const MyBookLogCard = ({ booklog }: MyBookCardProps) => {
                 {visibleImages.map((img, index) => {
                     if (index === 2 && images.length > 3) {
                         return (
-                            <div className="flex w-[94px] h-[94px] px-[82.276px] py-[43.606px] justify-center items-center gap-[5px] rounded-[6.582px] bg-gray-300">
+                            <div key={index} className="flex w-[94px] h-[94px] px-[82.276px] py-[43.606px] justify-center items-center gap-[5px] rounded-[6.582px] bg-gray-300">
                                 <p className="[font-feature-settings:'liga'_off] text-black text-en-caption-01">+{remainCount}</p>
                             </div>
                         );

@@ -3,7 +3,7 @@ import NavBarTop from "../../components/common/navbar/NavBarTop"
 import { MyBookLogCard } from "../../components/mypage/MyBookLogCard";
 import { useGetMyBooklog } from "../../hooks/queries/useGetMyBooklog";
 import { useEffect, useRef } from "react";
-import { MyBookLogCardSkeleton } from "../../components/mypage/MyBooklogCardSkeleton";
+import { MyBookLogCardSkeleton } from "../../components/mypage/MyBookLogCardSkeleton";
 
 export const MyBookLogPage = () => {
 
@@ -55,7 +55,7 @@ export const MyBookLogPage = () => {
                     <div className="flex px-5 flex-col items-start gap-3 self-stretch mt-5">
 
                         {booklogs.map((booklog) => (
-                            <MyBookLogCard key={booklog?.postId} booklog={booklog}/>
+                            <MyBookLogCard key={booklog.postId} booklog={booklog}/>
                         ))}
                 
                         {isFetchingNextPage && 
