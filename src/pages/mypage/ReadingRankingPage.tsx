@@ -38,6 +38,7 @@ function ReadingRankingPage() {
       {status === "content" && (
         <main className="px-5 pt-5 pb-8">
           <TopReadingRanking month={month} />
+          <hr className="my-5 border-gray-100" />
           <ReadingRankingList month={month} />
         </main>
       )}
