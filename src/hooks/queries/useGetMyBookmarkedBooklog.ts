@@ -4,7 +4,7 @@ import { getMyBookmarkedBooklog } from "../../api/mypage/myBooklog";
 
 export function useGetMyBookMarkedBooklog () {
     return useInfiniteQuery({
-        queryKey: [QUERY_KEY.booklogs],
+        queryKey: [QUERY_KEY.bookmarkedBooklogs],
         queryFn: ({ pageParam}) => 
             getMyBookmarkedBooklog({ page: pageParam, size: 20}),
         initialPageParam: 0,

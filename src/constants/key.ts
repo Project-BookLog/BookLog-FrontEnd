@@ -11,5 +11,6 @@ export const QUERY_KEY = {
     shelves: "shelves",
     myInfo: "myInfo",
     onboarding: "onboarding",
-    booklogs: "booklogs"
+    booklogs: "booklogs",
+    bookmarkedBooklogs: "bookmarkedBooklogs"
 }
