@@ -49,7 +49,16 @@ function PostCard({ item }: { item: BooklogFeedItem }) {
       <div className="flex items-start justify-between px-4">
         <div className="flex items-center gap-3">
           <div className="grid h-[35px] w-[35px] place-items-center rounded-full bg-[#CDCCCB] text-caption-02 text-[#4B4B4B]">
-            이미지
+            {item.author?.profileImageUrl ? (
+              <img
+                src={item.author.profileImageUrl}
+                alt="프로필 이미지"
+                className="h-full w-full rounded-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <span className="text-caption-02 text-[#4B4B4B]">?</span>
+            )}
           </div>
 
           <div>
@@ -102,7 +111,7 @@ function PostCard({ item }: { item: BooklogFeedItem }) {
       <div className="mt-4 flex gap-3 overflow-x-auto no-scrollbar px-4">
         {/* 책 표지 */}
         <div className="pl-[45px] shrink-0 relative">
-          <div className="relative h-[140px] w-[140px] overflow-hidden rounded-[8px] bg-[#CDCCCB]">
+          <div className="relative h-[140px] w-[100px] overflow-hidden rounded-[8px] bg-[#CDCCCB]">
             {item.book?.coverImageUrl ? (
               <img
                 src={item.book.coverImageUrl}
