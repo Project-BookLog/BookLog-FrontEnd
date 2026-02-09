@@ -23,14 +23,14 @@ export const KakaoLoginRedirectPage = () => {
       try {
 
         await setTokens({ accessToken, refreshToken });
-        await refetch();
+        const { data } = await refetch();
 
-        if (onboardingProfile?.isCompleted) {
+        if (data?.isCompleted) {
           navigate("/", { replace: true });
         } else {
           navigate("/onboarding", { replace: true });
         }
-        
+
       } catch (e) {
         console.error("카카오 로그인 처리 실패:", e);
         navigate("/login", { replace: true });
@@ -38,7 +38,7 @@ export const KakaoLoginRedirectPage = () => {
       
     }
     handleKakaoLogin();
-  }, [params, setTokens, navigate, onboardingProfile, refetch]);
+  }, [params, setTokens, navigate, refetch]);
 
   return <div>로그인 처리 중...</div>;
 };
