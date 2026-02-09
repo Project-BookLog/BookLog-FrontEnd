@@ -275,7 +275,9 @@ export default function UserProfilePage() {
             <div className="text-title-02 text-[#000000]">
               {profileLoading ? "불러오는 중..." : nickname}
             </div>
-            <div className="mt-1 text-caption-01 text-[#81807F]">{email}</div>
+            <div className="mt-1 text-caption-01 text-[#81807F]">
+              {profileLoading ? "불러오는 중..." : email}
+            </div>
 
             <div className="mt-2 flex items-center gap-3">
               <span className="text-caption-02 text-[#262626]">
