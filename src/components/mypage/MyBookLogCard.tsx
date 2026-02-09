@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Bookmark } from "../../assets/icons"
 import { useToggleBooklogBookmark } from "../../hooks/mutations/useToggleBooklogBookmark";
 import type { MyBooklogItem } from "../../types/myPage/myBooklog"
@@ -9,12 +10,16 @@ type MyBookCardProps = {
 export const MyBookLogCard = ({ booklog }: MyBookCardProps) => {
     
     const { mutate: toggleBookmark } = useToggleBooklogBookmark();
+    const navigate = useNavigate();
     const images = booklog.images;
     const visibleImages = images.slice(0, 3);
     const remainCount = images.length - 2;
 
     return (
-        <div className="flex px-5 pt-4 pb-[14px] flex-col items-start gap-3 self-stretch rounded-[12px] border-b border-gray-100 bg-gray-100">
+        <div
+            className="flex px-5 pt-4 pb-[14px] flex-col items-start gap-3 self-stretch rounded-[12px] border-b border-gray-100 bg-gray-100"
+            onClick={() => navigate(`/booklog/${booklog.postId}`)}
+        >
             <div className="flex justify-between items-start self-stretch">
                 {visibleImages.map((img, index) => {
                     if (index === 2 && images.length > 3) {

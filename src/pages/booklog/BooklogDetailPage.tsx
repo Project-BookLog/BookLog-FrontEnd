@@ -214,7 +214,7 @@ export default function BooklogDetailPage() {
     return (
       <div className="min-h-screen bg-bg">
         <div className="mx-auto w-full max-w-[420px] bg-bg">
-          <NavBar title="책 정보" onBack={() => navigate("/booklog")} />
+          <NavBar title="책 정보" onBack={() => navigate(-1)} />
           <div className="p-4 text-caption-01 text-gray-600">데이터가 없어요.</div>
         </div>
       </div>
@@ -227,7 +227,7 @@ export default function BooklogDetailPage() {
         {/* 상단 네비 */}
         <NavBar
           title="책 정보"
-          onBack={() => navigate("/booklog")}
+          onBack={() => navigate(-1)}
           rightSlot={
             <button
               type="button"

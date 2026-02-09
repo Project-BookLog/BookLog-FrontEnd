@@ -31,7 +31,7 @@ export const BookMarkedPage = () => {
         <div className="min-h-screen w-full bg-bg flex flex-col">
             <NavBarTop
                 title="북마크"
-                onBack={() => navigate("/mypage")}
+                onBack={() => navigate("/mypage", { replace: true })}
             />
 
             {isLoading && (
