@@ -9,6 +9,7 @@ import BestSeller from "../components/home/BestSeller";
 import NavbarBottom from "../components/common/navbar/NavBarBottom";
 import { ErrorPage } from "./onboarding/ErrorPage";
 
+import { getMyProfile } from "../api/mypage/myProfile";
 import { getHome } from "../api/home/home";
 import type { BestsellerSection, RealTimeRankingBook } from "../types/home/home.types";
 
@@ -16,6 +17,8 @@ const TABS = ["홈", "실시간 랭킹", "분위기별", "문체별", "몰입도
 type TapType = (typeof TABS)[number];
 
 function HomePage() {
+  const [username, setUsername] = useState<string>("");
+
   const [activeTab, setActiveTab] = useState<TapType>("홈");
   const [rankingBooks, setRankingBooks] = useState<RealTimeRankingBook[]>([]);
   const [moodBestsellers, setMoodBestsellers] = useState<BestsellerSection[]>([]);
@@ -23,6 +26,7 @@ function HomePage() {
   const [immersionBestsellers, setImmersionBestsellers] = useState<BestsellerSection[]>([]);
   
   const [isError, setIsError] = useState(false);
+  
 
   const likeSectionRef = useRef<HTMLDivElement | null>(null);
   const rankingRef = useRef<HTMLDivElement | null>(null);
@@ -69,6 +73,15 @@ function HomePage() {
     }
   };
 
+  useEffect(() => {
+    getMyProfile()
+      .then((res) => {
+        setUsername(res.nickname);
+      })
+      .catch((err) => {
+        console.error("프로필 불러오기 실패:", err);
+      });
+  }, []);
 
   useEffect(() => {
     getHome().then((res) => {
@@ -150,7 +163,7 @@ function HomePage() {
         </section>
 
         <section className="mb-12">
-          <CurrentReading />
+          <CurrentReading username={username} />
         </section>
 
         <section ref={rankingRef} className="scroll-mt-15 mb-12">
