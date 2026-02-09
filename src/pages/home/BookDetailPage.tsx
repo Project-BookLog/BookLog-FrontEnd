@@ -4,9 +4,9 @@ import Tab from "../../components/common/Tab";
 import BookRecommeded from "../../components/home/book/BookRecommended";
 import BookInfo from "../../components/home/book/BookInfo";
 import BookLogCarousel from "../../components/home/book/BookLogCarousel";
-// import { useParams } from "react-router-dom";
-// import { useGetBookDetail } from "../../hooks/queries/useGetBookDetail";
-import { Dummy_book } from "../../assets/icons";
+import { useParams } from "react-router-dom";
+import { useGetBookDetail } from "../../hooks/queries/useGetBookDetail";
+import { LoadingPage } from "../onboarding/LoadingPage";
 
 const TABS = ["책 추천", "책 정보", "북로그"] as const;
 type TabType = (typeof TABS)[number];
@@ -18,7 +18,10 @@ export const BookDetailPage = () => {
   const InfoRef = useRef<HTMLElement | null>(null);
   const BookLogRef = useRef<HTMLElement | null>(null);
  
-  // const { bookid } = useParams<{ bookid: string }>();
+  const { bookId } = useParams<{ bookId: string }>();
+  const { data: book, isLoading } = useGetBookDetail(Number(bookId));
+
+  
   // const { bookId, userBookId } = useParams();
 
   // const { data: userBook } = useGetBookDetail(Number(userBookId));
@@ -27,30 +30,7 @@ export const BookDetailPage = () => {
   // const isInMyShelf = !!userBookId;
   // const displayBook = isInMyShelf ? userBook : book;
 
-  const handleChangeTab = (nextTab: TabType) => {
-    setTab(nextTab);
-
-    const getTarget = () => {
-      if (nextTab === "책 추천") return RecommendedRef.current;
-      if (nextTab === "책 정보") return InfoRef.current;
-      if (nextTab === "북로그") return BookLogRef.current;
-      return null;
-    };
-
-    const el = getTarget();
-    if (!el) return;
-
-    const rect = el.getBoundingClientRect();
-    const offsetTop = window.scrollY + rect.top;
-    const OFFSET = 80;
-
-    window.scrollTo({
-      top: offsetTop - OFFSET,
-      behavior: "smooth",
-    });
-  };
-
-  useEffect(() => {
+    useEffect(() => {
     const handleScroll = () => {
       const sections: { name: TabType; el: HTMLElement | null }[] = [
         { name: "책 추천", el: RecommendedRef.current },
@@ -86,6 +66,43 @@ export const BookDetailPage = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [tab]);
 
+  if (isLoading) return <LoadingPage />;
+  if (!book) return null;
+
+  const authors = book.authors
+  .filter((a) => a.role === "AUTHOR")
+  .map((a) => a.name)
+  .join(", ");
+
+  const translators = book.authors
+  .filter((a) => a.role === "TRANSLATOR")
+  .map((a) => a.name)
+  .join(", ");
+
+
+  const handleChangeTab = (nextTab: TabType) => {
+    setTab(nextTab);
+
+    const getTarget = () => {
+      if (nextTab === "책 추천") return RecommendedRef.current;
+      if (nextTab === "책 정보") return InfoRef.current;
+      if (nextTab === "북로그") return BookLogRef.current;
+      return null;
+    };
+
+    const el = getTarget();
+    if (!el) return;
+
+    const rect = el.getBoundingClientRect();
+    const offsetTop = window.scrollY + rect.top;
+    const OFFSET = 80;
+
+    window.scrollTo({
+      top: offsetTop - OFFSET,
+      behavior: "smooth",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-bg">
       <NavBarTop
@@ -98,8 +115,19 @@ export const BookDetailPage = () => {
         {/* 상단 책 썸네일 + 정보 */}
         <div className="px-6">
           <div className="flex justify-center">
-            <Dummy_book className="w-37.5 h-57.5 flex-shrink-0 rounded-md" />
+            <div className=" rounded-[4px] w-[150px] h-[230px]">
+              {book.thumbnailUrl ? (
+                <img
+                  src={book.thumbnailUrl}
+                  alt={book.title}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-300" />
+              )}
+            </div>
           </div>
+
           <div className="mt-6 space-y-4">
             <div>
               <button className="px-2 py-1 h-6 rounded-sm bg-lightblue-1 text-caption-02 text-primary">
@@ -107,12 +135,14 @@ export const BookDetailPage = () => {
               </button>
             </div>
             <div>
-              <p className="text-title-01">물고기는 존재하지 않는다</p>
+              <p className="text-title-01">{book.title}</p>
               <p className="text-caption-01 text-gray-500 mb-2 mt-1">
-                상실, 사랑 그리고 숨어있는 삶의 질서에 관한 이야기
+                상실, 사랑 그리고 숨어 있는 삶의 질서에 관한 이야기
               </p>
               <p className="text-caption-02 text-gray-500">
-                룰루밀러 저<span> | </span>정지인 역
+                {authors ? `${authors} 저` : "-"}
+                <span className="text-gray-200"> | </span>
+                {translators ? `${translators} 역` : "-"}
               </p>
             </div>
           </div>
@@ -138,7 +168,7 @@ export const BookDetailPage = () => {
 
         {/* 책 정보 섹션 */}
         <section ref={InfoRef}>
-          <BookInfo/>
+          <BookInfo book={book} />
           <hr className="mt-5 h-2 bg-gray-100 border-none" />
         </section>
 

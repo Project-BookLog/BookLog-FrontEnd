@@ -1,13 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { QUERY_KEY } from "../../constants/key";
-import { getBookDetail } from "../../api/userBooks";
+import { getBookDetail } from "../../api/home/detail";
 
-export function useGetBookDetail (userBookId: number) {
-    return useQuery({
-        queryKey: [QUERY_KEY.book, userBookId],
-        queryFn: () => getBookDetail(userBookId),
-        enabled: !!userBookId,
-        staleTime: 5 * 60 * 1000,
-        gcTime: 10 * 60 * 1000
-    });
+export const useGetBookDetail = (bookId: number) => {
+  return useQuery({
+    queryKey: ["bookDetail", bookId],
+    queryFn: () => getBookDetail(bookId),
+    enabled: !!bookId,
+  });
 };

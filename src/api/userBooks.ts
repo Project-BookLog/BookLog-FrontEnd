@@ -3,14 +3,14 @@ import type { BookStatus, RequestPatchUserBookDto, UserBookDetail } from "../typ
 import type { RequestDeleteUserBooksDto, ResponseUserBooksDto } from "../types/library"
 import { privateApi } from "./axiosConfig"
 
-export const getBookList = async(shelfId?: number, status?: BookStatus, sort: BOOK_ORDER = BOOK_ORDER.LATEST): Promise<ResponseUserBooksDto> => {
+export const getUserBookList = async(shelfId?: number, status?: BookStatus, sort: BOOK_ORDER = BOOK_ORDER.LATEST): Promise<ResponseUserBooksDto> => {
     const {data} = await privateApi.get("/user-books", {
         params: {shelfId, status, sort},
     });
     return data;
 }
 
-export const deleteBookList = async ( body: RequestDeleteUserBooksDto, shelfId?: number, status?: BookStatus) => {
+export const deleteUserBookList = async ( body: RequestDeleteUserBooksDto, shelfId?: number, status?: BookStatus) => {
     await privateApi.delete("/user-books", {
         params: {
             shelfId,
@@ -20,11 +20,11 @@ export const deleteBookList = async ( body: RequestDeleteUserBooksDto, shelfId?:
     });
 }
 
-export const getBookDetail = async (userBookId: number): Promise<UserBookDetail> => {
+export const getUserBookDetail = async (userBookId: number): Promise<UserBookDetail> => {
     const { data } = await privateApi.get(`/user-books/${userBookId}`);
     return data;
 }
 
-export const patchBookDetail = async (userBookId: number, body: RequestPatchUserBookDto) => {
+export const patchUserBookDetail = async (userBookId: number, body: RequestPatchUserBookDto) => {
     await privateApi.patch(`/user-books/${userBookId}`, body)
 }
