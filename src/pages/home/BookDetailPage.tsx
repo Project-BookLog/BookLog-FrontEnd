@@ -30,7 +30,8 @@ export const BookDetailPage = () => {
   // const isInMyShelf = !!userBookId;
   // const displayBook = isInMyShelf ? userBook : book;
 
-    useEffect(() => {
+
+  useEffect(() => {
     const handleScroll = () => {
       const sections: { name: TabType; el: HTMLElement | null }[] = [
         { name: "책 추천", el: RecommendedRef.current },
@@ -68,6 +69,9 @@ export const BookDetailPage = () => {
 
   if (isLoading) return <LoadingPage />;
   if (!book) return null;
+
+  console.log("BookDetailPage render", { isLoading, bookId });
+
 
   const authors = book.authors
   .filter((a) => a.role === "AUTHOR")
