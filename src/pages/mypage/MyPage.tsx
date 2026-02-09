@@ -1,20 +1,38 @@
+import { useMemo, useEffect, useState } from "react";
 import { Setting, BackIcon } from "../../assets/icons";
-import { mockUser } from "../../data/user.mock";
 import UserInfoCard from "../../components/mypage/UserInfoCard";
 import ReadingStatus from "../../components/mypage/ReadingStatus";
 import TopReadingRanking from "../../components/mypage/TopReadingRanking";
 import ReadingCalendar from "../../components/mypage/ReadingCalendar";
 import NavbarBottom from "../../components/common/navbar/NavBarBottom";
 import { useNavigate } from "react-router-dom";
-import { useMemo } from "react";
 import { getCurrentMonthString, getCurrentYearMonth } from "../../utils/date";
+
+import { getMyProfileCard } from "../../api/mypage/myProfileCard";
+import type { UserProfileCard } from "../../types/myPage/user.types";
 
 function MyPage() {
   const navigate = useNavigate();
-
+  const [profile, setProfile] = useState<UserProfileCard | null>(null);
+  // const [loading, setLoading] = useState(true);
   const monthString = useMemo(() => getCurrentMonthString(), []);
   const { year, month } = useMemo(() => getCurrentYearMonth(), []);
 
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const profileData = await getMyProfileCard();
+        setProfile(profileData);
+      } catch (error) {
+        console.error("Failed to fetch profile:", error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   return (
     <div className="min-h-screen bg-bg">
@@ -31,7 +49,7 @@ function MyPage() {
         </header>
 
         <section className=" px-5">
-          <UserInfoCard user={mockUser} />
+          {profile && <UserInfoCard user={profile} />}
         </section>
 
         <div className="mt-8 h-2 w-full bg-gray-100" />
