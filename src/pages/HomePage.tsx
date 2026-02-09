@@ -7,8 +7,11 @@ import CurrentReading from "../components/home/CurrentReading";
 import Ranking from "../components/home/Ranking";
 import BestSeller from "../components/home/BestSeller";
 import NavbarBottom from "../components/common/navbar/NavBarBottom";
+
+import { LoadingPage } from "./onboarding/LoadingPage";
 import { ErrorPage } from "./onboarding/ErrorPage";
 
+import { getMyProfile } from "../api/mypage/myProfile";
 import { getHome } from "../api/home/home";
 import type { BestsellerSection, RealTimeRankingBook } from "../types/home/home.types";
 
@@ -16,12 +19,15 @@ const TABS = ["홈", "실시간 랭킹", "분위기별", "문체별", "몰입도
 type TapType = (typeof TABS)[number];
 
 function HomePage() {
+  const [username, setUsername] = useState<string>("");
+
   const [activeTab, setActiveTab] = useState<TapType>("홈");
   const [rankingBooks, setRankingBooks] = useState<RealTimeRankingBook[]>([]);
   const [moodBestsellers, setMoodBestsellers] = useState<BestsellerSection[]>([]);
   const [writingStyleBestsellers, setWritingStyleBestsellers] = useState<BestsellerSection[]>([]);
   const [immersionBestsellers, setImmersionBestsellers] = useState<BestsellerSection[]>([]);
   
+  const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
   const likeSectionRef = useRef<HTMLDivElement | null>(null);
@@ -69,17 +75,36 @@ function HomePage() {
     }
   };
 
+  useEffect(() => {
+    getMyProfile()
+      .then((res) => {
+        setUsername(res.nickname);
+      })
+      .catch((err) => {
+        console.error("프로필 불러오기 실패:", err);
+      });
+  }, []);
 
   useEffect(() => {
-    getHome().then((res) => {
-      setRankingBooks(res.realTimeRanking.rankings);
-      setMoodBestsellers(res.moodBestsellers);
-      setWritingStyleBestsellers(res.writingStyleBestsellers);
-      setImmersionBestsellers(res.immersionBestsellers);
-    }).catch((err) => {
-      setIsError(true);
-      console.error("홈 데이터 불러오기 실패:", err);
-    });
+    Promise.all([
+      getMyProfile(),
+      getHome(),
+    ])
+      .then(([profileRes, homeRes]) => {
+        setUsername(profileRes.nickname);
+
+        setRankingBooks(homeRes.realTimeRanking.rankings);
+        setMoodBestsellers(homeRes.moodBestsellers);
+        setWritingStyleBestsellers(homeRes.writingStyleBestsellers);
+        setImmersionBestsellers(homeRes.immersionBestsellers);
+      })
+      .catch((err) => {
+        console.error("홈 데이터 불러오기 실패:", err);
+        setIsError(true);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, []);
 
 
@@ -121,6 +146,7 @@ function HomePage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [activeTab]); 
 
+  if(isLoading) return <LoadingPage />;
   if (isError) return <ErrorPage />;
   
   return (
@@ -150,7 +176,7 @@ function HomePage() {
         </section>
 
         <section className="mb-12">
-          <CurrentReading />
+          <CurrentReading username={username} />
         </section>
 
         <section ref={rankingRef} className="scroll-mt-15 mb-12">

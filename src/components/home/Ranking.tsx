@@ -1,4 +1,6 @@
 import type { RealTimeRankingBook } from "../../types/home/home.types";
+import { useNavigate } from "react-router-dom";
+
 interface RankingProps {
   books: RealTimeRankingBook[];
 }
@@ -28,6 +30,11 @@ const formatAuthor = (author: string | null) => {
 
 
 function Ranking({ books }: RankingProps) {
+  const navigate = useNavigate();
+  const handleClickBook = (bookId: number) => {
+    navigate(`/book/${bookId}`);
+  }
+  
   return (
     <section className="px-5">
       {/* 타이틀 */}
@@ -45,6 +52,7 @@ function Ranking({ books }: RankingProps) {
             return (
               <div
                 key={book.bookId}
+                onClick={()=> handleClickBook(book.bookId)}
                 className={`w-27 flex-shrink-0 ${
                   idx === books.length - 1 ? "me-10" : ""
                 }`}
