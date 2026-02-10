@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Default_BookImg } from "../../assets/icons";
 import type { BestsellerSection } from "../../types/home/home.types";
 import { useNavigate } from "react-router-dom";
 
@@ -98,7 +99,7 @@ function BestSeller({ type, title, subtitle, sections }: BestSellerProps) {
                   className="block w-full h-full object-cover"
                 />
               ) : (
-                <div className="block w-full h-full bg-gray-200" />
+                <Default_BookImg className="w-full h-full object-cover" />
               )}
             </div>
 

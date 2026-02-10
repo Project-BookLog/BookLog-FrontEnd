@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Default_ProfileImg } from "../../assets/icons";
 import { getReadingRankingList } from "../../api/mypage/readingRanking";
 import type { ReadingUser } from "../../types/myPage/readingRanking.types";
 
@@ -61,7 +62,7 @@ const ReadingRankingList = ({ month }: Props) => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <span className="text-caption-01 text-gray-600">img</span>
+                <Default_ProfileImg className="h-full w-full object-cover" />
               )}
             </div>
 

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { Bookmark } from "../../assets/icons";
+import { Bookmark, Default_BookImg, Default_ProfileImg } from "../../assets/icons";
 import BookTag from "./BookTag";
 
 import type { BooklogFeedItem } from "../../types/booklog/feed.types";
@@ -57,7 +57,7 @@ function PostCard({ item }: { item: BooklogFeedItem }) {
                 loading="lazy"
               />
             ) : (
-              <span className="text-caption-02 text-[#4B4B4B]">?</span>
+              <Default_ProfileImg className="w-full h-full object-cover" />
             )}
           </div>
 
@@ -120,9 +120,7 @@ function PostCard({ item }: { item: BooklogFeedItem }) {
                 loading="lazy"
               />
             ) : (
-              <div className="grid h-full w-full place-items-center text-caption-01 text-[#4B4B4B]">
-                책 표지 정보가 없습니다. 
-              </div>
+              <Default_BookImg className="w-full h-full object-cover" />
             )}
           </div>
 

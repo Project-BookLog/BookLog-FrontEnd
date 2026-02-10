@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Frame } from "../../assets/icons";
+import { Frame, Default_BookImg } from "../../assets/icons";
 import Carousel from "react-multi-carousel";
 import type { CarouselInternalState } from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
@@ -129,7 +129,7 @@ const CurrentReading: React.FC<Props> = ({ username }) => {
                         draggable={false}
                       />
                     ) : (
-                      <span className="text-xs">No Image</span>
+                      <Default_BookImg className="w-full h-full object-cover" />
                     )}
                   </div>
 

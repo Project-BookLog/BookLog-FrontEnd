@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Share } from "../../assets/icons";
+import { Share, Default_ProfileImg } from "../../assets/icons";
 import type { UserProfileCard} from "../../types/myPage/user.types";
 
 type UserInfoCardProps = {
@@ -28,7 +28,7 @@ function UserInfoCard({ user }: UserInfoCardProps) {
                   className="h-full w-full object-cover rounded-full"
                 />
               ) : (
-                <div className="h-full w-full rounded-full bg-gray-300" />
+                <Default_ProfileImg className="h-full w-full object-cover rounded-full" />
               )}
             </div>
             <div className="ml-4 h-18 flex flex-col justify-center gap-1">

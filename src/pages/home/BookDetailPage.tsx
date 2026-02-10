@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Default_BookImg } from "../../assets/icons";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import Tab from "../../components/common/Tab";
 import BookRecommeded from "../../components/home/book/BookRecommended";
@@ -170,7 +171,7 @@ export const BookDetailPage = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full bg-gray-300" />
+                <Default_BookImg className="w-full h-full object-cover" />
               )}
             </div>
           </div>
