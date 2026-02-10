@@ -1,9 +1,9 @@
 // src/pages/mypage/UserProfilePage.tsx
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import NavBarTop from "../../components/common/navbar/NavBarTop";
-import { Share, Bookmark, BackIcon } from "../../assets/icons";
+import { Share, BackIcon } from "../../assets/icons";
 
 import { getPublicUserShelvesPreview } from "../../api/publicUserShelves";
 import type { PublicUserShelf } from "../../types/publicShelves.types";
@@ -12,6 +12,9 @@ import { getUserProfile } from "../../api/userProfile";
 import type { UserProfileResponse } from "../../types/userProfile.types";
 
 import { followUser, unfollowUser } from "../../api/follow";
+import { MyBookLogCard } from "../../components/mypage/MyBookLogCard";
+import { MyBookLogCardSkeleton } from "../../components/mypage/MyBookLogCardSkeleton";
+import { useGetUserPublicBooklog } from "../../hooks/queries/useGetUserPublicBooklog";
 
 type Tab = "library" | "blog";
 
@@ -30,17 +33,10 @@ type ShelfSection = {
   books: Book[];
 };
 
-type BlogPost = {
-  id: string;
-  excerpt: string;
-  tags: string[];
-  bookmarkCount: number;
-  moreCount?: number;
-};
-
 export default function UserProfilePage() {
   const navigate = useNavigate();
   const { userId } = useParams<{ userId: string }>();
+  const parsedUserId = userId && Number.isFinite(Number(userId)) ? Number(userId) : undefined;
 
   const [tab, setTab] = useState<Tab>("library");
 
@@ -51,9 +47,19 @@ export default function UserProfilePage() {
 
   const followLockRef = useRef(false);
   const [followSubmitting, setFollowSubmitting] = useState(false);
+  const blogBottomRef = useRef<HTMLDivElement | null>(null);
 
   const [librarySections, setLibrarySections] = useState<ShelfSection[]>([]);
   const [shelvesLoading, setShelvesLoading] = useState(true);
+  const {
+    data: userBooklogsData,
+    fetchNextPage: fetchNextBooklogs,
+    hasNextPage: hasNextBooklogPage,
+    isFetchingNextPage: isFetchingNextBooklogPage,
+    isLoading: isBooklogsLoading,
+  } = useGetUserPublicBooklog(parsedUserId);
+
+  const userBooklogs = userBooklogsData?.pages.flatMap((page) => page.data?.items ?? []).filter(Boolean) ?? [];
 
   // =========================
   // 1) 프로필 fetch
@@ -212,29 +218,29 @@ export default function UserProfilePage() {
     }
   };
 
-  const blogPosts = useMemo<BlogPost[]>(
-    () => [
-      {
-        id: "p1",
-        excerpt:
-          "이 책은 어쩌구 다른 유저의 북로그 내용 다른 유저의 북로그 내용 다른 유저의 북로그 내용 다른 유저의 북로그 내용 다른 유저의 북로그 내용 유저의 북로그 내용 다른 유저의 북로그 내용 다른 유저의 북로그 내용 ",
-        tags: ["잔잔한, 따뜻한", "사유적", "생각이 필요한"],
-        bookmarkCount: 20,
-        moreCount: 2,
-      },
-      {
-        id: "p2",
-        excerpt:
-          "이 책은 어쩌구 다른 유저의 북로그 내용 다른 유저의 북로그 내용 다른 유저의 북로그 내용 다른 유저의 북로그 내용 다른 유저의 북로그 내용 유저의 북로그 내용 다른 유저의 북로그 내용 다른 유저의 북로그 내용 ",
-        tags: ["잔잔한, 따뜻한", "사유적", "생각이 필요한"],
-        bookmarkCount: 20,
-        moreCount: 2,
-      },
-    ],
-    []
-  );
+  useEffect(() => {
+    if (tab !== "blog") return;
+    if (!blogBottomRef.current || !hasNextBooklogPage) return;
 
-  const hasBlog = blogPosts.length > 0;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isFetchingNextBooklogPage) {
+          fetchNextBooklogs();
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    observer.observe(blogBottomRef.current);
+
+    return () => observer.disconnect();
+  }, [
+    tab,
+    fetchNextBooklogs,
+    hasNextBooklogPage,
+    isFetchingNextBooklogPage,
+    userBooklogs.length,
+  ]);
 
   const handleBack = () => {
     if (window.history.length > 1) navigate(-1);
@@ -402,12 +408,31 @@ export default function UserProfilePage() {
                 />
               </div>
             )
-          ) : hasBlog ? (
-            <div className="space-y-4 px-5">
-              {blogPosts.map((p) => (
-                <BlogCard key={p.id} post={p} />
+          ) : isBooklogsLoading ? (
+            <div className="flex px-5 flex-col items-start gap-3 self-stretch">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <MyBookLogCardSkeleton key={i} />
               ))}
             </div>
+          ) : userBooklogs.length > 0 ? (
+            <>
+              <div className="flex px-5 flex-col items-start gap-3 self-stretch">
+                {userBooklogs.map((booklog) => (
+                  <MyBookLogCard
+                    key={booklog.postId}
+                    booklog={booklog}
+                    onClick={() => navigate(`/booklog/${booklog.postId}`)}
+                  />
+                ))}
+
+                {isFetchingNextBooklogPage &&
+                  Array.from({ length: 2 }).map((_, i) => (
+                    <MyBookLogCardSkeleton key={`fetch-${i}`} />
+                  ))}
+              </div>
+
+              <div ref={blogBottomRef} className="h-1" />
+            </>
           ) : (
             <div className="px-5">
               <EmptyState
@@ -510,51 +535,6 @@ function ShelfRow<
         </div>
       </div>
     </section>
-  );
-}
-
-/* ===== 북로그 카드 ===== */
-function BlogCard({ post }: { post: BlogPost }) {
-  return (
-    <div className="rounded-[12px] bg-gray-100 px-[20px] py-[14px]">
-      <div className="flex gap-2">
-        <div className="grid h-[94px] w-[94px] place-items-center rounded-[8px] bg-[#CDCCCB]">
-          <span className="text-body-03 text-[#000000]">북 img</span>
-        </div>
-
-        <div className="grid h-[94px] w-[94px] place-items-center rounded-[8px] bg-[#CDCCCB]">
-          <span className="text-body-03 text-[#000000]">img</span>
-        </div>
-
-        <div className="grid h-[94px] w-[94px] place-items-center rounded-[8px] bg-[#CDCCCB]">
-          <span className="text-body-01-m text-[#000000]">
-            +{post.moreCount ?? 0}
-          </span>
-        </div>
-      </div>
-
-      <p className="mt-4 line-clamp-2 text-caption-01 text-[#4D4D4C]">
-        {post.excerpt}
-      </p>
-
-      <div className="mt-4 flex items-center justify-between">
-        <div className="flex gap-1 overflow-hidden">
-          {post.tags.map((t) => (
-            <span
-              key={t}
-              className="shrink-0 rounded-[4px] bg-[#788ADE26] px-[8px] py-[3px] text-caption-02 text-[#3049C0]"
-            >
-              {t}
-            </span>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-1 text-caption-01 text-[#9B9A97]">
-          <Bookmark className="h-5 w-5" />
-          <span>{post.bookmarkCount}</span>
-        </div>
-      </div>
-    </div>
   );
 }
 

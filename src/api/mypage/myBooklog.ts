@@ -10,3 +10,13 @@ export const getMyBookmarkedBooklog = async ({page = 0, size = 20, sort} : {page
     const { data } = await privateApi.get("/me/booklogs/bookmarks", { params: { page, size, sort } });
     return data;
 }
+
+export const getUserPublicBooklog = async (
+    userId: number,
+    { page = 0, size = 20 }: { page?: number; size?: number }
+): Promise<ResponseGetMyBooklogDto> => {
+    const { data } = await privateApi.get(`/users/${userId}/booklogs`, {
+        params: { visibility: "PUBLIC", page, size },
+    });
+    return data;
+}

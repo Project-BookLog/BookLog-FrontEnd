@@ -10,7 +10,7 @@ type MyBookCardProps = {
 export const MyBookLogCard = ({ booklog, onClick }: MyBookCardProps) => {
     
     const { mutate: toggleBookmark } = useToggleBooklogBookmark();
-    const images = booklog.images;
+    const images = (booklog.images ?? []).filter((img) => Boolean(img?.imageUrl));
     const visibleImages = images.slice(0, 3);
     const remainCount = images.length - 2;
 
