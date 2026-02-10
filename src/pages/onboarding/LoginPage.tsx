@@ -71,30 +71,30 @@ export const LoginPage = () => {
                     <div className="flex flex-col items-start self-stretch">
                         <input
                             {...getInputProps("email")}
-                            className={`flex h-[56px] px-[24px] py-[15px] items-center gap-[10px] self-stretch rounded-[12px]  focus:outline-none focus:ring-0
-                                ${!values.email ? "bg-gray-100 mb-[12px]" : errors?.email && touched?.email ? "border border-warning bg-white mb-[6px]" : "bg-white mb-[12px]"}`}
+                            className={`flex h-[56px] px-[24px] py-[15px] items-center gap-[10px] self-stretch rounded-[12px] focus:outline-none focus:ring-0
+                                ${!values.email ? "bg-gray-100" : errors?.email && touched?.email ? "border border-warning bg-white" : "bg-white"} ${!!(errors?.email && touched?.email) ? "mb-0" : "mb-[12px]"}`}
                             type={"text"}
                             placeholder={"ID"}
                         />
                         {errors?.email && touched?.email && (
-                            <div className="flex items-start px-3 justify-center gap-[10px] mb-[20px]">
+                            <div className="flex items-start px-3 justify-center gap-[10px] mt-[6px] mb-[20px]">
                                 <p className="text-start text-warning text-body-03">{errors.email}</p>
                             </div>
                         )}
                         <input
                             {...getInputProps("password")}
-                            className={`flex h-[56px] px-[24px] py-[15px] items-center gap-[10px] self-stretch rounded-[12px]  focus:outline-none focus:ring-0
-                                ${!values.password ? "bg-gray-100" : errors?.password && touched?.password ? "border border-warning bg-white mb-[6px]" : "bg-white"}`}
+                            className={`flex h-[56px] px-[24px] py-[15px] items-center gap-[10px] self-stretch rounded-[12px] focus:outline-none focus:ring-0
+                                ${!values.password ? "bg-gray-100" : errors?.password && touched?.password ? "border border-warning bg-white" : "bg-white"}`}
                             type={"password"}
                             placeholder={"PW"}
                         />
                         {errors?.password && touched?.password && (
-                            <div className="flex items-start pl-3 justify-center gap-[10px]">
+                            <div className="flex items-start pl-3 justify-center gap-[10px] mt-[6px]">
                                 <p className="text-start text-warning text-body-03">{errors.password}</p>
                             </div>
                         )}
                         {loginError && (
-                            <div className="flex items-start pl-3 justify-center">
+                            <div className="flex items-start pl-3 justify-center ">
                                 <p className="text-start text-warning text-body-03">{loginError}</p>
                             </div>
                         )}
