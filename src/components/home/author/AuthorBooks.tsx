@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { BackIcon, Reset } from "../../../assets/icons";
+import { BackIcon, /*Reset*/ } from "../../../assets/icons";
 import { SortDropDown } from "../../common/dropdown/SortDropDown";
 import { BOOK_ORDER, sortOptions } from "../../../enum/book";
 import { FilterChips, type FilterChip } from "../../common/FilterChips";
@@ -136,13 +136,13 @@ function AuthorBooks() {
     navigate("/bookdetail");
   };
 
-  const handleResetFilters = () => {
-    const params = new URLSearchParams(searchParams);
-    params.delete("mood");
-    params.delete("style");
-    params.delete("immersion");
-    navigate(`${window.location.pathname}?${params.toString()}`, { replace: true });
-  };
+  // const handleResetFilters = () => {
+  //   const params = new URLSearchParams(searchParams);
+  //   params.delete("mood");
+  //   params.delete("style");
+  //   params.delete("immersion");
+  //   navigate(`${window.location.pathname}?${params.toString()}`, { replace: true });
+  // };
 
 
   const goFilter = (from: FilterKey) => {
@@ -179,7 +179,7 @@ function AuthorBooks() {
     },
   ];
 
-  const hasAnyFilter = Object.values(selectedFilters).some(Boolean);
+  // const hasAnyFilter = Object.values(selectedFilters).some(Boolean);
 
   return (
     <section className="relative">
@@ -193,17 +193,10 @@ function AuthorBooks() {
 
       {/* 상단 필터/정렬 바 */}
       <div className="mb-5 flex items-center gap-3 pl-5">
-        <button
-          type="button"
-          onClick={handleResetFilters}
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-gray-100 disabled:opacity-50"
-          disabled={!hasAnyFilter}
-        >
-          <Reset className="h-4 w-4" />
-        </button>
-
         <div className="no-scrollbar flex flex-1 gap-2 overflow-x-auto pr-1">
-          <FilterChips chips={filterChips} />
+          <FilterChips chips={filterChips} hasAnyFilter={false} onReset={function (): void {
+            throw new Error("Function not implemented.");
+          } } />
         </div>
       </div>
 
