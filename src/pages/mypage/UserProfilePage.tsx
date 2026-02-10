@@ -33,6 +33,36 @@ type ShelfSection = {
   books: Book[];
 };
 
+type FollowPayload = {
+  isFollowing?: boolean;
+  followerCount?: number;
+  followingCount?: number;
+};
+
+function parseFollowPayload(input: unknown): FollowPayload | null {
+  if (!input || typeof input !== "object") return null;
+
+  const root = input as Record<string, unknown>;
+  const candidate =
+    root.data && typeof root.data === "object"
+      ? (root.data as Record<string, unknown>)
+      : root;
+
+  const payload: FollowPayload = {};
+
+  if (typeof candidate.isFollowing === "boolean") {
+    payload.isFollowing = candidate.isFollowing;
+  }
+  if (typeof candidate.followerCount === "number") {
+    payload.followerCount = candidate.followerCount;
+  }
+  if (typeof candidate.followingCount === "number") {
+    payload.followingCount = candidate.followingCount;
+  }
+
+  return payload;
+}
+
 export default function UserProfilePage() {
   const navigate = useNavigate();
   const { userId } = useParams<{ userId: string }>();
@@ -81,12 +111,12 @@ export default function UserProfilePage() {
 
       try {
         setProfileLoading(true);
-        const res = await getUserProfile(numericUserId);
+        const profileData = await getUserProfile(numericUserId);
 
         if (!alive) return;
 
-        setProfile(res.data);
-        setIsFollowing(res.data.isFollowing);
+        setProfile(profileData);
+        setIsFollowing(Boolean(profileData.isFollowing));
       } catch (e) {
         console.error(e);
         if (alive) {
@@ -193,13 +223,18 @@ export default function UserProfilePage() {
         : await unfollowUser(numericUserId);
 
       if (res?.data) {
-        setIsFollowing(res.data.isFollowing);
+        const payload = parseFollowPayload(res.data);
+
+        if (typeof payload?.isFollowing === "boolean") {
+          setIsFollowing(payload.isFollowing);
+        }
+
         setProfile((p) =>
           p
             ? {
                 ...p,
-                followerCount: res.data.followerCount ?? p.followerCount,
-                followingCount: res.data.followingCount ?? p.followingCount,
+                followerCount: payload?.followerCount ?? p.followerCount,
+                followingCount: payload?.followingCount ?? p.followingCount,
               }
             : p
         );
