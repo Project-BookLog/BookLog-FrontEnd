@@ -28,6 +28,7 @@ export type Shelf = {
 
 export type UserBook = {
   userBookId: number;
+  logId?: number;
   status: BookStatus;
   progressPercent: number;
   currentPage: number;

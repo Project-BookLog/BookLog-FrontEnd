@@ -367,6 +367,7 @@ export default function RecordPage() {
       const payload: CreateReadingLogRequest = {
         readDate: toApiDate(date.y, date.m, date.d),
         currentPage: Number(pagesRead),
+        pagesRead: Number(pagesRead),
       };
 
       if (isEditMode) {
@@ -379,11 +380,6 @@ export default function RecordPage() {
       navigate(-1);
     } catch (e) {
       console.error(isEditMode ? "updateReadingLog failed:" : "createReadingLog failed:", e);
-      alert(
-        isEditMode
-          ? "독서 기록 수정에 실패했어요. 잠시 후 다시 시도해 주세요."
-          : "독서 기록 저장에 실패했어요. 잠시 후 다시 시도해 주세요."
-      );
     } finally {
       submittingRef.current = false;
       setSubmitting(false);
