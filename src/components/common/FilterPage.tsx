@@ -13,9 +13,10 @@ type Props = {
 };
 
 export default function FilterPage({ scope }: Props) {
-  const { filter, toggleFilter, pageInfo } = useFilter(scope);
+  const { filter, toggleFilter, resetFilter, pageInfo } = useFilter(scope);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  
 
   const hasAnyFilter =
     filter.mood.length > 0 ||
@@ -60,6 +61,22 @@ export default function FilterPage({ scope }: Props) {
     };
   }, []);
 
+  useEffect(() => {
+    const hasQueryFilter =
+      searchParams.has("mood") ||
+      searchParams.has("style") ||
+      searchParams.has("immersion");
+
+    if (!hasQueryFilter) {
+      resetFilter();
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+
+
+  
   return (
     <div className="min-h-screen bg-bg">
       <header>

@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { BackIcon, Reset } from "../../../assets/icons";
+import { BackIcon, /*Reset*/ } from "../../../assets/icons";
 import { SortDropDown } from "../../common/dropdown/SortDropDown";
 import { BOOK_ORDER, sortOptions } from "../../../enum/book";
 import { FilterChips, type FilterChip } from "../../common/FilterChips";
@@ -131,9 +131,9 @@ function AuthorBooks() {
     }
   }, [currentSort, selectedFilters]);
 
-  const handleBookClick = () => {
-    // navigate(`/book/${bookId}`);
-    navigate("/bookdetail");
+  const handleBookClick = (bookId: number) => {
+    navigate(`/book/${bookId}`);
+    // navigate("/bookdetail");
   };
 
   const handleResetFilters = () => {
@@ -193,17 +193,8 @@ function AuthorBooks() {
 
       {/* 상단 필터/정렬 바 */}
       <div className="mb-5 flex items-center gap-3 pl-5">
-        <button
-          type="button"
-          onClick={handleResetFilters}
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-gray-100 disabled:opacity-50"
-          disabled={!hasAnyFilter}
-        >
-          <Reset className="h-4 w-4" />
-        </button>
-
         <div className="no-scrollbar flex flex-1 gap-2 overflow-x-auto pr-1">
-          <FilterChips chips={filterChips} />
+          <FilterChips chips={filterChips} hasAnyFilter={hasAnyFilter} onReset={handleResetFilters} />
         </div>
       </div>
 
@@ -243,7 +234,7 @@ function AuthorBooks() {
             key={book.bookId}
             type="button"
             className="text-left"
-            onClick={() => handleBookClick()}
+            onClick={() => handleBookClick(book.bookId)}
           >
             <div className="h-36 w-full overflow-hidden rounded">
               <img
