@@ -7,6 +7,8 @@ export interface Book {
   authors: string[];
   translators?: string[];
   publishedDate?: string;
+
+  tags?: string[];
 }
 
 export type UserBookDetail = {
