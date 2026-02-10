@@ -1,6 +1,6 @@
 // src/pages/booklog/BooklogPage.tsx
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import BookTag from "../../components/booklog/BookTag";
 import FilterBar from "../../components/booklog/FilterBar";
@@ -10,10 +10,8 @@ import { useFilter } from "../../hooks/useFilter";
 
 import { getBooklogsFeed } from "../../api/booklogFeed";
 import { useToggleBooklogBookmark } from "../../hooks/mutations/useToggleBooklogBookmark";
+import { useToast } from "../../context/ToastContext";
 
-/* =============================
- *  ✅ 안전한 ID 생성기 (crypto.randomUUID fallback)
- * ============================= */
 function generateId(): string {
   try {
     if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -27,9 +25,6 @@ function generateId(): string {
     .slice(2, 10)}`;
 }
 
-/* =============================
- *  ✅ 최소 응답 타입 (any 제거)
- * ============================= */
 type ItemUser = {
   nickname?: string;
   name?: string;
@@ -65,7 +60,6 @@ type Item = {
   scrapCount?: number | string;
   likeCount?: number | string;
 
-  // ✅ 북마크 여부(백엔드에서 내려주면 사용)
   bookmarkedByMe?: boolean;
   isBookmarked?: boolean;
 
@@ -210,9 +204,7 @@ function PostCard({ post }: { post: Post }) {
             }}
           />
 
-          <span className="text-caption-01 text-[#9B9A97]">
-            {bookmarkCount}
-          </span>
+          <span className="text-caption-01 text-[#9B9A97]">{bookmarkCount}</span>
         </button>
       </div>
 
@@ -256,10 +248,23 @@ function PostCard({ post }: { post: Post }) {
  * ============================= */
 export default function BooklogPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { showToast } = useToast();
 
   const { filter, resetFilter } = useFilter("booklog");
 
   const [posts, setPosts] = useState<Post[]>([]);
+
+  // ✅ BookWritePage에서 navigate state로 넘긴 toast를 여기서 처리
+  useEffect(() => {
+    const toast = (location.state as { toast?: string } | null)?.toast;
+    if (!toast) return;
+
+    showToast(toast);
+
+    // ✅ 뒤로가기/새로고침 때 토스트가 또 뜨는 것 방지
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location.pathname, location.state, navigate, showToast]);
 
   const mockPosts = useMemo<Post[]>(
     () => [
@@ -316,7 +321,7 @@ export default function BooklogPage() {
           : [];
 
         if (import.meta.env.DEV) {
-          console.log("✅ feed params(filter):", filter);
+          console.log("feed params(filter):", filter);
           console.log("feed raw data:", data);
           console.log("feed list length:", list.length);
           console.log("isValidFeed:", isValidFeed);

@@ -107,16 +107,11 @@ export default function BookWritePage() {
         if (tag.category === "IMMERSION")
           nextFilter.immersion.push(tag.name as never);
       });
-      if (tags.length > 0) {
-        setFilter(nextFilter);
-      }
-      if (state.content) {
-        setContent(state.content);
-      }
-      if (state.imageUrls) {
-        setExistingImageUrls(state.imageUrls);
-      }
+      if (tags.length > 0) setFilter(nextFilter);
+      if (state.content) setContent(state.content);
+      if (state.imageUrls) setExistingImageUrls(state.imageUrls);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -132,31 +127,39 @@ export default function BookWritePage() {
     );
   }, [filter]);
 
-  const canPublish = content.trim().length > 0 && hasTag && !isPublishing;
+  const bookId = book?.bookId;
+  const canPublish =
+    content.trim().length > 0 &&
+    hasTag &&
+    !isPublishing &&
+    typeof bookId === "number" &&
+    bookId > 0 &&
+    !!tagOptions;
 
-  /** ---------------- 발행 ---------------- */
+  /** ---------------- 발행/수정 ---------------- */
   const onPublish = async () => {
-    // ✅ 동기 락: state 업데이트 전에도 중복 발행 방지
     if (publishingRef.current) return;
     if (!canPublish) return;
 
     publishingRef.current = true;
 
-    const bookId = book?.bookId;
-
-    if (!bookId || bookId <= 0) {
+    // ✅ edit 모드는 이미지 업로드/발행 로직 전에 즉시 종료 (불필요 업로드 방지)
+    if (isEditMode) {
+      // (수정 API 붙이면 여기서 호출)
+      showToast("수정이 완료되었어요.");
+      resetFilter();
+      sessionStorage.removeItem(DRAFT_STORAGE_KEY);
+      if (editPostId) navigate(`/booklog/${editPostId}`, { replace: true });
       publishingRef.current = false;
-      showToast("책 정보(bookId)가 올바르지 않아요. 다시 선택해 주세요.");
       return;
     }
 
-    if (!tagOptions) {
+    // 여기부터는 "발행(create)"만
+    if (!tagOptions || !bookId) {
       publishingRef.current = false;
-      showToast("태그 정보를 불러오는 중이에요. 잠시 후 다시 시도해 주세요.");
       return;
     }
 
-    // ✅ filter.* 는 string[] (태그 이름) → 옵션으로 name -> tagId 매핑
     const nameToId = new Map<string, number>();
     for (const t of tagOptions.mood) nameToId.set(t.name, t.tagId);
     for (const t of tagOptions.style) nameToId.set(t.name, t.tagId);
@@ -173,7 +176,6 @@ export default function BookWritePage() {
 
     if (tagIds.length === 0) {
       publishingRef.current = false;
-      showToast("태그를 최소 1개 이상 선택해 주세요.");
       return;
     }
 
@@ -181,39 +183,28 @@ export default function BookWritePage() {
     try {
       // 1) 이미지 업로드 (있을 때만)
       let imageUrls: string[] = [...existingImageUrls];
+
       if (images.length > 0) {
         const files = images.map((img) => img.file);
         const uploaded = await uploadBooklogImages(files);
         imageUrls = [...imageUrls, ...uploaded];
       }
 
-      if (isEditMode) {
-        showToast("수정 기능은 준비 중이에요.");
-        return;
-      } else {
-        // 2) 북로그 발행
-        const res = await createBooklog({
-          bookId,
-          title: book?.title ?? "",
-          content: content.trim(),
-          tagIds,
-          imageUrls,
-        });
+      // 2) 북로그 발행
+      await createBooklog({
+        bookId,
+        title: book?.title ?? "",
+        content: content.trim(),
+        tagIds,
+        imageUrls,
+      });
 
-        showToast("북로그가 발행되었어요.");
-        resetFilter();
-        sessionStorage.removeItem(DRAFT_STORAGE_KEY);
-        navigate("/booklog", { replace: true });
+      resetFilter();
+      sessionStorage.removeItem(DRAFT_STORAGE_KEY);
 
-        console.log("created postId:", res.postId);
-      }
+      navigate("/booklog", { replace: true, state: { toast: "북로그가 발행되었어요." }, });
     } catch (err) {
       console.error(err);
-      showToast(
-        isEditMode
-          ? "수정에 실패했어요. 잠시 후 다시 시도해 주세요."
-          : "발행에 실패했어요. 잠시 후 다시 시도해 주세요."
-      );
     } finally {
       publishingRef.current = false;
       setIsPublishing(false);
@@ -246,7 +237,6 @@ export default function BookWritePage() {
     e.target.value = "";
   };
 
-  // blob 정리
   useEffect(() => {
     return () => {
       images.forEach((img) => URL.revokeObjectURL(img.previewUrl));
@@ -262,6 +252,8 @@ export default function BookWritePage() {
     setIsConfirmOpen(false);
     resetFilter();
     sessionStorage.removeItem(DRAFT_STORAGE_KEY);
+
+
     if (isEditMode && editPostId) {
       navigate(`/booklog/${editPostId}`, { replace: true });
     } else {
@@ -276,7 +268,6 @@ export default function BookWritePage() {
 
   return (
     <div className="relative min-h-dvh bg-bg pb-28">
-      {/* Confirm Modal */}
       <ConfirmModal
         isOpen={isConfirmOpen}
         title="작성 중인 내용을 삭제할까요?"
@@ -363,10 +354,7 @@ export default function BookWritePage() {
             onClick={openFilePicker}
             className="mt-3 flex h-[60px] w-[64px] flex-col items-center justify-center rounded border border-[#CDCCCB]"
           >
-            {/* 카메라 아이콘 */}
             <Camera className="h-6 w-6 text-[#676665] -translate-y-[3px]" />
-
-            {/* 숫자 */}
             <span className="text-text-en-body-01 leading-none">
               <span className="text-[#676665]">{imageCount}</span>
               <span className="text-[#9B9A97]"> / {MAX_IMAGE_COUNT}</span>
@@ -378,23 +366,24 @@ export default function BookWritePage() {
               {existingImageUrls.map((url) => (
                 <div
                   key={url}
-                  className="h-[140px] w-[140px] shrink-0 rounded bg-[#CDCCCB] overflow-hidden"
+                  className="h-[140px] w-[140px] shrink-0 overflow-hidden rounded bg-[#CDCCCB]"
                 >
                   <div
-                    className="h-full w-full bg-center bg-cover"
+                    className="h-full w-full bg-cover bg-center"
                     style={{ backgroundImage: `url(${url})` }}
                     role="img"
                     aria-label="기존 이미지"
                   />
                 </div>
               ))}
+
               {images.map((img) => (
                 <div
                   key={img.id}
-                  className="h-[140px] w-[140px] shrink-0 rounded bg-[#CDCCCB] overflow-hidden"
+                  className="h-[140px] w-[140px] shrink-0 overflow-hidden rounded bg-[#CDCCCB]"
                 >
                   <div
-                    className="h-full w-full bg-center bg-cover"
+                    className="h-full w-full bg-cover bg-center"
                     style={{ backgroundImage: `url(${img.previewUrl})` }}
                     role="img"
                     aria-label="선택한 이미지"

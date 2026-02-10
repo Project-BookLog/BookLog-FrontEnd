@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { Bookmark } from "../../assets/icons"
 import { useToggleBooklogBookmark } from "../../hooks/mutations/useToggleBooklogBookmark";
 import type { MyBooklogItem } from "../../types/myPage/myBooklog"
