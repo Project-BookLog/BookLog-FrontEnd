@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import useForm from "../../hooks/useForm";
 import { validateSignin, type UserLoginInformation } from "../../utils/validate";
 import { useAuth } from "../../context/AuthContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { KakaoTalk, LogoBooklog, SymbolLogo } from "../../assets/icons";
 import { useGetOnboardingProfile } from "../../hooks/queries/useGetOnboardingProfile";
 
@@ -10,6 +10,7 @@ export const LoginPage = () => {
     const navigate = useNavigate();
     const { login, accessToken } = useAuth();
     const { data: onboardingProfile, isLoading, isError } = useGetOnboardingProfile();
+    const [loginError, setLoginError] = useState<string | null>(null);
 
     useEffect(() => {
         if (!accessToken) return;
@@ -22,7 +23,7 @@ export const LoginPage = () => {
         }
     }, [accessToken, isLoading, isError, onboardingProfile, navigate,]);
 
-    const {values, errors, getInputProps} = useForm<UserLoginInformation>({
+    const {values, errors, touched, getInputProps} = useForm<UserLoginInformation>({
         initialValue: {
             email: "",
             password: "",
@@ -30,12 +31,21 @@ export const LoginPage = () => {
         validate: validateSignin
     });
 
+    useEffect(() => {
+        if (loginError) {
+            setLoginError(null);
+        }
+    }, [values.email, values.password]);
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         try {
             await login(values);
-        } catch (err) {
-            console.error("로그인 실패:", err);
+        } catch (err: any) {
+            const status = err?.response?.status;
+
+            if (status === 400 || status === 404) { setLoginError("이메일 또는 비밀번호가 올바르지 않습니다.");}
+            else { setLoginError("로그인 중 오류가 발생했어요. 다시 시도해주세요."); }
         }
     };
 
@@ -55,24 +65,39 @@ export const LoginPage = () => {
             </div>
             <div className="flex flex-col w-[335px] items-center gap-3 mt-[70px]">
                 <form
-                    className="flex flex-col items-start gap-4 self-stretch"
+                    className="flex flex-col items-start gap-[40px] self-stretch"
                     onSubmit={handleSubmit}
                 >
-                    <div className="flex flex-col items-start gap-2 self-stretch">
+                    <div className="flex flex-col items-start self-stretch">
                         <input
                             {...getInputProps("email")}
-                            className={`flex h-[56px] px-[24px] py-[15px] items-center gap-[10px] self-stretch rounded-[12px] border-none focus:outline-none focus:ring-0
-                                ${!values.email ? "bg-gray-100" : "bg-white"}`}
+                            className={`flex h-[56px] px-[24px] py-[15px] items-center gap-[10px] self-stretch rounded-[12px]  focus:outline-none focus:ring-0
+                                ${!values.email ? "bg-gray-100 mb-[12px]" : errors?.email && touched?.email ? "border border-warning bg-white mb-[6px]" : "bg-white mb-[12px]"}`}
                             type={"text"}
                             placeholder={"ID"}
                         />
+                        {errors?.email && touched?.email && (
+                            <div className="flex items-start px-3 justify-center gap-[10px] mb-[20px]">
+                                <p className="text-start text-warning text-body-03">{errors.email}</p>
+                            </div>
+                        )}
                         <input
                             {...getInputProps("password")}
-                            className={`flex h-[56px] px-[24px] py-[15px] items-center gap-[10px] self-stretch rounded-[12px] border-none focus:outline-none focus:ring-0
-                                ${!values.password ? "bg-gray-100" : "bg-white"}`}
+                            className={`flex h-[56px] px-[24px] py-[15px] items-center gap-[10px] self-stretch rounded-[12px]  focus:outline-none focus:ring-0
+                                ${!values.password ? "bg-gray-100" : errors?.password && touched?.password ? "border border-warning bg-white mb-[6px]" : "bg-white"}`}
                             type={"password"}
                             placeholder={"PW"}
                         />
+                        {errors?.password && touched?.password && (
+                            <div className="flex items-start pl-3 justify-center gap-[10px]">
+                                <p className="text-start text-warning text-body-03">{errors.password}</p>
+                            </div>
+                        )}
+                        {loginError && (
+                            <div className="flex items-start pl-3 justify-center">
+                                <p className="text-start text-warning text-body-03">{loginError}</p>
+                            </div>
+                        )}
                     </div>
                     <button
                         type="submit"

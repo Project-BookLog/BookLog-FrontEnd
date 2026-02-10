@@ -7,15 +7,23 @@ interface UseFormProps<T> {
 
 function useForm<T> ({initialValue, validate}: UseFormProps<T>) {
     const [values, setValues] = useState(initialValue);
+    const [touched, setTouched] = useState<Record<string, boolean>>();
     const [errors, setErrors] = useState<Record<string, string>>();
 
     //시용자가 입력값을 바꿀 때 실행되는 함수
     const handleChange = (id: keyof T, text: string) => {
         setValues({
-            ...values,  //불변성 유지(기존 값 유지)
+            ...values,
             [id]: text,
         });
     };
+
+    const handleBlur = (name: keyof T) => {
+        setTouched({
+            ...touched,
+            [name]: true,
+        })
+    }
 
 
     const getInputProps = (id: keyof T) => {
@@ -24,8 +32,9 @@ function useForm<T> ({initialValue, validate}: UseFormProps<T>) {
         const onChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
         ) => handleChange(id, e.target.value);
 
+        const onBlur = () => handleBlur(id);
 
-        return {value, onChange};
+        return {value, onChange, onBlur};
     };
 
     useEffect(() => {
@@ -33,7 +42,7 @@ function useForm<T> ({initialValue, validate}: UseFormProps<T>) {
         setErrors(newErrors);
     }, [validate, values]);
 
-    return { values, errors, getInputProps };
+    return { values, errors, touched, getInputProps };
 }
 
 export default useForm;

@@ -15,12 +15,12 @@ function validateUser(values: UserLoginInformation) {
         values.email,
         )
     ) {
-        errors.email = "이메일 형식이 올바르지 않습니다.";
+        errors.email = "올바른 이메일 형식을 입력해주세요.";
     }
     
     if (!/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+~`\-={}[\]:;"'<>,.?/\\]).{8,}$/i.test(
         values.password,
-        )) { errors.password = "비밀번호는 8자 이상이며, 영문, 숫자, 특수문자를 최소 1개 이상 포함해야 합니다."; }
+        )) { errors.password = "비밀번호는 영문, 숫자, 특수문자 각 1자 이상을 포함하여 8자 이상 입력해주세요."; }
 
     return errors;
 }
