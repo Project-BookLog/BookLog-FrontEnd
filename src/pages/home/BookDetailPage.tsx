@@ -103,7 +103,7 @@ export const BookDetailPage = () => {
   if (!isUserBook && isUserBooksLoading) return <LoadingPage />;
   if (!book) return null;
 
-  console.log("BookDetailPage render", { isLoading, bookId });
+  console.log("BookDetailPage render", { bookId });
 
 
   const authors = book.authors

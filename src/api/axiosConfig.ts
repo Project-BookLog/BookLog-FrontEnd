@@ -55,7 +55,11 @@ privateApi.interceptors.response.use(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const originalRequest: any = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url?.includes("/auth/logout")
+    ) {
       originalRequest._retry = true;
 
       if (!refreshPromise) {
@@ -63,7 +67,6 @@ privateApi.interceptors.response.use(
           const refreshTokenRaw = localStorage.getItem(
             LOCAL_STORAGE_KEY.refreshToken
           );
-
           const refreshToken = refreshTokenRaw ? JSON.parse(refreshTokenRaw) : null;
 
           if (!refreshToken) throw new Error("No refresh token");
@@ -82,6 +85,7 @@ privateApi.interceptors.response.use(
           return result.data!.accessToken;
         })()
           .catch(() => {
+            refreshPromise = null;
             localStorage.removeItem(LOCAL_STORAGE_KEY.accessToken);
             localStorage.removeItem(LOCAL_STORAGE_KEY.refreshToken);
             window.location.href = "/login";
@@ -102,3 +106,4 @@ privateApi.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
