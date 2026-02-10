@@ -52,10 +52,18 @@ export default function BookWritePage() {
   const { filter, resetFilter, setFilter } = useFilter("booklogWrite");
   const { showToast } = useToast();
 
+  /** ---------------- 드래프트 키 분리 ---------------- */
+  const draftKey = useMemo(() => {
+    // edit 모드는 새 글 드래프트를 덮어쓰지 않도록 분리 저장
+    if (isEditMode && editPostId) return `${DRAFT_STORAGE_KEY}:edit:${editPostId}`;
+    return `${DRAFT_STORAGE_KEY}:new`;
+  }, [isEditMode, editPostId]);
+
   const [content, setContent] = useState(() => {
-    const saved = sessionStorage.getItem(DRAFT_STORAGE_KEY);
+    const saved = sessionStorage.getItem(draftKey);
     return state.content ?? saved ?? "";
   });
+
   const [isPublishing, setIsPublishing] = useState(false);
 
   /** ---------------- 태그 옵션 ---------------- */
@@ -95,28 +103,46 @@ export default function BookWritePage() {
   useEffect(() => {
     if (state.fresh) {
       resetFilter();
-      sessionStorage.removeItem(DRAFT_STORAGE_KEY);
+      sessionStorage.removeItem(draftKey);
     }
 
     if (isEditMode) {
       const tags = state.tags ?? [];
       const nextFilter: FilterState = { mood: [], style: [], immersion: [] };
+
+      type Mood = FilterState["mood"][number];
+      type Style = FilterState["style"][number];
+      type Immersion = FilterState["immersion"][number];
+
       tags.forEach((tag) => {
-        if (tag.category === "MOOD") nextFilter.mood.push(tag.name as never);
-        if (tag.category === "STYLE") nextFilter.style.push(tag.name as never);
+        if (!tag?.name) return;
+
+        if (tag.category === "MOOD") nextFilter.mood.push(tag.name as Mood);
+        if (tag.category === "STYLE") nextFilter.style.push(tag.name as Style);
         if (tag.category === "IMMERSION")
-          nextFilter.immersion.push(tag.name as never);
+          nextFilter.immersion.push(tag.name as Immersion);
       });
-      if (tags.length > 0) setFilter(nextFilter);
+
+      // 최소 1개라도 들어있으면 적용
+      if (
+        nextFilter.mood.length > 0 ||
+        nextFilter.style.length > 0 ||
+        nextFilter.immersion.length > 0
+      ) {
+        setFilter(nextFilter);
+      }
+
       if (state.content) setContent(state.content);
       if (state.imageUrls) setExistingImageUrls(state.imageUrls);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /** ---------------- 드래프트 저장 ---------------- */
   useEffect(() => {
-    sessionStorage.setItem(DRAFT_STORAGE_KEY, content);
-  }, [content]);
+    // edit / new 모드 모두 draftKey로 분리 저장 (새 글 덮어쓰기 방지)
+    sessionStorage.setItem(draftKey, content);
+  }, [content, draftKey]);
 
   /** ---------------- 발행 가능 여부 ---------------- */
   const hasTag = useMemo(() => {
@@ -128,6 +154,9 @@ export default function BookWritePage() {
   }, [filter]);
 
   const bookId = book?.bookId;
+
+  // edit 기능 미구현이면 제출 자체를 막아도 되지만,
+  // 여기서는 onPublish에서 메시지 처리하고 조용히 막지 않도록 canPublish는 기존 유지.
   const canPublish =
     content.trim().length > 0 &&
     hasTag &&
@@ -143,13 +172,9 @@ export default function BookWritePage() {
 
     publishingRef.current = true;
 
-    // ✅ edit 모드는 이미지 업로드/발행 로직 전에 즉시 종료 (불필요 업로드 방지)
+    // ✅ edit 모드: 성공처럼 보이게 하면 안 됨 (API 미구현)
     if (isEditMode) {
-      // (수정 API 붙이면 여기서 호출)
-      showToast("수정이 완료되었어요.");
-      resetFilter();
-      sessionStorage.removeItem(DRAFT_STORAGE_KEY);
-      if (editPostId) navigate(`/booklog/${editPostId}`, { replace: true });
+      showToast("수정 기능은 준비 중이에요.");
       publishingRef.current = false;
       return;
     }
@@ -180,6 +205,7 @@ export default function BookWritePage() {
     }
 
     setIsPublishing(true);
+
     try {
       // 1) 이미지 업로드 (있을 때만)
       let imageUrls: string[] = [...existingImageUrls];
@@ -200,9 +226,13 @@ export default function BookWritePage() {
       });
 
       resetFilter();
-      sessionStorage.removeItem(DRAFT_STORAGE_KEY);
+      sessionStorage.removeItem(draftKey);
 
-      navigate("/booklog", { replace: true, state: { toast: "북로그가 발행되었어요." }, });
+      // ✅ 토스트는 /booklog 메인에서 띄우도록 state로 전달
+      navigate("/booklog", {
+        replace: true,
+        state: { toast: "북로그가 발행되었어요." },
+      });
     } catch (err) {
       console.error(err);
     } finally {
@@ -237,6 +267,7 @@ export default function BookWritePage() {
     e.target.value = "";
   };
 
+  // blob 정리
   useEffect(() => {
     return () => {
       images.forEach((img) => URL.revokeObjectURL(img.previewUrl));
@@ -251,8 +282,7 @@ export default function BookWritePage() {
   const deleteDraftAndGoBack = () => {
     setIsConfirmOpen(false);
     resetFilter();
-    sessionStorage.removeItem(DRAFT_STORAGE_KEY);
-
+    sessionStorage.removeItem(draftKey);
 
     if (isEditMode && editPostId) {
       navigate(`/booklog/${editPostId}`, { replace: true });
@@ -368,11 +398,13 @@ export default function BookWritePage() {
                   key={url}
                   className="h-[140px] w-[140px] shrink-0 overflow-hidden rounded bg-[#CDCCCB]"
                 >
-                  <div
-                    className="h-full w-full bg-cover bg-center"
-                    style={{ backgroundImage: `url(${url})` }}
-                    role="img"
-                    aria-label="기존 이미지"
+                  {/* ✅ backgroundImage 제거: CSS 파싱/인젝션 리스크 방지 */}
+                  <img
+                    src={url}
+                    alt="기존 이미지"
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
                   />
                 </div>
               ))}
@@ -382,11 +414,12 @@ export default function BookWritePage() {
                   key={img.id}
                   className="h-[140px] w-[140px] shrink-0 overflow-hidden rounded bg-[#CDCCCB]"
                 >
-                  <div
-                    className="h-full w-full bg-cover bg-center"
-                    style={{ backgroundImage: `url(${img.previewUrl})` }}
-                    role="img"
-                    aria-label="선택한 이미지"
+                  {/* ✅ backgroundImage 제거 */}
+                  <img
+                    src={img.previewUrl}
+                    alt="선택한 이미지"
+                    className="h-full w-full object-cover"
+                    loading="lazy"
                   />
                 </div>
               ))}

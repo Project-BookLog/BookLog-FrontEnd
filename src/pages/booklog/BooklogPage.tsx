@@ -12,6 +12,9 @@ import { getBooklogsFeed } from "../../api/booklogFeed";
 import { useToggleBooklogBookmark } from "../../hooks/mutations/useToggleBooklogBookmark";
 import { useToast } from "../../context/ToastContext";
 
+/* =============================
+ *  ✅ 안전한 ID 생성기 (crypto.randomUUID fallback)
+ * ============================= */
 function generateId(): string {
   try {
     if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -25,6 +28,9 @@ function generateId(): string {
     .slice(2, 10)}`;
 }
 
+/* =============================
+ *  ✅ 최소 응답 타입 (any 제거)
+ * ============================= */
 type ItemUser = {
   nickname?: string;
   name?: string;
@@ -60,6 +66,7 @@ type Item = {
   scrapCount?: number | string;
   likeCount?: number | string;
 
+  // ✅ 북마크 여부(백엔드에서 내려주면 사용)
   bookmarkedByMe?: boolean;
   isBookmarked?: boolean;
 
@@ -183,7 +190,9 @@ function PostCard({ post }: { post: Post }) {
 
             try {
               setIsToggling(true);
-              const data = await toggleBooklogBookmark({ postId: Number(post.id) });
+              const data = await toggleBooklogBookmark({
+                postId: Number(post.id),
+              });
               setBookmarked(data.bookmarkedByMe);
               setBookmarkCount(data.bookmarkCount);
             } catch (err) {
