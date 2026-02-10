@@ -18,13 +18,21 @@ import {
   getBooklogTagOptions,
   type BooklogTagOptionsResponse,
 } from "../../api/booklogTags";
+import type { BooklogTag } from "../../types/booklogDetail.types";
+import type { FilterState } from "../../context/FilterContext";
 
 type LocationState = {
   book?: Book;
   fresh?: boolean;
+  mode?: "edit";
+  postId?: number;
+  content?: string;
+  tags?: BooklogTag[];
+  imageUrls?: string[];
 };
 
 const MAX_IMAGE_COUNT = 8;
+const DRAFT_STORAGE_KEY = "booklogWriteDraft:content";
 
 type PickedImage = {
   id: string;
@@ -38,11 +46,16 @@ export default function BookWritePage() {
   const state = (location.state || {}) as LocationState;
 
   const book = state.book;
+  const isEditMode = state.mode === "edit";
+  const editPostId = state.postId;
 
-  const { filter, resetFilter } = useFilter("booklogWrite");
+  const { filter, resetFilter, setFilter } = useFilter("booklogWrite");
   const { showToast } = useToast();
 
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState(() => {
+    const saved = sessionStorage.getItem(DRAFT_STORAGE_KEY);
+    return state.content ?? saved ?? "";
+  });
   const [isPublishing, setIsPublishing] = useState(false);
 
   /** ---------------- 태그 옵션 ---------------- */
@@ -70,7 +83,10 @@ export default function BookWritePage() {
   /** ---------------- 이미지 ---------------- */
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [images, setImages] = useState<PickedImage[]>([]);
-  const imageCount = images.length;
+  const [existingImageUrls, setExistingImageUrls] = useState<string[]>(
+    state.imageUrls ?? []
+  );
+  const imageCount = images.length + existingImageUrls.length;
 
   /** ---------------- 뒤로가기 모달 ---------------- */
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -79,8 +95,33 @@ export default function BookWritePage() {
   useEffect(() => {
     if (state.fresh) {
       resetFilter();
+      sessionStorage.removeItem(DRAFT_STORAGE_KEY);
+    }
+
+    if (isEditMode) {
+      const tags = state.tags ?? [];
+      const nextFilter: FilterState = { mood: [], style: [], immersion: [] };
+      tags.forEach((tag) => {
+        if (tag.category === "MOOD") nextFilter.mood.push(tag.name as never);
+        if (tag.category === "STYLE") nextFilter.style.push(tag.name as never);
+        if (tag.category === "IMMERSION")
+          nextFilter.immersion.push(tag.name as never);
+      });
+      if (tags.length > 0) {
+        setFilter(nextFilter);
+      }
+      if (state.content) {
+        setContent(state.content);
+      }
+      if (state.imageUrls) {
+        setExistingImageUrls(state.imageUrls);
+      }
     }
   }, []);
+
+  useEffect(() => {
+    sessionStorage.setItem(DRAFT_STORAGE_KEY, content);
+  }, [content]);
 
   /** ---------------- 발행 가능 여부 ---------------- */
   const hasTag = useMemo(() => {
@@ -139,29 +180,40 @@ export default function BookWritePage() {
     setIsPublishing(true);
     try {
       // 1) 이미지 업로드 (있을 때만)
-      let imageUrls: string[] = [];
+      let imageUrls: string[] = [...existingImageUrls];
       if (images.length > 0) {
         const files = images.map((img) => img.file);
-        imageUrls = await uploadBooklogImages(files);
+        const uploaded = await uploadBooklogImages(files);
+        imageUrls = [...imageUrls, ...uploaded];
       }
 
-      // 2) 북로그 발행
-      const res = await createBooklog({
-        bookId,
-        title: book?.title ?? "",
-        content: content.trim(),
-        tagIds,
-        imageUrls,
-      });
+      if (isEditMode) {
+        showToast("수정 기능은 준비 중이에요.");
+        return;
+      } else {
+        // 2) 북로그 발행
+        const res = await createBooklog({
+          bookId,
+          title: book?.title ?? "",
+          content: content.trim(),
+          tagIds,
+          imageUrls,
+        });
 
-      showToast("북로그가 발행되었어요.");
-      resetFilter();
-      navigate("/booklog", { replace: true });
+        showToast("북로그가 발행되었어요.");
+        resetFilter();
+        sessionStorage.removeItem(DRAFT_STORAGE_KEY);
+        navigate("/booklog", { replace: true });
 
-      console.log("created postId:", res.postId);
+        console.log("created postId:", res.postId);
+      }
     } catch (err) {
       console.error(err);
-      showToast("발행에 실패했어요. 잠시 후 다시 시도해 주세요.");
+      showToast(
+        isEditMode
+          ? "수정에 실패했어요. 잠시 후 다시 시도해 주세요."
+          : "발행에 실패했어요. 잠시 후 다시 시도해 주세요."
+      );
     } finally {
       publishingRef.current = false;
       setIsPublishing(false);
@@ -179,7 +231,7 @@ export default function BookWritePage() {
     if (files.length === 0) return;
 
     setImages((prev) => {
-      const remain = MAX_IMAGE_COUNT - prev.length;
+      const remain = MAX_IMAGE_COUNT - (prev.length + existingImageUrls.length);
       const picked = files.slice(0, remain);
 
       const next = picked.map((file) => ({
@@ -209,7 +261,12 @@ export default function BookWritePage() {
   const deleteDraftAndGoBack = () => {
     setIsConfirmOpen(false);
     resetFilter();
-    navigate("/booklog/pick");
+    sessionStorage.removeItem(DRAFT_STORAGE_KEY);
+    if (isEditMode && editPostId) {
+      navigate(`/booklog/${editPostId}`, { replace: true });
+    } else {
+      navigate("/booklog/pick");
+    }
   };
 
   const authorText = book?.authors?.length
@@ -316,8 +373,21 @@ export default function BookWritePage() {
             </span>
           </button>
 
-          {images.length > 0 && (
+          {(existingImageUrls.length > 0 || images.length > 0) && (
             <div className="mt-4 flex gap-3 overflow-x-auto">
+              {existingImageUrls.map((url) => (
+                <div
+                  key={url}
+                  className="h-[140px] w-[140px] shrink-0 rounded bg-[#CDCCCB] overflow-hidden"
+                >
+                  <div
+                    className="h-full w-full bg-center bg-cover"
+                    style={{ backgroundImage: `url(${url})` }}
+                    role="img"
+                    aria-label="기존 이미지"
+                  />
+                </div>
+              ))}
               {images.map((img) => (
                 <div
                   key={img.id}

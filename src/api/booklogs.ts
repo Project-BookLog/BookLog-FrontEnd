@@ -51,3 +51,9 @@ export const createBooklog = async (payload: CreateBooklogRequest) => {
   );
   return res.data;
 };
+
+/** ---------------- 북로그 삭제 ---------------- */
+export const deleteBooklog = async (postId: number) => {
+  const res = await privateApi.delete<{ postId: number }>(`/booklogs/${postId}`);
+  return res.data;
+};

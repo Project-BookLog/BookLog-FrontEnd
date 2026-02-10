@@ -5,12 +5,12 @@ import type { MyBooklogItem } from "../../types/myPage/myBooklog"
 
 type MyBookCardProps = {
     booklog: MyBooklogItem,
+    onClick?: () => void,
 }
 
-export const MyBookLogCard = ({ booklog }: MyBookCardProps) => {
+export const MyBookLogCard = ({ booklog, onClick }: MyBookCardProps) => {
     
     const { mutate: toggleBookmark } = useToggleBooklogBookmark();
-    const navigate = useNavigate();
     const images = booklog.images;
     const visibleImages = images.slice(0, 3);
     const remainCount = images.length - 2;
@@ -18,7 +18,16 @@ export const MyBookLogCard = ({ booklog }: MyBookCardProps) => {
     return (
         <div
             className="flex px-5 pt-4 pb-[14px] flex-col items-start gap-3 self-stretch rounded-[12px] border-b border-gray-100 bg-gray-100"
-            onClick={() => navigate(`/booklog/${booklog.postId}`)}
+            onClick={onClick}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+                if (!onClick) return;
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onClick();
+                }
+            }}
         >
             <div className="flex justify-between items-start self-stretch">
                 {visibleImages.map((img, index) => {
@@ -56,7 +65,10 @@ export const MyBookLogCard = ({ booklog }: MyBookCardProps) => {
                     <div className="flex items-center gap-[2px]">
                         <Bookmark
                             className={`w-6 h-6 ${booklog.bookmarkedByMe ? "text-primary fill-current" : "text-gray-500"}`}
-                            onClick={() => toggleBookmark({ postId: booklog.postId })}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                toggleBookmark({ postId: booklog.postId });
+                            }}
                         />
                         <p className="text-gray-500 [font-feature-settings:'liga'_off] text-en-caption-01">{booklog.bookmarkCount}</p>
                     </div>

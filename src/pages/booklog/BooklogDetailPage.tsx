@@ -3,9 +3,15 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import NavBar from "../../components/common/navbar/NavBarTop";
 import BookContent from "../../components/booklog/BookContent";
-import { Bookmark } from "../../assets/icons";
+import { Bookmark, Kebab } from "../../assets/icons";
+import {
+  LibraryActionDropDown,
+  type LibraryAction,
+} from "../../components/common/dropdown/LibraryActionDropDown";
+import { useAuth } from "../../context/AuthContext";
+import { useToast } from "../../context/ToastContext";
 
-import { getBooklogDetail } from "../../api/booklogs";
+import { deleteBooklog, getBooklogDetail } from "../../api/booklogs";
 import type { BooklogDetailResponse } from "../../types/booklogDetail.types";
 
 import { getBooklogRecommendBooks } from "../../api/booklogRecommend";
@@ -15,6 +21,7 @@ import { getBooklogRecommendPosts } from "../../api/booklogRecommendPosts";
 import type { RecommendPost } from "../../types/booklogRecommendPosts.types";
 
 import { useToggleBooklogBookmark } from "../../hooks/mutations/useToggleBooklogBookmark";
+import { ConfirmModal } from "../../components/common/ConfirmModal";
 
 /** ---------- utils ---------- */
 function timeAgo(iso: string) {
@@ -58,16 +65,6 @@ type Post = {
   bookmarkedByMe?: boolean;
 };
 
-function MoreIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 5.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z" fill="currentColor" />
-      <path d="M12 10.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z" fill="currentColor" />
-      <path d="M12 15.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3z" fill="currentColor" />
-    </svg>
-  );
-}
-
 function TagPill({ children }: { children: React.ReactNode }) {
   return (
     <span className="rounded-[4px] bg-[#E4E5F0] px-[8px] py-[3px] text-caption-02 font-medium text-[#3049C0] whitespace-nowrap">
@@ -79,10 +76,15 @@ function TagPill({ children }: { children: React.ReactNode }) {
 export default function BooklogDetailPage() {
   const navigate = useNavigate();
   const { postId } = useParams<{ postId: string }>();
+  const { userId } = useAuth();
+  const { showToast } = useToast();
 
   const [bookmarked, setBookmarked] = useState(false);
   const [bookmarkCount, setBookmarkCount] = useState(0);
   const [isToggling, setIsToggling] = useState(false);
+  const [isActionDropDownOpen, setIsActionDropDownOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { mutateAsync: toggleBooklogBookmark } = useToggleBooklogBookmark();
 
   // ✅ API로 받아온 원본 데이터
@@ -125,6 +127,56 @@ export default function BooklogDetailPage() {
       bookmarkedByMe: detail.bookmarkedByMe,
     };
   }, [detail]);
+
+  const isMyPost = !!detail && typeof userId === "number" && detail.author.userId === userId;
+
+  const actions: LibraryAction[] = [
+    {
+      label: "수정하기",
+      onClick: () => {
+        if (!detail) return;
+        navigate("/booklog/write", {
+          state: {
+            mode: "edit",
+            postId: detail.postId,
+            book: {
+              bookId: detail.book.bookId,
+              title: detail.book.title,
+              thumbnailUrl: detail.book.coverImageUrl,
+              publisherName: detail.book.publisher,
+              authors: [detail.book.authorName],
+            },
+            content: detail.content,
+            tags: detail.tags,
+            imageUrls: (detail.images ?? []).map((img) => img.imageUrl),
+          },
+        });
+      },
+    },
+    {
+      label: "삭제하기",
+      onClick: () => {
+        setIsActionDropDownOpen(false);
+        setIsDeleteConfirmOpen(true);
+      },
+    },
+  ];
+
+  const handleDelete = async () => {
+    if (!detail || isDeleting) return;
+    setIsDeleting(true);
+    try {
+      await deleteBooklog(detail.postId);
+      showToast("삭제가 완료되었어요.");
+      navigate("/mypage/my-booklog", { replace: true });
+    } catch (e) {
+      console.error(e);
+      showToast("삭제에 실패했어요. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteConfirmOpen(false);
+    }
+  };
 
   const sortedImages = useMemo(() => {
     const imgs = post?.images ?? [];
@@ -223,22 +275,49 @@ export default function BooklogDetailPage() {
 
   return (
     <div className="min-h-screen bg-bg">
-      <div className="mx-auto w-full max-w-[420px] bg-bg">
-        {/* 상단 네비 */}
-        <NavBar
-          title="책 정보"
-          onBack={() => navigate(-1)}
-          rightSlot={
-            <button
-              type="button"
-              className="grid h-7 w-7 place-items-center"
-              aria-label="더보기"
-              onClick={() => {}}
-            >
-              <MoreIcon className="h-7 w-7 text-[#1F1F1F]" />
-            </button>
-          }
+      <div className="relative mx-auto w-full max-w-[420px] bg-bg">
+        <ConfirmModal
+          isOpen={isDeleteConfirmOpen}
+          title="게시물을 삭제할까요?"
+          description="삭제한 내용은 복구할 수 없어요."
+          confirmText="삭제"
+          cancelText="취소"
+          onConfirm={handleDelete}
+          onClose={() => setIsDeleteConfirmOpen(false)}
         />
+        {isMyPost && isActionDropDownOpen && (
+          <div
+            className="absolute inset-0 z-40 bg-b-op15 backdrop-blur-[2px]"
+            onClick={() => setIsActionDropDownOpen(false)}
+          />
+        )}
+
+        {/* 상단 네비 */}
+        <div className="relative">
+          <NavBar
+            title="책 정보"
+            onBack={() => navigate(-1)}
+            rightSlot={
+              isMyPost ? (
+                <button
+                  type="button"
+                  className="grid h-7 w-7 place-items-center"
+                  aria-label="더보기"
+                  onClick={() => setIsActionDropDownOpen((prev) => !prev)}
+                >
+                  <Kebab className="h-6 w-6 text-[#1F1F1F]" />
+                </button>
+              ) : null
+            }
+          />
+
+          {isMyPost && isActionDropDownOpen && (
+            <LibraryActionDropDown
+              actions={actions}
+              onClose={() => setIsActionDropDownOpen(false)}
+            />
+          )}
+        </div>
 
         {/* 유저 영역 */}
         <section className="px-4 pt-4">
