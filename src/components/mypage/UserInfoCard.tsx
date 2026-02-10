@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { Dummy_author, Share } from "../../assets/icons";
-import type { User } from "../../types/myPage/user.types"
+import { Share } from "../../assets/icons";
+import type { UserProfileCard} from "../../types/myPage/user.types";
 
 type UserInfoCardProps = {
-  user: User;
+  user: UserProfileCard;
 };
 
 function UserInfoCard({ user }: UserInfoCardProps) {
@@ -20,9 +20,19 @@ function UserInfoCard({ user }: UserInfoCardProps) {
         {/* 유저 기본 정보 */}
         <section>
           <div className="flex justify-start">
-            <Dummy_author className="h-18 w-18" />
+            <div className="h-[73px] w-[73px]">
+              {user.avatarUrl ? (
+                <img
+                  src={user.avatarUrl}
+                  alt="UserProfileImg"
+                  className="h-full w-full object-cover rounded-full"
+                />
+              ) : (
+                <div className="h-full w-full rounded-full bg-gray-300" />
+              )}
+            </div>
             <div className="ml-4 h-18 flex flex-col justify-center gap-1">
-              <div className="text-en-title-02">{user.name}</div>
+              <div className="text-en-title-02">{user.nickname}</div>
               <div className="text-en-caption-02 text-gray-600">
                 {user.email}
               </div>
@@ -44,7 +54,7 @@ function UserInfoCard({ user }: UserInfoCardProps) {
             >
               <div className="text-caption-02 text-gray-700">독서완독</div>
               <div className="text-title-02 text-black">
-                {user.finishedCount}
+                {user.completedBookCount}
               </div>
             </div>
             <div className="h-10 w-[1px] bg-gray-100" />
@@ -55,7 +65,7 @@ function UserInfoCard({ user }: UserInfoCardProps) {
             >
               <div className="text-caption-02 text-gray-700">나의 북로그</div>
               <div className="text-title-02 text-black">
-                {user.booklogCount}
+                {user.myBooklogCount}
               </div>
             </div>
             <div className="h-10 w-[1px] bg-gray-100" />

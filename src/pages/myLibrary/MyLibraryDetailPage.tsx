@@ -136,7 +136,7 @@ export function MyLibraryDetailPage() {
                   <BookCard
                     key={book.bookId}
                     book={book}
-                    onClick={() => navigate(`/my-library/book-detail/${book.userBookId}`, { state: {shelfName}})}/>
+                    onClick={() => navigate(`/my-library/book-detail/${book.userBookId}`, { state: {shelfName, shelfId: parsedShelfId}})}/>
                 ))}
               </div>
             ) : (
@@ -145,7 +145,7 @@ export function MyLibraryDetailPage() {
                   <ReadingBookCard
                     key={book.bookId}
                     book={book}
-                    onClick={() => navigate(`/my-library/book-detail/${book.userBookId}`, { state: {shelfName}})}/>
+                    onClick={() => navigate(`/my-library/book-detail/${book.userBookId}`, { state: {shelfName, shelfId: parsedShelfId}})}/>
                 ))}
               </div>
             )

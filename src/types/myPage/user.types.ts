@@ -1,13 +1,13 @@
-export type User = { //목업
-  id: string;
-  name: string;
+export interface UserProfileCard {
+  nickname: string;
+  avatarUrl: string;
   email: string;
   followerCount: number;
   followingCount: number;
-  finishedCount: number;
-  booklogCount: number;
+  completedBookCount: number;
+  myBooklogCount: number;
   bookmarkCount: number;
-};
+}
 
 export type ResponseMyProfileDto = {
   userId: number;
@@ -22,3 +22,4 @@ export interface UpdateProfileDto {
   isShelfPublic: boolean;
   isBooklogPublic: boolean;
 }
+

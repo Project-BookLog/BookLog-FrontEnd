@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import FilterBar from "../../components/booklog/FilterBar";
 import NavbarBottom from "../../components/common/navbar/NavBarBottom";
@@ -12,12 +12,9 @@ import type { BooklogFeedItem } from "../../types/booklog/feed.types";
 
 import { LoadingPage } from "../onboarding/LoadingPage";
 import { ErrorPage } from "../onboarding/ErrorPage";
-import { useToast } from "../../context/ToastContext";
 
 export default function BooklogPage() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { showToast } = useToast();
 
   const { filter, resetFilter } = useFilter("booklog");
 
@@ -25,24 +22,8 @@ export default function BooklogPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
-  /** -----------------------------
-   * BookWritePage → navigate state toast 처리
-   * ----------------------------- */
-  useEffect(() => {
-    const toast = (location.state as { toast?: string } | null)?.toast;
-    if (!toast) return;
-
-    showToast(toast);
-
-    // 뒤로가기 / 새로고침 시 토스트 재노출 방지
-    navigate(location.pathname, { replace: true, state: null });
-  }, [location.pathname, location.state, navigate, showToast]);
-
   const filterKey = useMemo(() => JSON.stringify(filter), [filter]);
 
-  /** -----------------------------
-   * 피드 조회
-   * ----------------------------- */
   useEffect(() => {
     let alive = true;
 
@@ -51,12 +32,9 @@ export default function BooklogPage() {
         setIsLoading(true);
         setIsError(false);
 
-        // main 기준 API 시그니처
         const data = await getBooklogsFeed(0, 20);
 
-        if (alive) {
-          setItems(data.items ?? []);
-        }
+        if (alive) setItems(data.items ?? []);
       } catch (e) {
         console.error("북로그 피드 조회 실패:", e);
         if (alive) {

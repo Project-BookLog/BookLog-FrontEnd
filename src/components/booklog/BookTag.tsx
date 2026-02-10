@@ -18,10 +18,9 @@ export default function BookTag({ title, author }: Props) {
       className="
         inline-flex items-center
         rounded-[20px]
-        bg-black/40
+        bg-b-op40/40
         backdrop-blur-[20px]
         h-[33px]
-        shadow-sm
       "
       aria-label="책 태그"
     >
@@ -31,7 +30,7 @@ export default function BookTag({ title, author }: Props) {
           <span className="text-body-01-sb text-white whitespace-nowrap">
             {title}
           </span>
-          <span className="text-en-caption-02 text-[#E7E5E4] whitespace-nowrap">
+          <span className="text-en-caption-02 text-gray-200 whitespace-nowrap">
             {author}
           </span>
         </div>

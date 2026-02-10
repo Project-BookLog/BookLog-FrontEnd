@@ -1,5 +1,5 @@
 import { BOOK_ORDER } from "../enum/book"
-import type { BookStatus, RequestPatchUserBookDto, UserBookDetail } from "../types/book.types";
+import type { BookStatus, RequestPatchUserBookDto, RequestPostUserBookDto, UserBookDetail } from "../types/book.types";
 import type { RequestDeleteUserBooksDto, ResponseUserBooksDto } from "../types/library"
 import { privateApi } from "./axiosConfig"
 
@@ -27,4 +27,13 @@ export const getUserBookDetail = async (userBookId: number): Promise<UserBookDet
 
 export const patchUserBookDetail = async (userBookId: number, body: RequestPatchUserBookDto) => {
     await privateApi.patch(`/user-books/${userBookId}`, body)
+}
+
+export const patchUserBookTotalPage = async (userBookId: number, pageCountSnapshot: number) => {
+    await privateApi.patch(`/user-books/${userBookId}/total-page`, { pageCountSnapshot })
+}
+
+export const postUserBook = async ({bookId, shelfId, status = "TO_READ"}: RequestPostUserBookDto): Promise<{ userBookId: number }> => {
+    const { data } = await privateApi.post("/user-books", {bookId, shelfId, status});
+    return data;
 }

@@ -111,7 +111,7 @@ function App() {
         />
         <Route path="/my-library/add" element={<AddLibraryPage />} />
         <Route path="/my-library/:shelfId/edit-library" element={<EditPage />} />
-        <Route path="/my-library/record/:bookId" element={<RecordPage />} />
+        <Route path="/my-library/record/:userBookId" element={<RecordPage />} />
         <Route
           path="/my-library/stopped/:shelfId"
           element={<StoppedBooksPage />}

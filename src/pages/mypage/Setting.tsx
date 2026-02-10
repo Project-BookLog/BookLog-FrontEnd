@@ -1,8 +1,38 @@
 import NavBarTop from "../../components/common/navbar/NavBarTop";
+import { postLogout } from "../../api/auth";
+import { useNavigate } from "react-router-dom";
+import { LOCAL_STORAGE_KEY } from "../../constants/key";
 
 function Setting() {
   const titleStyle = "text-caption-02 text-gray-500 mb-3.5"
   const subtitleStyle = "text-body-01-m text-gray-900 flex flex-col gap-y-4 mb-5"
+
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      const refreshTokenRaw = localStorage.getItem(
+        LOCAL_STORAGE_KEY.refreshToken
+      );
+      const refreshToken = refreshTokenRaw
+        ? JSON.parse(refreshTokenRaw)
+        : null;
+
+      if (refreshToken) {
+        await postLogout(refreshToken);
+      }
+    } catch (e) {
+      console.error("로그아웃 실패", e);
+    } finally {
+
+      localStorage.removeItem(LOCAL_STORAGE_KEY.accessToken);
+      localStorage.removeItem(LOCAL_STORAGE_KEY.refreshToken);
+      localStorage.removeItem(LOCAL_STORAGE_KEY.nickname);
+      localStorage.removeItem(LOCAL_STORAGE_KEY.userId);
+      navigate("/login", { replace: true });
+    }
+  };
+
 
   return (
     <div className="bg-bg min-h-screen">
@@ -38,7 +68,7 @@ function Setting() {
 
         <section className="mt-5">
           <div className={subtitleStyle}>
-            <p>로그아웃</p>
+            <p className="cursor-pointer" onClick={handleLogout}>로그아웃</p>
             <p>탈퇴하기</p>
           <hr className="text-gray-100 mb-5" />
           </div>

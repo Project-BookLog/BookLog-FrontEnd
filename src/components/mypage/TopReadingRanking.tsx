@@ -18,6 +18,13 @@ function TopReadingRanking({ month }: Props) {
   const [users, setUsers] = useState<ReadingUser[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const orderedUsers = [
+    users.find(u => u.rank === 2),
+    users.find(u => u.rank === 1),
+    users.find(u => u.rank === 3),
+  ].filter(Boolean) as ReadingUser[];
+
+
   useEffect(() => {
    let ignore = false;
    // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -42,13 +49,13 @@ function TopReadingRanking({ month }: Props) {
     <div className="bg-bg">
       <section className="w-full mt-[14px]">
         <div className="flex items-end justify-between">
-          {users.map((user) => (
+          {orderedUsers.map((user) => (
             <div key={user.userId} className="flex flex-col items-center">
               {/* 이미지+랭크뱃지 */}
               {user.rank === 1 ? (
                 //1등용: 그라데이션
                 <div className="rounded-full p-[2px] [background-image:linear-gradient(330deg,_#788ade,_#E9EBF4)]">
-                  <div className="relative flex h-[90px] w-[90px] items-center justify-center rounded-full bg-gray-300 overflow-hidden">
+                  <div className="relative flex h-[90px] w-[90px] items-center justify-center rounded-full bg-gray-300">
                     {user.profileImageUrl ? (
                       <img
                         src={user.profileImageUrl}
@@ -66,7 +73,7 @@ function TopReadingRanking({ month }: Props) {
                 </div>
               ) : (
                 // 나머지 일반 원
-                <div className="relative flex h-[70px] w-[70px] items-center justify-center rounded-full bg-gray-300 overflow-hidden">
+                <div className="relative flex h-[70px] w-[70px] items-center justify-center rounded-full bg-gray-300">
                   {user.profileImageUrl ? (
                     <img
                       src={user.profileImageUrl}
@@ -76,7 +83,7 @@ function TopReadingRanking({ month }: Props) {
                   ) : (
                     <span className="text-caption-01 text-gray-600">img</span>
                   )}
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rounded-full bg-primary-side px-2 py-0.5 text-caption-02 text-white">
+                  <div className="absolute bottom-0 left-1/2 translate-y-1/2 -translate-x-1/2 rounded-full bg-primary-side px-2 py-0.5 text-caption-02 text-white">
                     {rankLabel[user.rank]}
                   </div>
                 </div>
