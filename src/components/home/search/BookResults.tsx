@@ -84,7 +84,7 @@ export default function BookResults({ total, items }: Props) {
         return copied.sort((a, b) => a.title.localeCompare(b.title));
 
       case BOOK_ORDER.AUTHOR:
-        return copied.sort((a, b) => a.authors[0].localeCompare(b.authors[0]));
+        return copied.sort((a, b) => (a.authors[0] ?? "").localeCompare(b.authors[0] ?? ""));
 
       default:
         return copied;

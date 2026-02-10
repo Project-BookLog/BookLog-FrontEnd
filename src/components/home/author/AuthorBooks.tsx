@@ -131,18 +131,18 @@ function AuthorBooks() {
     }
   }, [currentSort, selectedFilters]);
 
-  const handleBookClick = () => {
-    // navigate(`/book/${bookId}`);
-    navigate("/bookdetail");
+  const handleBookClick = (bookId: number) => {
+    navigate(`/book/${bookId}`);
+    // navigate("/bookdetail");
   };
 
-  // const handleResetFilters = () => {
-  //   const params = new URLSearchParams(searchParams);
-  //   params.delete("mood");
-  //   params.delete("style");
-  //   params.delete("immersion");
-  //   navigate(`${window.location.pathname}?${params.toString()}`, { replace: true });
-  // };
+  const handleResetFilters = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("mood");
+    params.delete("style");
+    params.delete("immersion");
+    navigate(`${window.location.pathname}?${params.toString()}`, { replace: true });
+  };
 
 
   const goFilter = (from: FilterKey) => {
@@ -179,7 +179,7 @@ function AuthorBooks() {
     },
   ];
 
-  // const hasAnyFilter = Object.values(selectedFilters).some(Boolean);
+  const hasAnyFilter = Object.values(selectedFilters).some(Boolean);
 
   return (
     <section className="relative">
@@ -194,9 +194,7 @@ function AuthorBooks() {
       {/* 상단 필터/정렬 바 */}
       <div className="mb-5 flex items-center gap-3 pl-5">
         <div className="no-scrollbar flex flex-1 gap-2 overflow-x-auto pr-1">
-          <FilterChips chips={filterChips} hasAnyFilter={false} onReset={function (): void {
-            throw new Error("Function not implemented.");
-          } } />
+          <FilterChips chips={filterChips} hasAnyFilter={hasAnyFilter} onReset={handleResetFilters} />
         </div>
       </div>
 
@@ -236,7 +234,7 @@ function AuthorBooks() {
             key={book.bookId}
             type="button"
             className="text-left"
-            onClick={() => handleBookClick()}
+            onClick={() => handleBookClick(book.bookId)}
           >
             <div className="h-36 w-full overflow-hidden rounded">
               <img
