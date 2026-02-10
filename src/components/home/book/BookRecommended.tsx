@@ -31,37 +31,37 @@ function BookRecommended({ book }: { book: BookDetailResponse }) {
       )}
 
       {/* 상세 취향 분석 */}
-      <div className="mt-10">
-        <p className="text-title-02 font-semibold">상세 취향 분석</p>
-      </div>
+      {book.tasteAnalysis && (
+        <>
+          <div className="mt-10">
+            <p className="text-title-02 font-semibold">상세 취향 분석</p>
+          </div>
 
-      <div className="my-2 gap-2 flex flex-wrap">
-        {(Object.keys(TASTE_LABEL) as TasteKey[]).map((key) => (
-          <button
-            key={key}
-            onClick={() => setActive(key)}
-            className={`h-9 px-3 py-1 rounded-full text-body-03
-              ${
-                active === key
-                  ? "text-primary bg-lightblue-1 border border-primary"
-                  : "text-gray-700 bg-gray-100"
-              }
-            `}
-          >
-            {TASTE_LABEL[key]}
-          </button>
-        ))}
-      </div>
+          <div className="my-2 gap-2 flex flex-wrap">
+            {(Object.keys(TASTE_LABEL) as TasteKey[]).map((key) => (
+              <button
+                key={key}
+                onClick={() => setActive(key)}
+                className={`h-9 px-3 py-1 rounded-full text-body-03
+                  ${
+                    active === key
+                      ? "text-primary bg-lightblue-1 border border-primary"
+                      : "text-gray-700 bg-gray-100"
+                  }
+                `}
+              >
+                {TASTE_LABEL[key]}
+              </button>
+            ))}
+          </div>
 
-      {analysis && (
-        <div className="bg-gray-100 rounded-lg px-4 py-5">
-          <p className="text-subtitle-01-sb mb-2">
-            {analysis.title}
-          </p>
-          <p className="text-caption-01 text-gray-600">
-            {analysis.description}
-          </p>
-        </div>
+          {analysis && (
+            <div className="bg-gray-100 rounded-lg px-4 py-5">
+              <p className="text-subtitle-01-sb mb-2">{analysis.title}</p>
+              <p className="text-caption-01 text-gray-600">{analysis.description}</p>
+            </div>
+          )}
+        </>
       )}
     </section>
   );
