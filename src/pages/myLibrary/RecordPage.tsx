@@ -301,8 +301,6 @@ export default function RecordPage() {
 
     if (userBookDetail.format) { setBookType(FORMAT_REVERSE_MAP[userBookDetail.format]); }
 
-    if (userBookDetail.currentPage != null) { setPagesRead(String(userBookDetail.currentPage)); }
-
     if (userBookDetail.pageCountSnapshot != null) { setTotalPages(String(userBookDetail.pageCountSnapshot)); }
 
   }, [userBookDetail]);
