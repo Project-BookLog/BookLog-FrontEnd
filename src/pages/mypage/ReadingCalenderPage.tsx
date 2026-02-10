@@ -3,7 +3,7 @@ import { BackIcon } from "../../assets/icons";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import CalendarCommentCard from "../../components/mypage/CalendarCommentCard";
 import ReadingCalendar from "../../components/mypage/ReadingCalendar";
-import type { ReadingCalendarStatusResponse } from "../../types/myPage/myReading.types";
+import type { ReadingStatusResponse } from "../../types/myPage/myReading.types";
 import { getReadingStatus } from "../../api/mypage/myReading";
 
 function ReadingCalendarPage() {
@@ -14,7 +14,7 @@ function ReadingCalendarPage() {
   // 기본값: 현재 달
   const [year, setYear] = useState(thisYear);
   const [month, setMonth] = useState(thisMonth);
-  const [status, setStatus] = useState<ReadingCalendarStatusResponse | null>(null);
+  const [status, setStatus] = useState<ReadingStatusResponse | null>(null);
   const [loading, setLoading] = useState(false);
 
 
@@ -34,6 +34,7 @@ function ReadingCalendarPage() {
 
   const handleNextMonth = () => {
     if (isCurrentMonth) return;
+    setLoading(true);
 
     if (month === 12) {
       setYear((prevYear) => prevYear + 1); 
@@ -77,10 +78,6 @@ function ReadingCalendarPage() {
 
       <main className="mt-5 pb-10 px-5">
         <section className="mb-5">
-          {loading && (
-            <div className="h-[88px] bg-gray-100 rounded-[12px] animate-pulse" />
-          )}
-
           {!loading && status && (
             <CalendarCommentCard data={status} />
           )}
