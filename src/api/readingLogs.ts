@@ -4,6 +4,7 @@ import { privateApi } from "./axiosConfig";
 export type CreateReadingLogRequest = {
   readDate: string; // "YYYY-MM-DD"
   currentPage: number;
+  pagesRead?: number;
 };
 
 export type CreateReadingLogResponse = {
@@ -26,4 +27,8 @@ export function createReadingLog(
 
 export function updateReadingLog(logId: number, body: CreateReadingLogRequest) {
   return privateApi.patch<CreateReadingLogResponse>(`/reading-logs/${logId}`, body);
+}
+
+export function deleteReadingLog(logId: number) {
+  return privateApi.delete(`/reading-logs/${logId}`);
 }
