@@ -346,6 +346,33 @@ export default function RecordPage() {
     try {
       setSubmitting(true);
 
+      const totalPagesNumber = Number(totalPages);
+      const sessionPagesRead = Number(pagesRead);
+      const baseCurrentPage = Number(userBookDetail?.currentPage ?? 0);
+      const currentPageAtRecord = baseCurrentPage + sessionPagesRead;
+
+      if (!Number.isFinite(sessionPagesRead) || sessionPagesRead <= 0) {
+        showToast("읽은 페이지 수를 올바르게 입력해 주세요.");
+        return;
+      }
+      if (!Number.isFinite(baseCurrentPage) || baseCurrentPage < 0) {
+        showToast("기존 페이지 정보를 확인할 수 없어요. 잠시 후 다시 시도해 주세요.");
+        return;
+      }
+      if (!Number.isFinite(currentPageAtRecord) || currentPageAtRecord <= 0) {
+        showToast("현재 페이지 계산에 실패했어요. 다시 입력해 주세요.");
+        return;
+      }
+
+      if (
+        Number.isFinite(totalPagesNumber) &&
+        totalPagesNumber > 0 &&
+        currentPageAtRecord > totalPagesNumber
+      ) {
+        showToast("현재 페이지가 총 페이지를 초과할 수 없어요.");
+        return;
+      }
+
       if (hasValidUserBookId && bookType && status && selectedShelfId) {
         await patchUserBook({
           userBookId: parsedUserBookId,
@@ -357,26 +384,8 @@ export default function RecordPage() {
         });
       }
 
-      const totalPagesNumber = Number(totalPages);
       if (Number.isFinite(totalPagesNumber) && totalPagesNumber > 0) {
         await patchTotalPages({ userBookId: parsedUserBookId, pageCountSnapshot: totalPagesNumber});
-      }
-
-      const sessionPagesRead = Number(pagesRead);
-      const baseCurrentPage = Number(userBookDetail?.currentPage ?? 0);
-      const currentPageAtRecord = baseCurrentPage + sessionPagesRead;
-
-      if (!Number.isFinite(sessionPagesRead) || sessionPagesRead <= 0) return;
-      if (!Number.isFinite(baseCurrentPage) || baseCurrentPage < 0) return;
-      if (!Number.isFinite(currentPageAtRecord) || currentPageAtRecord <= 0) return;
-
-      if (
-        Number.isFinite(totalPagesNumber) &&
-        totalPagesNumber > 0 &&
-        currentPageAtRecord > totalPagesNumber
-      ) {
-        console.error("독서 기록 저장 실패: currentPage가 총 페이지를 초과합니다.");
-        return;
       }
       
       const payload: CreateReadingLogRequest = {
