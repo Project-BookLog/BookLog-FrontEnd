@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
+import { XIcon, Pencil, Default_ProfileImg } from "../../assets/icons";
 import { useNavigate } from "react-router-dom";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import { LoadingPage } from "../onboarding/LoadingPage";
 import { ErrorPage } from "../onboarding/ErrorPage";
 import EditPhotoModal from "../../components/mypage/EditPhotoModal";
-import { XIcon, Pencil } from "../../assets/icons";
 import { getMyProfile, updateMyProfile, updateMyProfileAvatar } from "../../api/mypage/myProfile";
 import type { UpdateProfileDto } from "../../types/myPage/user.types";
 
@@ -118,7 +118,7 @@ function EditProfile() {
                   alt="프로필 미리보기" 
                   className="w-full h-full object-cover" 
                 />
-              ) : null}
+              ) : <Default_ProfileImg className="w-full h-full object-cover" />}
             </div>
             <div 
               className="absolute inset-0 bg-b-op60 group-hover:bg-black/50 transition-all duration-200 flex flex-col items-center justify-center cursor-pointer"

@@ -1,5 +1,6 @@
 import type { RealTimeRankingBook } from "../../types/home/home.types";
 import { useNavigate } from "react-router-dom";
+import { Default_BookImg } from "../../assets/icons";
 
 interface RankingProps {
   books: RealTimeRankingBook[];
@@ -66,7 +67,7 @@ function Ranking({ books }: RankingProps) {
                       className="w-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gray-200" />
+                    <Default_BookImg className="w-full h-full object-cover" />
                   )}
                 </div>
 

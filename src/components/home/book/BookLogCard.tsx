@@ -1,4 +1,5 @@
 import type { BookRelatedBooklog } from "../../../types/home/detail.types";
+import { Default_ProfileImg } from "../../../assets/icons";
 
 type BookLogCardProps = BookRelatedBooklog & {
   isLast?: boolean;
@@ -49,14 +50,14 @@ function BookLogCard({
       {totalImages > 0 && (
         <div className="mt-3 flex gap-2">
           {visibleImages.map(img => (
-            <img
+            img.imageUrl ? <img
               key={img.imageId}
               src={img.imageUrl}
               className="w-[54px] h-[54px] rounded-[7.2px] object-cover"
-            />
+            /> : <Default_ProfileImg key={img.imageId} className="w-[54px] h-[54px] rounded-[7.2px] object-cover" />
           ))}
 
-          {remainCount > 0 && (
+          {remainCount > 0 && images[3] && (
             <div className="relative rounded-md overflow-hidden">
               <img
                 src={images[3].imageUrl}

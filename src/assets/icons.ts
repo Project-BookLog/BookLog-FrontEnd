@@ -2,6 +2,10 @@
 import Dummy_book from "./icons/Dummy_book.svg?react"; 
 import Dummy_author from "./icons/Dummy_author.svg?react";
 
+//기본
+import Default_ProfileImg from "./icons/Default_ProfileImg.svg?react";
+import Default_BookImg from "./icons/Default_BookImg.svg?react";
+
 //로고
 import Logo2 from "./icons/Logo2.svg?react";
 import LogoBooklog from "./icons/LogoBooklog.svg?react";
@@ -62,7 +66,7 @@ import Onboarding_dark from "./icons/Onboarding_dark.svg?react";
 
 
 export {
-  Dummy_book, Dummy_author,
+  Dummy_book, Dummy_author, Default_ProfileImg, Default_BookImg,
 
   Logo2,LogoBooklog, SymbolLogo,
 

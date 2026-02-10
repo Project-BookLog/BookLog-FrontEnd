@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Default_ProfileImg } from "../../assets/icons";
 import { getTopReadingRanking } from "../../api/mypage/readingRanking";
 import type { ReadingUser } from "../../types/myPage/readingRanking.types";
 import EmptyReadingRanking from "./EmptyReadingRanking";
@@ -63,7 +64,7 @@ function TopReadingRanking({ month }: Props) {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <span className="text-caption-01 text-gray-600">img</span>
+                      <Default_ProfileImg className="h-full w-full object-cover" />
                     )}
                     {/* 순위뱃지 */}
                     <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rounded-full bg-primary px-2 py-0.5 text-caption-02 text-white">
@@ -81,7 +82,7 @@ function TopReadingRanking({ month }: Props) {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <span className="text-caption-01 text-gray-600">img</span>
+                    <Default_ProfileImg className="h-full w-full object-cover" />
                   )}
                   <div className="absolute bottom-0 left-1/2 translate-y-1/2 -translate-x-1/2 rounded-full bg-primary-side px-2 py-0.5 text-caption-02 text-white">
                     {rankLabel[user.rank]}
