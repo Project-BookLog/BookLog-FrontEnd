@@ -12,6 +12,9 @@ import { getBooklogsFeed } from "../../api/booklogFeed";
 import { useToggleBooklogBookmark } from "../../hooks/mutations/useToggleBooklogBookmark";
 import { useToast } from "../../context/ToastContext";
 
+import { LoadingPage } from "../onboarding/LoadingPage";
+import { ErrorPage } from "../onboarding/ErrorPage";
+
 /* =============================
  *  ✅ 안전한 ID 생성기 (crypto.randomUUID fallback)
  * ============================= */
@@ -138,7 +141,6 @@ type Post = {
 function PostCard({ post }: { post: Post }) {
   const navigate = useNavigate();
 
-  // ✅ 서버/피드에서 내려온 값이 있으면 그걸 초기값으로
   const [bookmarked, setBookmarked] = useState<boolean>(
     post.bookmarkedByMe ?? false
   );
@@ -146,7 +148,6 @@ function PostCard({ post }: { post: Post }) {
   const [isToggling, setIsToggling] = useState(false);
   const { mutateAsync: toggleBooklogBookmark } = useToggleBooklogBookmark();
 
-  // ✅ 카드가 바뀌면(리스트 갱신 등) 로컬 상태도 동기화
   useEffect(() => {
     setBookmarked(post.bookmarkedByMe ?? false);
     setBookmarkCount(post.bookmarkCount);
@@ -252,9 +253,6 @@ function PostCard({ post }: { post: Post }) {
   );
 }
 
-/* =============================
- * 페이지
- * ============================= */
 export default function BooklogPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -263,6 +261,8 @@ export default function BooklogPage() {
   const { filter, resetFilter } = useFilter("booklog");
 
   const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
   // ✅ BookWritePage에서 navigate state로 넘긴 toast를 여기서 처리
   useEffect(() => {
@@ -270,8 +270,6 @@ export default function BooklogPage() {
     if (!toast) return;
 
     showToast(toast);
-
-    // ✅ 뒤로가기/새로고침 때 토스트가 또 뜨는 것 방지
     navigate(location.pathname, { replace: true, state: null });
   }, [location.pathname, location.state, navigate, showToast]);
 
@@ -314,6 +312,9 @@ export default function BooklogPage() {
 
     (async () => {
       try {
+        setIsLoading(true);
+        setIsError(false);
+
         const data = (await getBooklogsFeed({
           mood: filter.mood,
           style: filter.style,
@@ -328,13 +329,6 @@ export default function BooklogPage() {
           : Array.isArray((data as FeedResponse)?.items)
           ? (data as FeedResponse).items
           : [];
-
-        if (import.meta.env.DEV) {
-          console.log("feed params(filter):", filter);
-          console.log("feed raw data:", data);
-          console.log("feed list length:", list.length);
-          console.log("isValidFeed:", isValidFeed);
-        }
 
         const mapped: Post[] = list.map((it: Item) => {
           const username =
@@ -376,8 +370,7 @@ export default function BooklogPage() {
           const timeAgo =
             it.timeAgo ?? it.createdAgo ?? it.createdAt ?? "방금 전";
 
-          const bookmarkedByMe =
-            it.bookmarkedByMe ?? it.isBookmarked ?? false;
+          const bookmarkedByMe = it.bookmarkedByMe ?? it.isBookmarked ?? false;
 
           return {
             id: String(it.id ?? it.postId ?? it.booklogId ?? generateId()),
@@ -394,17 +387,25 @@ export default function BooklogPage() {
           };
         });
 
-        if (alive) setPosts(isValidFeed ? mapped : mockPosts);
+        if (!alive) return;
+        setPosts(isValidFeed ? mapped : mockPosts);
       } catch (e) {
         console.error("북로그 피드 조회 실패:", e);
-        if (alive) setPosts(mockPosts);
+        if (!alive) return;
+        setIsError(true);
+        setPosts(mockPosts);
+      } finally {
+        if (alive) setIsLoading(false);
       }
     })();
 
     return () => {
       alive = false;
     };
-  }, [mockPosts, filterKey, filter, resetFilter]);
+  }, [filterKey, filter, mockPosts]);
+
+  if (isLoading) return <LoadingPage />;
+  if (isError) return <ErrorPage />;
 
   return (
     <div className="min-h-screen bg-bg pb-24">
