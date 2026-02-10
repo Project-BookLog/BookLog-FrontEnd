@@ -2,20 +2,45 @@ export interface BookDetailResponse {
   bookId: number;
   title: string;
   description: string;
+  shortIntro?: string;
   thumbnailUrl: string;
   publisherName: string;
   publishedDate: string;
-  isbn: string;
-  isbn10: string;
-  isbn13: string;
+  isbn: string | null;
+  isbn10: string | null;
+  isbn13: string | null;
   detailUrl: string;
+
   authors: {
     authorId: number;
     name: string;
     role: "AUTHOR" | "TRANSLATOR";
     profileImageUrl: string | null;
   }[];
+
+  aiTasteComment?: {
+    title: string;
+    description: string;
+  };
+
+  tasteAnalysis?: {
+    mood: {
+      title: string;
+      description: string;
+    };
+    style: {
+      title: string;
+      description: string;
+    };
+    immersion: {
+      title: string;
+      description: string;
+    };
+  };
+
+  tableOfContents?: string[];
 }
+
 
 //도서상세 - 북로그
 export type BookRelatedBooklogsApiResponse = {

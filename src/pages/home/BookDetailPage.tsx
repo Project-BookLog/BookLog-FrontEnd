@@ -185,7 +185,7 @@ export const BookDetailPage = () => {
             <div>
               <p className="text-title-01">{book.title}</p>
               <p className="text-caption-01 text-gray-500 mb-2 mt-1">
-                상실, 사랑 그리고 숨어 있는 삶의 질서에 관한 이야기
+                {book.shortIntro ?? "-"}
               </p>
               <p className="text-caption-02 text-gray-500">
                 {authors ? `${authors} 저` : "-"}
@@ -234,7 +234,7 @@ export const BookDetailPage = () => {
 
         {/* 책 추천 섹션 */}
         <section ref={RecommendedRef}>
-          <BookRecommeded />
+          <BookRecommeded book={book} />
           <hr className="mt-5 h-2 bg-gray-100 border-none" />
         </section>
 
