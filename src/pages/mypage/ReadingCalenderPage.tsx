@@ -1,18 +1,23 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BackIcon } from "../../assets/icons";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import CalendarCommentCard from "../../components/mypage/CalendarCommentCard";
 import ReadingCalendar from "../../components/mypage/ReadingCalendar";
+import type { ReadingStatusResponse } from "../../types/myPage/myReading.types";
+import { getReadingStatus } from "../../api/mypage/myReading";
 
 function ReadingCalendarPage() {
-  // 오늘 기준
   const today = useMemo(() => new Date(), []);
   const thisYear = today.getFullYear();
-  const thisMonth = today.getMonth() + 1; // 1~12
+  const thisMonth = today.getMonth() + 1; 
 
   // 기본값: 현재 달
   const [year, setYear] = useState(thisYear);
   const [month, setMonth] = useState(thisMonth);
+  const [status, setStatus] = useState<ReadingStatusResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+
+
 
   const isCurrentMonth =
     year === thisYear && month === thisMonth;
@@ -27,20 +32,42 @@ function ReadingCalendarPage() {
   };
 
 
-const handleNextMonth = () => {
-  if (isCurrentMonth) return;
+  const handleNextMonth = () => {
+    if (isCurrentMonth) return;
+    setLoading(true);
 
-  if (month === 12) {
-    setYear((prevYear) => prevYear + 1); 
-    setMonth(1);
-  } else {
-    setMonth((prevMonth) => prevMonth + 1); 
-  }
-};
+    if (month === 12) {
+      setYear((prevYear) => prevYear + 1); 
+      setMonth(1);
+    } else {
+      setMonth((prevMonth) => prevMonth + 1); 
+    }
+  };
+
+  const apiMonth = `${year}-${month.toString().padStart(2, "0")}`;
 
   const formattedTitle = `${year}.${month
     .toString()
     .padStart(2, "0")}`;
+
+  useEffect(() => {
+    let ignore = false;
+
+    getReadingStatus(apiMonth)
+      .then((data) => {
+        if (!ignore) setStatus(data);
+      })
+      .catch(() => {
+        if (!ignore) setStatus(null);
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [apiMonth]);
 
   return (
     <div className="bg-bg min-h-screen">
@@ -51,7 +78,9 @@ const handleNextMonth = () => {
 
       <main className="mt-5 pb-10 px-5">
         <section className="mb-5">
-          <CalendarCommentCard />
+          {!loading && status && (
+            <CalendarCommentCard data={status} />
+          )}
         </section>
 
         <section>
@@ -70,7 +99,7 @@ const handleNextMonth = () => {
               {formattedTitle}
             </p>
 
-            {/* 다음 달 (현재 달이면 비활성 & 회색) */}
+            {/* 다음 달 */}
             <button
               type="button"
               onClick={handleNextMonth}

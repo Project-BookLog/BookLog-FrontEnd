@@ -11,11 +11,22 @@ export interface ReadingStatusResponse {
 
 
 export type ReadingCalendarDayDto = {
-  date: string; // "2026-01-01"
+  date: string;
   thumbnailUrl: string;
 };
 
 export type ReadingCalendarResponse = {
-  month: string; // "2026-01"
+  month: string;
   days: ReadingCalendarDayDto[];
 };
+
+export interface ReadingCalendarStatusResponse {
+  month: string;
+  progressPercent: number; 
+  dayProgress: {
+    currentDay: number; 
+    lastDay: number; 
+  };
+  topMoodTags: string[]; 
+  aiSummary: string; 
+}
