@@ -1,5 +1,5 @@
 import { privateApi } from "../axiosConfig";
-import type { ReadingCalendarResponse, ReadingStatusResponse } from "../../types/myPage/myReading.types";
+import type { ReadingCalendarResponse, ReadingCalendarStatusResponse, ReadingStatusResponse } from "../../types/myPage/myReading.types";
 
 export const getReadingStatus = async (
   month: string
@@ -18,4 +18,14 @@ export const getReadingCalendar = async (month?: string) => {
     { params: month ? { month } : undefined }
   );
   return data;
+};
+
+
+export const getReadingCalendarSStatus = async (month: string) => {
+  const res = await privateApi.get<{ data: ReadingCalendarStatusResponse }>(
+    `/api/v1/me/reading-status`,
+    { params: { month } }
+  );
+
+  return res.data.data;
 };
