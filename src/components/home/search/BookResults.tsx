@@ -63,21 +63,21 @@ export default function BookResults({ total, items }: Props) {
   const sortedItems = useMemo(() => {
     const copied = [...filteredItems];
 
-    const getTime = (d?: string) => {
-      if (!d) return -Infinity; 
-      const t = new Date(d).getTime(); 
-      return Number.isNaN(t) ? -Infinity : t;
+    const getTime = (d?: string, fallback = -Infinity) => {
+      if (!d) return fallback;
+      const t = new Date(d).getTime();
+      return Number.isNaN(t) ? fallback : t;
     };
 
     switch (sortOrder) {
       case BOOK_ORDER.LATEST: 
         return copied.sort(
-          (a, b) => getTime(b.publishedDate) - getTime(a.publishedDate)
+          (a, b) => getTime(b.publishedDate, -Infinity) - getTime(a.publishedDate, -Infinity)
         );
 
       case BOOK_ORDER.OLDEST:
         return copied.sort(
-          (a, b) => getTime(a.publishedDate) - getTime(b.publishedDate)
+          (a, b) => getTime(a.publishedDate, Infinity) - getTime(b.publishedDate, Infinity)
         );
 
       case BOOK_ORDER.TITLE:
