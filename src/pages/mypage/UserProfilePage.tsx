@@ -131,7 +131,7 @@ export default function UserProfilePage() {
         const mapped: ShelfSection[] = shelves.map((shelf) => ({
           id: String(shelf.shelfId),
           title: shelf.name,
-          books: (shelf.previewBooks ?? []).map((b) => ({
+          books: (shelf.previewBooks ?? shelf.topBooks ?? []).map((b) => ({
             id: String(b.bookId),
             title: b.title,
             author: b.authorName,
@@ -386,9 +386,7 @@ export default function UserProfilePage() {
                     title={section.title}
                     onViewAll={() => {
                       if (!userId) return;
-                      navigate(`/users/${userId}/library/${section.id}`, {
-                        state: { shelfName: section.title, isPublic: true },
-                      });
+                      navigate(`/users/${userId}/shelves`);
                     }}
                     items={section.books}
                   />
@@ -473,6 +471,7 @@ function ShelfRow<
   items: T[];
 }) {
   const top3 = items.slice(0, 3);
+  const hasBooks = top3.length > 0;
   const GradationFrame =
     "w-[347px] shrink-0 self-stretch rounded-b-[6px] border-[1.2px] border-[rgba(255,255,255,0.7)] bg-[linear-gradient(153deg,rgba(48,73,192,0.28)_18%,rgba(120,138,222,0.28)_44.99%,rgba(120,138,222,0.31)_58.48%,rgba(48,73,192,0.35)_85.47%)] shadow-[0_6px_16px_rgba(48,73,192,0.15)] backdrop-blur-[2px]";
 
@@ -491,49 +490,55 @@ function ShelfRow<
         </button>
       </div>
 
-      <div className="relative flex w-[375px] px-5 flex-col items-center gap-[10px]">
-        <div className="inline-flex items-center gap-[10px]">
-          {top3.map((book) => (
-            <div
-              key={book.id}
-              className="flex w-[104px] h-[156px] items-center rounded-[4px] overflow-hidden bg-[#CDCCCB]"
-            >
-              {book.coverUrl ? (
-                <div
-                  className="h-full w-full bg-center bg-cover"
-                  role="img"
-                  aria-label={book.title}
-                  style={{ backgroundImage: `url(${book.coverUrl})` }}
-                />
-              ) : book.CoverIcon ? (
-                <book.CoverIcon className="h-full w-full" />
-              ) : (
-                <span className="text-xs">No Image</span>
-              )}
-            </div>
-          ))}
-        </div>
+      {hasBooks ? (
+        <div className="relative flex w-[375px] px-5 flex-col items-center gap-[10px]">
+          <div className="inline-flex items-center gap-[10px]">
+            {top3.map((book) => (
+              <div
+                key={book.id}
+                className="flex w-[104px] h-[156px] items-center rounded-[4px] overflow-hidden bg-[#CDCCCB]"
+              >
+                {book.coverUrl ? (
+                  <div
+                    className="h-full w-full bg-center bg-cover"
+                    role="img"
+                    aria-label={book.title}
+                    style={{ backgroundImage: `url(${book.coverUrl})` }}
+                  />
+                ) : book.CoverIcon ? (
+                  <book.CoverIcon className="h-full w-full" />
+                ) : (
+                  <span className="text-xs">No Image</span>
+                )}
+              </div>
+            ))}
+          </div>
 
-        <div className="absolute top-[116px] flex w-[347px] h-[52px] justify-center items-center">
-          <span className={`${GradationFrame}`} />
-        </div>
+          <div className="absolute top-[116px] flex w-[347px] h-[52px] justify-center items-center">
+            <span className={GradationFrame} />
+          </div>
 
-        <div className="flex items-center gap-[10px]">
-          {top3.map((book) => (
-            <div
-              key={`${book.id}-meta`}
-              className="flex w-[104px] flex-col justify-center items-start gap-[2px]"
-            >
-              <p className="line-clamp-1 self-stretch overflow-hidden text-ellipsis text-black text-subtitle-02-sb">
-                {book.title}
-              </p>
-              <p className="w-[105px] line-clamp-1 overflow-hidden text-ellipsis text-gray-500 text-caption-02">
-                {book.author}, {book.publisher}
-              </p>
-            </div>
-          ))}
+          <div className="flex items-center gap-[10px]">
+            {top3.map((book) => (
+              <div
+                key={`${book.id}-meta`}
+                className="flex w-[104px] flex-col justify-center items-start gap-[2px]"
+              >
+                <p className="line-clamp-1 self-stretch overflow-hidden text-ellipsis text-black text-subtitle-02-sb">
+                  {book.title}
+                </p>
+                <p className="w-[105px] line-clamp-1 overflow-hidden text-ellipsis text-gray-500 text-caption-02">
+                  {book.author}, {book.publisher}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="px-5 w-full text-center text-body-03 text-gray-600">
+          서재에 담긴 책이 없습니다.
+        </div>
+      )}
     </section>
   );
 }

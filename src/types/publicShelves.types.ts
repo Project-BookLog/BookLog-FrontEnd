@@ -14,7 +14,9 @@ export type PublicUserShelf = {
   name: string;
   isPublic: boolean; 
   setOrder: BOOK_ORDER;
-  previewBooks: PublicUserPreviewBook[];
+  previewBooks?: PublicUserPreviewBook[];
+  topBooks?: PublicUserPreviewBook[];
+  bookCount?: number;
 };
 
 export type ResponsePublicUserShelvesDto = {

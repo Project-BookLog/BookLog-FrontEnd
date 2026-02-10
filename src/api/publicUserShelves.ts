@@ -2,11 +2,11 @@
 import { privateApi } from "./axiosConfig";
 import type { ResponsePublicUserShelvesDto } from "../types/publicShelves.types";
 
-export function getPublicUserShelvesPreview(userId: number, size = 3) {
+export function getPublicUserShelvesPreview(userId: number, limit = 3) {
   return privateApi.get<ResponsePublicUserShelvesDto>(`/users/${userId}/shelves`, {
     params: {
       visibility: "PUBLIC",
-      size,
+      limit,
     },
   });
 }

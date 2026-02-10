@@ -42,6 +42,7 @@ import Setting from "./pages/mypage/Setting";
 import ReadingCalendarPage from "./pages/mypage/ReadingCalenderPage";
 import ReadingRankingPage from "./pages/mypage/ReadingRankingPage";
 import UserProfilePage from "./pages/mypage/UserProfilePage";
+import UserPublicShelvesPage from "./pages/mypage/UserPublicShelvesPage";
 import { KakaoLoginRedirectPage } from "./pages/KakaoLoginRedirectPage";
 import { FinishedBooksPage } from "./pages/mypage/FinishedBooksPage";
 import { MyBookLogPage } from "./pages/mypage/MyBookLogPage";
@@ -121,6 +122,7 @@ function App() {
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/mypage/editprofile" element={<EditProfile />} />
         <Route path="/users/:userId" element={<UserProfilePage />} />
+        <Route path="/users/:userId/shelves" element={<UserPublicShelvesPage />} />
         <Route path="/setting" element={<Setting />} />
         <Route path="/mypage/readingcalendar" element={<ReadingCalendarPage />} />
         <Route path="/mypage/readingranking" element={<ReadingRankingPage />} />
