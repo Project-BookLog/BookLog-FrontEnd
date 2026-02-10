@@ -44,39 +44,30 @@ const CurrentReading: React.FC<Props> = ({ username }) => {
     },
   };
 
-  // const handleAfterChange = (
-  //   previousSlide: number,
-  //   state: CarouselInternalState
-  // ) => {
-  //   const { currentSlide } = state;
-  //   const dataSize = books.length;
-
-  //   let activeSlide = 0;
-
-  //   if (previousSlide < currentSlide) {
-  //     // 오른쪽->다음
-  //     activeSlide = currentSlide - 2 === dataSize ? 0 : currentSlide - 2;
-  //   } else {
-  //     // 왼쪽->이전
-  //     activeSlide =
-  //       currentSlide +
-  //       (currentSlide <= dataSize && currentSlide >= 2 ? -2 : dataSize - 2);
-  //   }
-
-  //   // BOOKS 범위 안으로 보정
-  //   activeSlide = ((activeSlide % dataSize) + dataSize) % dataSize;
-  //   setActiveIndex(activeSlide);
-  // };
-
   const handleAfterChange = (
-    _: number,
+    previousSlide: number,
     state: CarouselInternalState
   ) => {
-    const index = ((state.currentSlide - 1) % books.length + books.length) % books.length;
-    setActiveIndex(index);
+    const { currentSlide } = state;
+    const dataSize = books.length;
+
+    let activeSlide = 0;
+
+    if (previousSlide < currentSlide) {
+      // 오른쪽->다음
+      activeSlide = currentSlide - 2 === dataSize ? 0 : currentSlide - 2;
+    } else {
+      // 왼쪽->이전
+      activeSlide =
+        currentSlide +
+        (currentSlide <= dataSize && currentSlide >= 2 ? -2 : dataSize - 2);
+    }
+
+    // 범위 안으로 보정
+    activeSlide = ((activeSlide % dataSize) + dataSize) % dataSize;
+    setActiveIndex(activeSlide);
   };
 
-  
   return (
     <div>
       <div className="px-5 mb-0">
