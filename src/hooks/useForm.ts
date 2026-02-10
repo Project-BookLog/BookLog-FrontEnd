@@ -7,7 +7,7 @@ interface UseFormProps<T> {
 
 function useForm<T> ({initialValue, validate}: UseFormProps<T>) {
     const [values, setValues] = useState(initialValue);
-    const [touched, setTouched] = useState<Record<string, boolean>>();
+    const [touched, setTouched] = useState<Record<string, boolean>>({});
     const [errors, setErrors] = useState<Record<string, string>>();
 
     //시용자가 입력값을 바꿀 때 실행되는 함수
