@@ -16,7 +16,6 @@ import { ErrorPage } from "../onboarding/ErrorPage";
 export default function BooklogPage() {
   const navigate = useNavigate();
 
-  // ✅ filter도 같이 꺼내야 filterKey 만들 수 있음
   const { filter, resetFilter } = useFilter("booklog");
 
   const [items, setItems] = useState<BooklogFeedItem[]>([]);
@@ -35,9 +34,7 @@ export default function BooklogPage() {
 
         const data = await getBooklogsFeed(0, 20);
 
-        if (alive) {
-          setItems(data.items ?? []);
-        }
+        if (alive) setItems(data.items ?? []);
       } catch (e) {
         console.error("북로그 피드 조회 실패:", e);
         if (alive) {
@@ -82,8 +79,8 @@ export default function BooklogPage() {
         </div>
 
         <main className="mt-6">
-          {items.map((it) => (
-            <PostCard key={it.postId} item={it} />
+          {items.map((item) => (
+            <PostCard key={item.postId} item={item} />
           ))}
         </main>
 

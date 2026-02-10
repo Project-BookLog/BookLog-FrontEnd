@@ -18,13 +18,21 @@ import {
   getBooklogTagOptions,
   type BooklogTagOptionsResponse,
 } from "../../api/booklogTags";
+import type { BooklogTag } from "../../types/booklogDetail.types";
+import type { FilterState } from "../../context/FilterContext";
 
 type LocationState = {
   book?: Book;
   fresh?: boolean;
+  mode?: "edit";
+  postId?: number;
+  content?: string;
+  tags?: BooklogTag[];
+  imageUrls?: string[];
 };
 
 const MAX_IMAGE_COUNT = 8;
+const DRAFT_STORAGE_KEY = "booklogWriteDraft:content";
 
 type PickedImage = {
   id: string;
@@ -38,11 +46,24 @@ export default function BookWritePage() {
   const state = (location.state || {}) as LocationState;
 
   const book = state.book;
+  const isEditMode = state.mode === "edit";
+  const editPostId = state.postId;
 
-  const { filter, resetFilter } = useFilter("booklogWrite");
+  const { filter, resetFilter, setFilter } = useFilter("booklogWrite");
   const { showToast } = useToast();
 
-  const [content, setContent] = useState("");
+  /** ---------------- 드래프트 키 분리 ---------------- */
+  const draftKey = useMemo(() => {
+    // edit 모드는 새 글 드래프트를 덮어쓰지 않도록 분리 저장
+    if (isEditMode && editPostId) return `${DRAFT_STORAGE_KEY}:edit:${editPostId}`;
+    return `${DRAFT_STORAGE_KEY}:new`;
+  }, [isEditMode, editPostId]);
+
+  const [content, setContent] = useState(() => {
+    const saved = sessionStorage.getItem(draftKey);
+    return state.content ?? saved ?? "";
+  });
+
   const [isPublishing, setIsPublishing] = useState(false);
 
   /** ---------------- 태그 옵션 ---------------- */
@@ -70,7 +91,10 @@ export default function BookWritePage() {
   /** ---------------- 이미지 ---------------- */
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [images, setImages] = useState<PickedImage[]>([]);
-  const imageCount = images.length;
+  const [existingImageUrls, setExistingImageUrls] = useState<string[]>(
+    state.imageUrls ?? []
+  );
+  const imageCount = images.length + existingImageUrls.length;
 
   /** ---------------- 뒤로가기 모달 ---------------- */
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -79,8 +103,46 @@ export default function BookWritePage() {
   useEffect(() => {
     if (state.fresh) {
       resetFilter();
+      sessionStorage.removeItem(draftKey);
     }
+
+    if (isEditMode) {
+      const tags = state.tags ?? [];
+      const nextFilter: FilterState = { mood: [], style: [], immersion: [] };
+
+      type Mood = FilterState["mood"][number];
+      type Style = FilterState["style"][number];
+      type Immersion = FilterState["immersion"][number];
+
+      tags.forEach((tag) => {
+        if (!tag?.name) return;
+
+        if (tag.category === "MOOD") nextFilter.mood.push(tag.name as Mood);
+        if (tag.category === "STYLE") nextFilter.style.push(tag.name as Style);
+        if (tag.category === "IMMERSION")
+          nextFilter.immersion.push(tag.name as Immersion);
+      });
+
+      // 최소 1개라도 들어있으면 적용
+      if (
+        nextFilter.mood.length > 0 ||
+        nextFilter.style.length > 0 ||
+        nextFilter.immersion.length > 0
+      ) {
+        setFilter(nextFilter);
+      }
+
+      if (state.content) setContent(state.content);
+      if (state.imageUrls) setExistingImageUrls(state.imageUrls);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /** ---------------- 드래프트 저장 ---------------- */
+  useEffect(() => {
+    // edit / new 모드 모두 draftKey로 분리 저장 (새 글 덮어쓰기 방지)
+    sessionStorage.setItem(draftKey, content);
+  }, [content, draftKey]);
 
   /** ---------------- 발행 가능 여부 ---------------- */
   const hasTag = useMemo(() => {
@@ -91,31 +153,38 @@ export default function BookWritePage() {
     );
   }, [filter]);
 
-  const canPublish = content.trim().length > 0 && hasTag && !isPublishing;
+  const bookId = book?.bookId;
 
-  /** ---------------- 발행 ---------------- */
+  // edit 기능 미구현이면 제출 자체를 막아도 되지만,
+  // 여기서는 onPublish에서 메시지 처리하고 조용히 막지 않도록 canPublish는 기존 유지.
+  const canPublish =
+    content.trim().length > 0 &&
+    hasTag &&
+    !isPublishing &&
+    typeof bookId === "number" &&
+    bookId > 0 &&
+    !!tagOptions;
+
+  /** ---------------- 발행/수정 ---------------- */
   const onPublish = async () => {
-    // ✅ 동기 락: state 업데이트 전에도 중복 발행 방지
     if (publishingRef.current) return;
     if (!canPublish) return;
 
     publishingRef.current = true;
 
-    const bookId = book?.bookId;
-
-    if (!bookId || bookId <= 0) {
+    // ✅ edit 모드: 성공처럼 보이게 하면 안 됨 (API 미구현)
+    if (isEditMode) {
+      showToast("수정 기능은 준비 중이에요.");
       publishingRef.current = false;
-      showToast("책 정보(bookId)가 올바르지 않아요. 다시 선택해 주세요.");
       return;
     }
 
-    if (!tagOptions) {
+    // 여기부터는 "발행(create)"만
+    if (!tagOptions || !bookId) {
       publishingRef.current = false;
-      showToast("태그 정보를 불러오는 중이에요. 잠시 후 다시 시도해 주세요.");
       return;
     }
 
-    // ✅ filter.* 는 string[] (태그 이름) → 옵션으로 name -> tagId 매핑
     const nameToId = new Map<string, number>();
     for (const t of tagOptions.mood) nameToId.set(t.name, t.tagId);
     for (const t of tagOptions.style) nameToId.set(t.name, t.tagId);
@@ -132,21 +201,23 @@ export default function BookWritePage() {
 
     if (tagIds.length === 0) {
       publishingRef.current = false;
-      showToast("태그를 최소 1개 이상 선택해 주세요.");
       return;
     }
 
     setIsPublishing(true);
+
     try {
       // 1) 이미지 업로드 (있을 때만)
-      let imageUrls: string[] = [];
+      let imageUrls: string[] = [...existingImageUrls];
+
       if (images.length > 0) {
         const files = images.map((img) => img.file);
-        imageUrls = await uploadBooklogImages(files);
+        const uploaded = await uploadBooklogImages(files);
+        imageUrls = [...imageUrls, ...uploaded];
       }
 
       // 2) 북로그 발행
-      const res = await createBooklog({
+      await createBooklog({
         bookId,
         title: book?.title ?? "",
         content: content.trim(),
@@ -154,14 +225,16 @@ export default function BookWritePage() {
         imageUrls,
       });
 
-      showToast("북로그가 발행되었어요.");
       resetFilter();
-      navigate("/booklog", { replace: true });
+      sessionStorage.removeItem(draftKey);
 
-      console.log("created postId:", res.postId);
+      // ✅ 토스트는 /booklog 메인에서 띄우도록 state로 전달
+      navigate("/booklog", {
+        replace: true,
+        state: { toast: "북로그가 발행되었어요." },
+      });
     } catch (err) {
       console.error(err);
-      showToast("발행에 실패했어요. 잠시 후 다시 시도해 주세요.");
     } finally {
       publishingRef.current = false;
       setIsPublishing(false);
@@ -179,7 +252,7 @@ export default function BookWritePage() {
     if (files.length === 0) return;
 
     setImages((prev) => {
-      const remain = MAX_IMAGE_COUNT - prev.length;
+      const remain = MAX_IMAGE_COUNT - (prev.length + existingImageUrls.length);
       const picked = files.slice(0, remain);
 
       const next = picked.map((file) => ({
@@ -209,7 +282,13 @@ export default function BookWritePage() {
   const deleteDraftAndGoBack = () => {
     setIsConfirmOpen(false);
     resetFilter();
-    navigate("/booklog/pick");
+    sessionStorage.removeItem(draftKey);
+
+    if (isEditMode && editPostId) {
+      navigate(`/booklog/${editPostId}`, { replace: true });
+    } else {
+      navigate("/booklog/pick");
+    }
   };
 
   const authorText = book?.authors?.length
@@ -219,7 +298,6 @@ export default function BookWritePage() {
 
   return (
     <div className="relative min-h-dvh bg-bg pb-28">
-      {/* Confirm Modal */}
       <ConfirmModal
         isOpen={isConfirmOpen}
         title="작성 중인 내용을 삭제할까요?"
@@ -306,28 +384,42 @@ export default function BookWritePage() {
             onClick={openFilePicker}
             className="mt-3 flex h-[60px] w-[64px] flex-col items-center justify-center rounded border border-[#CDCCCB]"
           >
-            {/* 카메라 아이콘 */}
             <Camera className="h-6 w-6 text-[#676665] -translate-y-[3px]" />
-
-            {/* 숫자 */}
             <span className="text-text-en-body-01 leading-none">
               <span className="text-[#676665]">{imageCount}</span>
               <span className="text-[#9B9A97]"> / {MAX_IMAGE_COUNT}</span>
             </span>
           </button>
 
-          {images.length > 0 && (
+          {(existingImageUrls.length > 0 || images.length > 0) && (
             <div className="mt-4 flex gap-3 overflow-x-auto">
+              {existingImageUrls.map((url) => (
+                <div
+                  key={url}
+                  className="h-[140px] w-[140px] shrink-0 overflow-hidden rounded bg-[#CDCCCB]"
+                >
+                  {/* ✅ backgroundImage 제거: CSS 파싱/인젝션 리스크 방지 */}
+                  <img
+                    src={url}
+                    alt="기존 이미지"
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+              ))}
+
               {images.map((img) => (
                 <div
                   key={img.id}
-                  className="h-[140px] w-[140px] shrink-0 rounded bg-[#CDCCCB] overflow-hidden"
+                  className="h-[140px] w-[140px] shrink-0 overflow-hidden rounded bg-[#CDCCCB]"
                 >
-                  <div
-                    className="h-full w-full bg-center bg-cover"
-                    style={{ backgroundImage: `url(${img.previewUrl})` }}
-                    role="img"
-                    aria-label="선택한 이미지"
+                  {/* ✅ backgroundImage 제거 */}
+                  <img
+                    src={img.previewUrl}
+                    alt="선택한 이미지"
+                    className="h-full w-full object-cover"
+                    loading="lazy"
                   />
                 </div>
               ))}
