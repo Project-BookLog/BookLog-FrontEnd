@@ -363,11 +363,28 @@ export default function RecordPage() {
       if (Number.isFinite(totalPagesNumber) && totalPagesNumber > 0) {
         await patchTotalPages({ userBookId: parsedUserBookId, pageCountSnapshot: totalPagesNumber});
       }
+
+      const sessionPagesRead = Number(pagesRead);
+      const baseCurrentPage = Number(userBookDetail?.currentPage ?? 0);
+      const currentPageAtRecord = baseCurrentPage + sessionPagesRead;
+
+      if (!Number.isFinite(sessionPagesRead) || sessionPagesRead <= 0) return;
+      if (!Number.isFinite(baseCurrentPage) || baseCurrentPage < 0) return;
+      if (!Number.isFinite(currentPageAtRecord) || currentPageAtRecord <= 0) return;
+
+      if (
+        Number.isFinite(totalPagesNumber) &&
+        totalPagesNumber > 0 &&
+        currentPageAtRecord > totalPagesNumber
+      ) {
+        console.error("독서 기록 저장 실패: currentPage가 총 페이지를 초과합니다.");
+        return;
+      }
       
       const payload: CreateReadingLogRequest = {
         readDate: toApiDate(date.y, date.m, date.d),
-        currentPage: Number(pagesRead),
-        pagesRead: Number(pagesRead),
+        currentPage: currentPageAtRecord,
+        pagesRead: sessionPagesRead,
       };
 
       if (isEditMode) {
