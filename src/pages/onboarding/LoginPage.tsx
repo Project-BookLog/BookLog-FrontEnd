@@ -4,24 +4,17 @@ import { validateSignin, type UserLoginInformation } from "../../utils/validate"
 import { useAuth } from "../../context/AuthContext";
 import { useEffect, useState } from "react";
 import { KakaoTalk, LogoBooklog, SymbolLogo } from "../../assets/icons";
-import { useGetOnboardingProfile } from "../../hooks/queries/useGetOnboardingProfile";
 
 export const LoginPage = () => {
     const navigate = useNavigate();
     const { login, accessToken } = useAuth();
-    const { data: onboardingProfile, isLoading, isError } = useGetOnboardingProfile();
     const [loginError, setLoginError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!accessToken) return;
-        if (isLoading) return;
-        if(isError) return;
-        if (onboardingProfile?.isCompleted) {
-            navigate("/", { replace: true });
-        } else {
+        if (accessToken) {
             navigate("/onboarding", { replace: true });
         }
-    }, [accessToken, isLoading, isError, onboardingProfile, navigate,]);
+    }, [accessToken, navigate,]);
 
     const {values, errors, touched, getInputProps} = useForm<UserLoginInformation>({
         initialValue: {
