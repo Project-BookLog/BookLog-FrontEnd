@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import type { Author } from "../../../types/book.types";
+import { Default_BookImg, Default_ProfileImg } from "../../../assets/icons";
 
 export default function AuthorResults({
-  total,
+  // total,
   items,
 }: {
   total: number;
@@ -12,9 +13,9 @@ export default function AuthorResults({
 
   return (
     <section>
-      <div className="px-6 mb-3 text-body-03 text-gray-600">
+      {/* <div className="px-6 mb-3 text-body-03 text-gray-600">
         총 <span className="text-primary">{total}</span>명
-      </div>
+      </div> */}
 
       <div className="space-y-3 px-4 pb-2">
         {items.map((author) => (
@@ -33,7 +34,7 @@ export default function AuthorResults({
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-xs text-gray-400">작가</span>
+                    <Default_ProfileImg className="w-full h-full object-cover" />
                   )}
                 </div>
 
@@ -52,11 +53,15 @@ export default function AuthorResults({
                   <div className="mt-3 flex justify-between gap-5">
                     {author.books.slice(0, 2).map((book) => (
                       <div key={book.bookId} className="flex gap-[10px] w-35">
-                        <img
-                          src={book.thumbnailUrl}
-                          alt="책 표지"
-                          className="w-[30px] h-[45px] rounded-md object-cover"
-                        />
+                        {book.thumbnailUrl ? (
+                          <img
+                            src={book.thumbnailUrl}
+                            alt="책 표지"
+                            className="w-[30px] h-[45px] rounded-md object-cover"
+                          />
+                        ) : (
+                          <Default_BookImg className="w-[30px] h-[45px] rounded-md object-cover" />
+                        )}
                         <div className="min-w-0">
                           <p className="text-subtitle-02-sb line-clamp-2">
                             {book.title}

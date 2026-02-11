@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import Tab from "../../components/common/Tab";
 import AuthorProfile from "../../components/home/author/AuthorProfile";
@@ -19,6 +19,7 @@ const TABS = ["프로필", "수상경력", "도서"] as const;
 type TabType = (typeof TABS)[number];
 
 export const AuthorDetailPage = () => {
+  const navigate = useNavigate();
   const { authorid } = useParams<{ authorid: string }>();
   const [tab, setTab] = useState<TabType>("프로필");
   const [author, setAuthor] = useState<AuthorDetail | null>(null);
@@ -119,7 +120,7 @@ useEffect(() => {
     <div className="min-h-screen bg-bg">
       <NavBarTop
         back={true}
-        onBack={() => history.back()}
+        onBack={() => navigate(`/search`)}
         title="작가 정보"
       />
       

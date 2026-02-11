@@ -7,7 +7,7 @@ import { BOOK_ORDER, sortOptions } from "../../../enum/book";
 import { ArrowDown } from "../../../assets/icons";
 
 type Props = {
-  total: number;
+  // total: number;
   items: Book[];
 };
 
@@ -19,7 +19,7 @@ const FILTER_LABELS: Record<FilterKey, string> = {
   immersion: "몰입도",
 };
 
-export default function BookResults({ total, items }: Props) {
+export default function BookResults({ /*total,*/ items }: Props) {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -144,11 +144,11 @@ export default function BookResults({ total, items }: Props) {
       <section className="relative bg-bg">
         <div className="relative mb-3 flex items-center justify-between px-5">
           <p className="text-body-03 text-gray-600">
-            총{" "}
+            {/* 총{" "}
             <span className="text-primary">{sortedItems.length}</span>권
             {sortedItems.length !== total && (
               <span className="text-gray-400"> / 전체 {total}권</span>
-            )}
+            )} */}
           </p>
 
           <button
