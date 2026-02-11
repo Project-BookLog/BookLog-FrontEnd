@@ -39,6 +39,7 @@ export default function SearchPage() {
       );
     } catch (e) {
       console.warn("최근 검색어 삭제 실패", e);
+      alert("검색어 삭제에 실패했습니다.");
     }
   };
   const handleClearRecent = async () => {
@@ -47,6 +48,7 @@ export default function SearchPage() {
       setRecentKeywords([]);
     } catch (e) {
       console.warn("전체 삭제 실패", e);
+      alert("검색어 전체 삭제에 실패했습니다.");
     }
   };
 
