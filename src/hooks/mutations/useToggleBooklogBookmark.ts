@@ -47,17 +47,26 @@ export function useToggleBooklogBookmark() {
           if (!oldData) return oldData;
 
           return {
-            ...oldData,
-            pages: oldData.pages.map((page: any) => ({
-              ...page,
-              data: {
-                ...page.data,
-                items: page.data.items.filter(
-                  (item: any) => item.postId !== postId
-                ),
-              },
-            })),
-          };
+          ...oldData,
+          pages: oldData.pages.map((page: any) => ({
+            ...page,
+            data: {
+              ...page.data,
+              items: page.data.items.map((item: any) => {
+                if (item.postId === postId) {
+                  return {
+                    ...item,
+                    bookmarkedByMe: !item.bookmarkedByMe,
+                    bookmarkCount: item.bookmarkedByMe
+                      ? item.bookmarkCount - 1
+                      : item.bookmarkCount + 1,
+                  };
+                }
+                return item;
+              }),
+            },
+          })),
+        };
         }
       );
 
