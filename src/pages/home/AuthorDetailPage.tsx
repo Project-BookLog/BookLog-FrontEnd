@@ -91,13 +91,19 @@ export const AuthorDetailPage = () => {
 
   useEffect(() => {
     if (!authorid) return;
+    const id = Number(authorid);
+    if (Number.isNaN(id)) {
+      setIsError(true);
+      setIsLoading(false);
+      return;
+    }
 
     const fetchAuthor = async () => {
       try {
         setIsLoading(true);
         setIsError(false);
 
-        const data = await getAuthorDetail(Number(authorid));
+        const data = await getAuthorDetail(id);
         setAuthor(data);
       } catch (err) {
         console.error(err);
@@ -156,14 +162,7 @@ export const AuthorDetailPage = () => {
             </div>
 
             <div className="text-caption-02 text-gray-500">
-              {author.profile.occupations.map((job) => (
-                <span
-                  key={job}
-                  className="text-gray-500"
-                >
-                  {job}
-                </span>
-              ))}
+              <span>{author.profile.occupations.join(", ")}</span>
               <span className="mx-2 text-gray-200">|</span>
               {/* <span>{author.profile.국적 ?? "-"}</span> */}
             </div>

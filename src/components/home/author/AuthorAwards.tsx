@@ -1,14 +1,10 @@
 import { useState } from "react";
 import { BackIcon } from "../../../assets/icons";
-
-type Award = {
-  year: string;
-  text: string;
-};
+import type { AuthorAward } from "../../../types/home/detail.types";
 
 type Props = {
-  awards: Award[];
-};
+  awards: AuthorAward[];
+};  
 
 function AuthorAwards({ awards }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);

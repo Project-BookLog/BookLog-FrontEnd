@@ -63,10 +63,10 @@ function AuthorBooks({ books }: Props) {
 
     switch (currentSort) { //api보고 재조정 필요 
       case BOOK_ORDER.LATEST:
-        return filtered.reverse();
+        return filtered;
 
       case BOOK_ORDER.OLDEST:
-        return filtered;
+        return filtered.reverse();
 
       case BOOK_ORDER.TITLE:
         return filtered.sort((a, b) =>

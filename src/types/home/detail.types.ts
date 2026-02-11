@@ -90,6 +90,12 @@ export interface AuthorBook {
   };
 }
 
+export interface AuthorAward {
+  year: string;
+  text: string;
+}
+
+
 export interface AuthorDetail {
   authorId: number;
   name: string;
@@ -102,6 +108,5 @@ export interface AuthorDetail {
     birthDate: string | null;
     occupations: string[];
   };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  awards: any[];
+  awards: AuthorAward[];
 }
