@@ -47,6 +47,7 @@ export interface AuthorBook {
   publisherName: string;
 }
 
+
 export interface BookSearchResponse {
   page: number;
   size: number;

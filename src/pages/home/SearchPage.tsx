@@ -306,7 +306,7 @@ export default function SearchPage() {
             {activeTab === "도서" && (
               <>
                 <BookResults
-                  total={search.bookTotal}
+                  // total={search.bookTotal}
                   items={search.bookItems}
                 />
                 <div ref={loadMoreRef} />
@@ -316,7 +316,7 @@ export default function SearchPage() {
             {activeTab === "작가" && (
               <>
                 <AuthorResults
-                  total={search.authorTotal}
+                  // total={search.authorTotal}
                   items={search.authorItems}
                 />
                 <div ref={loadMoreRef} />

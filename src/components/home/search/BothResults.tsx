@@ -1,5 +1,5 @@
 import type { Author, Book } from "../../../types/book.types";
-import { BackIcon } from "../../../assets/icons";
+import { BackIcon, Default_BookImg, Default_ProfileImg } from "../../../assets/icons";
 import { useNavigate } from "react-router-dom";
 
 type BothResultsProps = {
@@ -55,7 +55,7 @@ export default function BothResults({
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-xs text-gray-400">작가</span>
+                    <Default_ProfileImg className="w-full h-full object-cover" />
                   )}
                 </div>
 
@@ -100,7 +100,9 @@ export default function BothResults({
                   alt={book.title}
                   className="w-full h-full object-cover"
                 />
-                ): null}
+                ): ( 
+                  <Default_BookImg className="w-full h-full object-cover" /> 
+                )}
               </div>
 
               <div className="min-w-0 flex-1 text-left">

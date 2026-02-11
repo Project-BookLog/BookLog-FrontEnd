@@ -27,7 +27,7 @@ export function FilterChips({
         type="button"
         onClick={onReset}
         disabled={!hasAnyFilter}
-        className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-gray-100 disabled:opacity-50"
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-gray-100 disabled:opacity-50"
       >
         <Reset className="h-4 w-4" />
       </button>

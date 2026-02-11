@@ -1,4 +1,4 @@
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { useFilter } from "../../hooks/useFilter";
 import NavBarTop from "../common/navbar/NavBarTop";
 import { useCallback, useEffect } from "react";
@@ -16,6 +16,7 @@ export default function FilterPage({ scope }: Props) {
   const { filter, toggleFilter, resetFilter, pageInfo } = useFilter(scope);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   
 
   const hasAnyFilter =
@@ -25,17 +26,19 @@ export default function FilterPage({ scope }: Props) {
 
   const handleApply = useCallback(() => {
     const preserveKeys = pageInfo?.preserveQuery || ['q'];
-    const returnUrl = pageInfo?.returnUrl || '/search';
+    const returnUrl =
+      location.state?.returnUrl ||
+      pageInfo?.returnUrl ||
+      "/search";
 
     const params = new URLSearchParams();
-    
+
     preserveKeys.forEach(key => {
       if (searchParams.has(key)) {
         params.set(key, searchParams.get(key)!);
       }
     });
 
-    
     if (searchParams.has('tab')) {
       params.set('tab', searchParams.get('tab')!);
     }
@@ -53,26 +56,26 @@ export default function FilterPage({ scope }: Props) {
     navigate(`${returnUrl}?${params.toString()}`);
   }, [filter, searchParams, pageInfo, navigate]);
 
-  useEffect(() => {
-    const original = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = original;
-    };
-  }, []);
+    useEffect(() => {
+      const original = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = original;
+      };
+    }, []);
 
-  useEffect(() => {
-    const hasQueryFilter =
-      searchParams.has("mood") ||
-      searchParams.has("style") ||
-      searchParams.has("immersion");
+    useEffect(() => {
+      const hasQueryFilter =
+        searchParams.has("mood") ||
+        searchParams.has("style") ||
+        searchParams.has("immersion");
 
-    if (!hasQueryFilter) {
-      resetFilter();
-    }
+      if (!hasQueryFilter) {
+        resetFilter();
+      }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
 
 

@@ -1,24 +1,66 @@
 import { useEffect, useRef, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import Tab from "../../components/common/Tab";
 import AuthorProfile from "../../components/home/author/AuthorProfile";
 import AuthorAwards from "../../components/home/author/AuthorAwards";
 import AuthorBooks from "../../components/home/author/AuthorBooks";
 import AuthorBookBrief from "../../components/home/author/AuthorBookBrief";
-// import { useParams } from "react-router-dom";
+import { Default_ProfileImg } from "../../assets/icons";
+
+import { getAuthorDetail } from "../../api/home/detail";
+import type { AuthorDetail } from "../../types/home/detail.types";
+
+import { LoadingPage } from "../onboarding/LoadingPage";
+import { ErrorPage } from "../onboarding/ErrorPage";
+
 
 const TABS = ["프로필", "수상경력", "도서"] as const;
 type TabType = (typeof TABS)[number];
 
 export const AuthorDetailPage = () => {
+  const navigate = useNavigate();
+  const { authorid } = useParams<{ authorid: string }>();
   const [tab, setTab] = useState<TabType>("프로필");
+  const [author, setAuthor] = useState<AuthorDetail | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
   const ProfileRef = useRef<HTMLElement | null>(null);
   const AwardRef = useRef<HTMLElement | null>(null);
   const BookRef = useRef<HTMLElement | null>(null);
 
-  // const { authorid } = useParams<{ authorid: string }>();
-  // console.log(authorid);
+
+useEffect(() => {
+  const handleScroll = () => { //상단기준 
+    const OFFSET = 100; 
+
+    const sections: { name: TabType; el: HTMLElement | null }[] = [
+      { name: "프로필", el: ProfileRef.current },
+      { name: "수상경력", el: AwardRef.current },
+      { name: "도서", el: BookRef.current },
+    ];
+
+    for (let i = sections.length - 1; i >= 0; i--) {
+      const section = sections[i];
+      if (!section.el) continue;
+
+      const rect = section.el.getBoundingClientRect();
+
+      if (rect.top <= OFFSET) {
+        if (tab !== section.name) {
+          setTab(section.name);
+        }
+        break;
+      }
+    }
+  };
+
+  window.addEventListener("scroll", handleScroll, { passive: true });
+  handleScroll();
+
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [tab]);
 
   const handleChangeTab = (nextTab: TabType) => {
     setTab(nextTab);
@@ -43,81 +85,95 @@ export const AuthorDetailPage = () => {
     });
   };
 
+
   useEffect(() => {
-    const handleScroll = () => {
-      const sections: { name: TabType; el: HTMLElement | null }[] = [
-        { name: "프로필", el: ProfileRef.current },
-        { name: "수상경력", el: AwardRef.current },
-        { name: "도서", el: BookRef.current },
-      ];
+    if (!authorid) return;
+    const id = Number(authorid);
+    if (Number.isNaN(id)) {
+      setIsError(true);
+      setIsLoading(false);
+      return;
+    }
 
-      const viewportMiddle = window.scrollY + window.innerHeight / 2 - 40;
+    const fetchAuthor = async () => {
+      try {
+        setIsLoading(true);
+        setIsError(false);
 
-      let closestName: TabType = tab;
-      let closestDistance = Infinity;
-
-      sections.forEach(({ name, el }) => {
-        if (!el) return;
-        const rect = el.getBoundingClientRect();
-        const sectionMiddle = rect.top + window.scrollY + rect.height / 2;
-        const distance = Math.abs(sectionMiddle - viewportMiddle);
-
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          closestName = name;
-        }
-      });
-
-      if (closestName !== tab) {
-        setTab(closestName);
+        const data = await getAuthorDetail(id);
+        setAuthor(data);
+      } catch (err) {
+        console.error(err);
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
+    fetchAuthor();
+  }, [authorid]);
 
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [tab]);
+  if (isLoading) return <LoadingPage />;
+  if (isError || !author) return <ErrorPage />;
 
   return (
     <div className="min-h-screen bg-bg">
       <NavBarTop
         back={true}
-        onBack={() => history.back()}
+        onBack={() => navigate(`/search`)}
         title="작가 정보"
       />
-
+      
       <main className="pb-6 pt-4 space-y-5 mb-10 bg-bg">
-        {/* 상단 책 썸네일 + 정보 */}
+        {/* 상단 프로필 */}
         <section className="px-5">
           <div className="flex justify-center">
-            <div className="rounded-full bg-[#d9d9d9] w-[170px] h-[170px] flex items-center justify-center">작가 이미지</div>
+            {author.profileImageUrl ? (
+              <img
+                src={author.profileImageUrl}
+                alt={author.name}
+                className="rounded-full w-[170px] h-[170px] object-cover"
+              />
+            ) : (
+              <Default_ProfileImg className="rounded-full w-[170px] h-[170px]" />
+            )}
           </div>
+
           <div className="mt-6 space-y-4">
             <div>
-              <button className="px-2 py-1 h-6 rounded-sm bg-lightblue-1 text-caption-02 text-primary">
-                소설가
-              </button>
+              <span className="px-2 py-1 h-6 rounded-sm bg-lightblue-1 text-caption-02 text-primary mr-2">
+                {author.profile.occupations?.length
+                  ? author.profile.occupations.join(", ")
+                  : "-"}
+              </span>
             </div>
+
             <div>
-              <p className="text-title-01">작가 이름</p>
-              <p className="text-caption-01 text-gray-500 mb-2 mt-1">
-                작가에 대한 한 줄 소개 내용
+              <p className="text-title-01 text-black">{author.name}</p>
+              <p className="text-caption-01 text-gray-500 mt-2">
+                {author.biography ?? "-"}
               </p>
-              <p className="text-caption-02 text-gray-500">
-                소설가<span> | </span>한국
-              </p>
+            </div>
+
+            <div className="text-caption-02 text-gray-500">
+              <span>
+                {author.profile.occupations?.length
+                  ? author.profile.occupations.join(", ")
+                  : "-"}
+              </span>
+              <span className="mx-2 text-gray-200">|</span>
+              {/* <span>{author.profile.국적 ?? "-"}</span> */}
             </div>
           </div>
 
           <div className="mt-4">
-            <AuthorBookBrief />
+            <AuthorBookBrief books={author.books.slice(0, 3)} />
           </div>
         </section>
 
         {/* 탭 */}
         <div className="sticky top-0 z-10 bg-bg">
-          <div className="px-6 border-b border-gray-200 bg-bgs">
+          <div className="px-6 border-b border-gray-200 bg-white">
             <Tab
               tabs={TABS}
               active={tab}
@@ -127,25 +183,24 @@ export const AuthorDetailPage = () => {
           </div>
         </div>
 
-        {/* 기본정보 섹션 */}
+
+        {/* 프로필 */}
         <section ref={ProfileRef}>
-          <AuthorProfile />
+          <AuthorProfile profile={author.profile} />
           <hr className="mt-5 h-2 bg-gray-100 border-none" />
         </section>
 
-        {/* 수상경력 섹션 */}
+        {/* 수상경력 */}
         <section ref={AwardRef}>
-          <AuthorAwards />
+          <AuthorAwards awards={author.awards} />
           <hr className="mt-5 h-2 bg-gray-100 border-none" />
         </section>
 
-        {/* 책 섹션 */}
+        {/* 책 리스트 */}
         <section ref={BookRef}>
-          <AuthorBooks />
+          <AuthorBooks books={author.books} />
         </section>
       </main>
-
-
     </div>
   );
 };
