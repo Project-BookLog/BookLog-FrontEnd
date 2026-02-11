@@ -1,5 +1,3 @@
-import type { AuthorBook } from "./home/detail.types";
-
 export interface Book {
   bookId: number;
   title: string;
@@ -40,6 +38,15 @@ export interface Author {
   biography?: string | null;
   books?: AuthorBook[]; 
 }
+
+export interface AuthorBook { 
+  bookId: number;
+  title: string;
+  thumbnailUrl: string;
+  authors: string; 
+  publisherName: string;
+}
+
 
 export interface BookSearchResponse {
   page: number;
