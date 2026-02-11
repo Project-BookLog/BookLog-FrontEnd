@@ -17,6 +17,7 @@ function BookLogCarousel() {
   useEffect(() => {
     if (!bookId) return;
 
+    setIsLoading(true);
     getBookRelatedBooklogs(Number(bookId))
       .then(res => {
         console.log(res.items);
