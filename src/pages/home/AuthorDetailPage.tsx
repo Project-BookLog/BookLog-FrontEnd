@@ -29,6 +29,38 @@ export const AuthorDetailPage = () => {
   const AwardRef = useRef<HTMLElement | null>(null);
   const BookRef = useRef<HTMLElement | null>(null);
 
+
+useEffect(() => {
+  const handleScroll = () => { //상단기준 
+    const OFFSET = 100; 
+
+    const sections: { name: TabType; el: HTMLElement | null }[] = [
+      { name: "프로필", el: ProfileRef.current },
+      { name: "수상경력", el: AwardRef.current },
+      { name: "도서", el: BookRef.current },
+    ];
+
+    for (let i = sections.length - 1; i >= 0; i--) {
+      const section = sections[i];
+      if (!section.el) continue;
+
+      const rect = section.el.getBoundingClientRect();
+
+      if (rect.top <= OFFSET) {
+        if (tab !== section.name) {
+          setTab(section.name);
+        }
+        break;
+      }
+    }
+  };
+
+  window.addEventListener("scroll", handleScroll, { passive: true });
+  handleScroll();
+
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [tab]);
+
   const handleChangeTab = (nextTab: TabType) => {
     setTab(nextTab);
 
@@ -51,42 +83,6 @@ export const AuthorDetailPage = () => {
       behavior: "smooth",
     });
   };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections: { name: TabType; el: HTMLElement | null }[] = [
-        { name: "프로필", el: ProfileRef.current },
-        { name: "수상경력", el: AwardRef.current },
-        { name: "도서", el: BookRef.current },
-      ];
-
-      const viewportMiddle = window.scrollY + window.innerHeight / 2 - 40;
-
-      let closestName: TabType = tab;
-      let closestDistance = Infinity;
-
-      sections.forEach(({ name, el }) => {
-        if (!el) return;
-        const rect = el.getBoundingClientRect();
-        const sectionMiddle = rect.top + window.scrollY + rect.height / 2;
-        const distance = Math.abs(sectionMiddle - viewportMiddle);
-
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          closestName = name;
-        }
-      });
-
-      if (closestName !== tab) {
-        setTab(closestName);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [tab]);
 
 
   useEffect(() => {
@@ -144,14 +140,11 @@ export const AuthorDetailPage = () => {
 
           <div className="mt-6 space-y-4">
             <div>
-              {author.profile.occupations.map((job) => (
-                <span
-                  key={job}
-                  className="px-2 py-1 h-6 rounded-sm bg-lightblue-1 text-caption-02 text-primary mr-2"
-                >
-                  {job}
-                </span>
-              ))}
+              <span className="px-2 py-1 h-6 rounded-sm bg-lightblue-1 text-caption-02 text-primary mr-2">
+                {author.profile.occupations?.length
+                  ? author.profile.occupations.join(", ")
+                  : "-"}
+              </span>
             </div>
 
             <div>
@@ -162,7 +155,11 @@ export const AuthorDetailPage = () => {
             </div>
 
             <div className="text-caption-02 text-gray-500">
-              <span>{author.profile.occupations.join(", ")}</span>
+              <span>
+                {author.profile.occupations?.length
+                  ? author.profile.occupations.join(", ")
+                  : "-"}
+              </span>
               <span className="mx-2 text-gray-200">|</span>
               {/* <span>{author.profile.국적 ?? "-"}</span> */}
             </div>
@@ -175,7 +172,7 @@ export const AuthorDetailPage = () => {
 
         {/* 탭 */}
         <div className="sticky top-0 z-10 bg-bg">
-          <div className="px-6 border-b border-gray-200 bg-bgs">
+          <div className="px-6 border-b border-gray-200 bg-white">
             <Tab
               tabs={TABS}
               active={tab}
@@ -184,6 +181,7 @@ export const AuthorDetailPage = () => {
             />
           </div>
         </div>
+
 
         {/* 프로필 */}
         <section ref={ProfileRef}>

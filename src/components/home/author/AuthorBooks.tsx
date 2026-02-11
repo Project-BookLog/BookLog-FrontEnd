@@ -61,7 +61,7 @@ function AuthorBooks({ books }: Props) {
       );
     }
 
-    switch (currentSort) { //api보고 재조정 필요 
+    switch (currentSort) { 
       case BOOK_ORDER.LATEST:
         return filtered;
 
@@ -219,7 +219,7 @@ function AuthorBooks({ books }: Props) {
               )}
             </div>
 
-            <p className="mt-2 line-clamp-2 text-caption-01 font-medium">
+            <p className="mt-2 line-clamp-2 text-subtitle-02-sb text-black">
               {book.title ?? "-"}
             </p>
 
