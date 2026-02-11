@@ -293,11 +293,10 @@ export default function RecordPage() {
   const [pagesRead, setPagesRead] = useState<string>("");
   const [totalPages, setTotalPages] = useState<string>("");
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
+  const [isApplyConfirmModalOpen, setIsApplyConfirmModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (!userBookDetail) return;
-
-    if (userBookDetail.status) { setStatus(STATUS_REVERSE_MAP[userBookDetail.status]); }
 
     if (userBookDetail.format) { setBookType(FORMAT_REVERSE_MAP[userBookDetail.format]); }
 
@@ -326,6 +325,11 @@ export default function RecordPage() {
   const submittingRef = useRef(false);
   const isStoppedStatus = status === "중단";
   const canApplyStopped = isStoppedStatus && hasValidUserBookId;
+  const allBooksShelfId = useMemo(
+    () => shelves.find((shelf) => shelf.name === "전체 도서")?.shelfId ?? null,
+    [shelves]
+  );
+  const targetShelfId = Number.isFinite(selectedShelfId) ? selectedShelfId : allBooksShelfId;
 
   const canApply = Boolean(
     status &&
@@ -335,7 +339,6 @@ export default function RecordPage() {
         (
           (isEditMode || hasValidUserBookId) &&
           bookType &&
-          Number.isFinite(selectedShelfId) &&
           isValidPagesRead &&
           isValidTotalPages
         )
@@ -358,7 +361,7 @@ export default function RecordPage() {
           userBookId: parsedUserBookId,
           body: {
             status: READ_STATUS_MAP[status],
-            ...(Number.isFinite(selectedShelfId) ? { shelfId: selectedShelfId as number } : {}),
+            ...(Number.isFinite(targetShelfId) ? { shelfId: targetShelfId as number } : {}),
             ...(bookType ? { format: BOOK_TYPE_MAP[bookType] } : {}),
           },
         });
@@ -395,13 +398,13 @@ export default function RecordPage() {
         return;
       }
 
-      if (hasValidUserBookId && bookType && status && selectedShelfId) {
+      if (hasValidUserBookId && bookType && status) {
         await patchUserBook({
           userBookId: parsedUserBookId,
           body: {
-            shelfId: selectedShelfId,
             status: READ_STATUS_MAP[status],
             format: BOOK_TYPE_MAP[bookType],
+            ...(Number.isFinite(targetShelfId) ? { shelfId: targetShelfId as number } : {}),
           },
         });
       }
@@ -446,7 +449,7 @@ export default function RecordPage() {
                 key={opt}
                 label={opt}
                 active={bookType === opt}
-                onClick={() => setBookType(opt)}
+                onClick={() => setBookType((prev) => (prev === opt ? null : opt))}
               />
             ))}
           </div>
@@ -461,7 +464,7 @@ export default function RecordPage() {
                 key={opt}
                 label={opt}
                 active={status === opt}
-                onClick={() => setStatus(opt)}
+                onClick={() => setStatus((prev) => (prev === opt ? null : opt))}
               />
             ))}
           </div>
@@ -476,7 +479,7 @@ export default function RecordPage() {
                 key={shelf.shelfId}
                 label={shelf.name}
                 active={selectedShelfId === shelf.shelfId}
-                onClick={() => setSelectedShelfId(shelf.shelfId)}
+                onClick={() => setSelectedShelfId((prev) => (prev === shelf.shelfId ? null : shelf.shelfId))}
               />
             ))}
             <PlusPill onClick={() => {}} />
@@ -585,7 +588,7 @@ export default function RecordPage() {
           <button
             type="button"
             disabled={!canApply}
-            onClick={onApply}
+            onClick={() => setIsApplyConfirmModalOpen(true)}
             className={[
               "h-[53px] w-full rounded-[12px] transition",
               "text-body-01-sb",
@@ -612,6 +615,21 @@ export default function RecordPage() {
           cancelText="취소"
           onConfirm={() => navigate(-1)}
           onClose={() => setIsConfirmModalOpen(false)}
+        />
+      }
+
+      {isApplyConfirmModalOpen &&
+        <ConfirmModal
+          isOpen={isApplyConfirmModalOpen}
+          title="독서 기록을 적용할까요?"
+          description="적용 후에는 기록이 저장됩니다."
+          confirmText="적용"
+          cancelText="취소"
+          onConfirm={() => {
+            setIsApplyConfirmModalOpen(false);
+            void onApply();
+          }}
+          onClose={() => setIsApplyConfirmModalOpen(false)}
         />
       }
     </div>
