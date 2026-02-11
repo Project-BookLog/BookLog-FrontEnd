@@ -84,7 +84,6 @@ export function useToggleBooklogBookmark() {
 
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEY.booklogs] });
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEY.bookmarkedBooklogs] });
     },
   });
 }
