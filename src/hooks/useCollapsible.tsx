@@ -9,11 +9,12 @@ export function useCollapsible(dependency: unknown) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (expanded) return;
 
     requestAnimationFrame(() => {
       setCollapsible(el.scrollHeight > el.clientHeight);
     });
-  }, [dependency]);
+  }, [dependency, expanded]);
 
   const toggle = () => setExpanded((prev) => !prev);
 

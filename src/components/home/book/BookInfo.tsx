@@ -72,6 +72,28 @@ function BookInfo({ book }: BookInfoProps) {
         </div>
       </section>
 
+      {/* 기본 정보 */}
+      <section>
+        <p className="text-title-02 font-semibold mb-4">기본 정보</p>
+
+        <div className="space-y-2 text-gray-500 text-body-03">
+          <div className="flex">
+            <span className="w-20">출판사</span>
+            <span>{book.publisherName || "-"}</span>
+          </div>
+
+          <div className="flex">
+            <span className="w-20">ISBN</span>
+            <span>{book.isbn13 || book.isbn10 || "-"}</span>
+          </div>
+
+          <div className="flex">
+            <span className="w-20">출판 연도</span>
+            <span>{book.publishedDate?.slice(0, 4) || "-"}</span>
+          </div>
+        </div>
+        </section>
+
     </div>
   );
 }
