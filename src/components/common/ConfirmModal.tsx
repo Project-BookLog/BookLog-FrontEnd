@@ -8,6 +8,7 @@ interface ConfirmModalProps {
     cancelText: string;
     onConfirm: () => void;
     onClose: () => void;
+    variant?: "primary" | "warning";
 }
 
 export function ConfirmModal({
@@ -18,6 +19,7 @@ export function ConfirmModal({
     cancelText,
     onConfirm,
     onClose,
+    variant = "warning",
 }: ConfirmModalProps) {
     useEffect(() => {
         if (isOpen) {
@@ -49,6 +51,11 @@ export function ConfirmModal({
 
     if (!isOpen) return null;
 
+    const confirmButtonClass =
+        variant === "primary"
+            ? "bg-primary text-white"
+            : "bg-warning-bg text-warning";
+
     return (
         <div
             className="absolute inset-0 z-50 min-h-screen flex items-center justify-center bg-black/15 backdrop-blur-[2px]"
@@ -65,7 +72,7 @@ export function ConfirmModal({
                 <div className="flex justify-center items-center gap-1 self-stretch">
                     <button
                         onClick={onConfirm}
-                        className="flex justify-center items-center w-[120px] px-[10px] py-[14px] gap-[10px] rounded-[8px] bg-warning-bg text-center text-subtitle-02-sb text-warning cursor-pointer"
+                        className={`flex justify-center items-center w-[120px] px-[10px] py-[14px] gap-[10px] rounded-[8px] text-center text-subtitle-02-sb cursor-pointer ${confirmButtonClass}`}
                     >
                         {confirmText}
                     </button>
