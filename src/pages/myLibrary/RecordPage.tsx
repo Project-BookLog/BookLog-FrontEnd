@@ -247,13 +247,6 @@ const READ_STATUS_MAP: Record<ReadStatus, BookStatus> = {
   "중단": "STOPPED",
 };
 
-const STATUS_REVERSE_MAP: Record<BookStatus, ReadStatus> = {
-  TO_READ: "읽을 예정",
-  READING: "읽는 중",
-  COMPLETED: "완독",
-  STOPPED: "중단",
-}
-
 const BOOK_TYPE_MAP: Record<BookType, BookFormat> = {
   "종이책": "PAPER",
   "전자책": "EBOOK",
@@ -621,6 +614,7 @@ export default function RecordPage() {
       {isApplyConfirmModalOpen &&
         <ConfirmModal
           isOpen={isApplyConfirmModalOpen}
+          variant="primary"
           title="독서 기록을 적용할까요?"
           description="적용 후에는 기록이 저장됩니다."
           confirmText="적용"
