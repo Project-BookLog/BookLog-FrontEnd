@@ -1,12 +1,5 @@
 import type { BOOK_ORDER } from "../enum/book";
-import type { Book, BookStatus } from "./book.types";
-
-export type Library = {
-  name: string;
-  isPublic: boolean;
-  books: Book[];
-  sort: BOOK_ORDER;
-};
+import type { BookStatus } from "./book.types";
 
 export type LibraryTab = "ALL" | "TO_READ" | "READING" | "COMPLETED";
 

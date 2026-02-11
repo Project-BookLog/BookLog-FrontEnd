@@ -54,7 +54,7 @@ export const BookMarkedPage = () => {
                     <div className="flex px-5 flex-col items-start gap-3 self-stretch mt-5">
 
                         {booklogs.map((booklog) => (
-                            <MyBookLogCard key={booklog.postId} booklog={booklog}/>
+                            <MyBookLogCard key={booklog.postId} booklog={booklog} onClick={() => navigate(`/booklog/${booklog.postId}`)}/>
                         ))}
                 
                         {isFetchingNextPage && 

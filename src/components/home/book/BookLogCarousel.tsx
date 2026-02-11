@@ -11,12 +11,13 @@ import { ErrorPage } from "../../../pages/onboarding/ErrorPage";
 function BookLogCarousel() {
   const { bookId } = useParams<{ bookId: string }>();
   const [logs, setLogs] = useState<BookRelatedBooklog []>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     if (!bookId) return;
 
+    setIsLoading(true);
     getBookRelatedBooklogs(Number(bookId))
       .then(res => {
         console.log(res.items);
