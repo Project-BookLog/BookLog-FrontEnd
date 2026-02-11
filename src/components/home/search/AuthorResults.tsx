@@ -6,7 +6,7 @@ export default function AuthorResults({
   // total,
   items,
 }: {
-  total: number;
+  // total: number;
   items: Author[];
 }) {
   const navigate = useNavigate();
