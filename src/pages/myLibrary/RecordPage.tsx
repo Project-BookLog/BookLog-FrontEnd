@@ -324,15 +324,22 @@ export default function RecordPage() {
 
   const [submitting, setSubmitting] = useState(false);
   const submittingRef = useRef(false);
+  const isStoppedStatus = status === "중단";
+  const canApplyStopped = isStoppedStatus && hasValidUserBookId;
 
   const canApply = Boolean(
-    (isEditMode || hasValidUserBookId) &&
-      bookType &&
-      status &&
-      Number.isFinite(selectedShelfId) &&
-      isValidPagesRead &&
-      isValidTotalPages &&
-      !submitting
+    status &&
+      !submitting &&
+      (
+        canApplyStopped ||
+        (
+          (isEditMode || hasValidUserBookId) &&
+          bookType &&
+          Number.isFinite(selectedShelfId) &&
+          isValidPagesRead &&
+          isValidTotalPages
+        )
+      )
   );
 
   const dateLabel = useMemo(() => {
@@ -345,6 +352,21 @@ export default function RecordPage() {
 
     try {
       setSubmitting(true);
+
+      if (canApplyStopped && status) {
+        await patchUserBook({
+          userBookId: parsedUserBookId,
+          body: {
+            status: READ_STATUS_MAP[status],
+            ...(Number.isFinite(selectedShelfId) ? { shelfId: selectedShelfId as number } : {}),
+            ...(bookType ? { format: BOOK_TYPE_MAP[bookType] } : {}),
+          },
+        });
+
+        showToast("독서 상태가 중단으로 변경되었어요.");
+        navigate(-1);
+        return;
+      }
 
       const totalPagesNumber = Number(totalPages);
       const sessionPagesRead = Number(pagesRead);
@@ -482,9 +504,9 @@ export default function RecordPage() {
           )}
         </div>
 
-        {/* 4) 읽은 페이지 수 */}
+        {/* 4) 현재 페이지 수 */}
         <div className="mb-6">
-          <div className="mb-3 text-en-subtitle-01 text-black">읽은 페이지 수</div>
+          <div className="mb-3 text-en-subtitle-01 text-black">현재 페이지 수</div>
 
           <div className="relative">
             <input
