@@ -325,14 +325,15 @@ export default function RecordPage() {
   const [submitting, setSubmitting] = useState(false);
   const submittingRef = useRef(false);
   const isStoppedStatus = status === "중단";
+  const canApplyStopped = isStoppedStatus && hasValidUserBookId;
 
   const canApply = Boolean(
-    (isEditMode || hasValidUserBookId) &&
-      status &&
+    status &&
       !submitting &&
       (
-        isStoppedStatus ||
+        canApplyStopped ||
         (
+          (isEditMode || hasValidUserBookId) &&
           bookType &&
           Number.isFinite(selectedShelfId) &&
           isValidPagesRead &&
@@ -352,7 +353,7 @@ export default function RecordPage() {
     try {
       setSubmitting(true);
 
-      if (isStoppedStatus && hasValidUserBookId && status) {
+      if (canApplyStopped && status) {
         await patchUserBook({
           userBookId: parsedUserBookId,
           body: {
