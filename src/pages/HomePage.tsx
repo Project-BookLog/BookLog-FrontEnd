@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { Alarm, LogoBooklog } from "../assets/icons";
 import NavBarTop from "../components/common/navbar/NavBarTop";
 import Tab from "../components/common/Tab";
-import LikeCarousel from "../components/home/LikeCarousel";
+import RecommendedCarousel from "../components/home/RecommendedCarousel";
 import CurrentReading from "../components/home/CurrentReading";
 import Ranking from "../components/home/Ranking";
 import BestSeller from "../components/home/BestSeller";
@@ -172,7 +172,7 @@ function HomePage() {
       {/* 내용 */}
       <main className="pb-6 pt-4 mb-10 overflow-x-hidden">
         <section ref={likeSectionRef} className="scroll-mt-15 mb-10">
-          <LikeCarousel />
+          <RecommendedCarousel />
         </section>
 
         <section className="mb-12">
