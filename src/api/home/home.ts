@@ -1,5 +1,12 @@
 import { privateApi } from "../axiosConfig";
-import type { CurrentReadingBook, HomeResponse } from "../../types/home/home.types";
+import type { CurrentReadingBook, HomeResponse, RecommendationResponse } from "../../types/home/home.types";
+
+export const getRecommendations = async () => {
+  const { data } = await privateApi.get<RecommendationResponse>(
+    "/onboarding/recommendations"
+  );
+  return data;
+};
 
 export const getHome = async (): Promise<HomeResponse> => {
   const { data } = await privateApi.get<HomeResponse>("/home");

@@ -1,3 +1,26 @@
+export interface RecommendationBook {
+  bookTitle: string;
+  author: string;
+  publisher: string;
+  thumbnailUrl: string;
+  moodKeyword: string;
+  styleKeyword: string;
+  immersionKeyword: string;
+}
+
+export interface RecommendationSection {
+  title: string;
+  description: string;
+  books: RecommendationBook[];
+}
+
+export interface RecommendationResponse {
+  authorSection: RecommendationSection;
+  genreSection: RecommendationSection;
+  moodSection: RecommendationSection;
+}
+
+
 export interface CurrentReadingBook {
   userBookId: number;
   title: string;

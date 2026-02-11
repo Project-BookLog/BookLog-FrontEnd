@@ -1,24 +1,34 @@
-import { useState, useRef } from "react";
-import LikeCard from "./LikeCard";
+import { useState, useRef, useEffect } from "react";
+import RecommendedCard from "./RecommendedCard";
+import { getRecommendations } from "../../api/home/home";
+import type { RecommendationSection } from "../../types/home/home.types";
 
-const LIKE_CARDS = [
-  { id: 0, title: "작가", description: "한강 작가님의 새 작품을 확인해보세요." },
-  { id: 1, title: "작가", description: "한강 작가님의 새 작품을 확인해보세요." },
-  { id: 2, title: "장르", description: "요즘 (장르)에서 뜨고 있는 작품을 확인해보세요." },
-  { id: 3, title: "분위기", description: "(분위기) 느낌의 인기 작품을 확인해보세요" },
-];
-
-function LikeCarousel() {
+function RecommendedCarousel() {
+  const [sections, setSections] = useState<RecommendationSection[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const startXRef = useRef<number | null>(null);
 
+  useEffect(() => {
+    getRecommendations()
+      .then((res) => {
+        setSections([
+          res.authorSection,
+          res.genreSection,
+          res.moodSection,
+        ]);
+      })
+      .catch((err) => {
+        console.error("추천 불러오기 실패", err);
+      });
+  }, []);
+
   const next = () =>
     setActiveIndex((i) =>
-      i === LIKE_CARDS.length - 1 ? 0 : i + 1
+      i === sections.length - 1 ? 0 : i + 1
     );
   const prev = () =>
     setActiveIndex((i) =>
-      i === 0 ? LIKE_CARDS.length - 1 : i - 1
+      i === 0 ? sections.length - 1 : i - 1
     );
 
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
@@ -49,9 +59,9 @@ function LikeCarousel() {
           className="flex transition-transform duration-300"
           style={{ transform: `translateX(-${activeIndex * 100}%)` }}
         >
-          {LIKE_CARDS.map((card) => (
-            <div key={card.id} className="shrink-0 w-full px-4">
-              <LikeCard title={card.title} description={card.description} />
+          {sections.map((section, index) => (
+            <div key={index} className="shrink-0 w-full px-4">
+              <RecommendedCard title={section.title} description={section.description} book={section.books[0]} />
             </div>
           ))}
         </div>
@@ -59,11 +69,11 @@ function LikeCarousel() {
 
       {/* 인디케이터 */}
       <div className="mt-3 flex items-center justify-center gap-2">
-        {LIKE_CARDS.map((card, index) => {
+        {sections.map((_, index) => {
           const isActive = index === activeIndex;
           return (
             <button
-              key={card.id}
+              key={index}
               type="button"
               onClick={() => setActiveIndex(index)}
               className={
@@ -79,4 +89,4 @@ function LikeCarousel() {
   );
 }
 
-export default LikeCarousel;
+export default RecommendedCarousel;
