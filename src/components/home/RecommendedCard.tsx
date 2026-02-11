@@ -16,11 +16,15 @@ function RecommendedCard({ title, description, book }: LikeCardProps) {
       {/* 배경 */}
       <div className="absolute inset-0 opacity-90 blur-[80px] pointer-events-none">
         <div className="w-full h-full flex items-center justify-center">
-          <img
-            src={book.thumbnailUrl}
-            alt={book.bookTitle}
-            className="w-[170%] h-[170%]"
-          /> 
+          {book.thumbnailUrl ? (
+            <img
+              src={book.thumbnailUrl}
+              alt={book.bookTitle}
+              className="w-[170%] h-[170%]"
+            />
+          ) : (
+            <Default_BookImg className="w-[170%] h-[170%]" />
+          )}
         </div>
       </div>
 
@@ -30,7 +34,7 @@ function RecommendedCard({ title, description, book }: LikeCardProps) {
       {/* 이동 버튼 */}
       <button
         type="button"
-        className="absolute right-4 top-4 z-10 rounded-[12px]] bg-black/20 p-1"
+        className="absolute right-4 top-4 z-10 rounded-[12px] bg-black/20 p-1"
         // onClick={() => navigate("/book/:bookId}") } 
       >
         <CircleArrow className="w-8 h-8" />

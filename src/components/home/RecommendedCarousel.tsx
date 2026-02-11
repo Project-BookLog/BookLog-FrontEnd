@@ -59,10 +59,12 @@ function RecommendedCarousel() {
           className="flex transition-transform duration-300"
           style={{ transform: `translateX(-${activeIndex * 100}%)` }}
         >
-          {sections.map((section, index) => (
-            <div key={index} className="shrink-0 w-full px-4">
-              <RecommendedCard title={section.title} description={section.description} book={section.books[0]} />
-            </div>
+          {sections
+            .filter((section) => section.books.length > 0)
+            .map((section, index) => (
+              <div key={index} className="shrink-0 w-full px-4">
+                <RecommendedCard title={section.title} description={section.description} book={section.books[0]} />
+              </div>
           ))}
         </div>
       </div>
