@@ -43,9 +43,11 @@ function RecentSearches({
       </div>
 
       {!hasItems ? (
-        <p className="text-body-03 text-gray-500">
-          최근 검색어가 없습니다.
-        </p>
+        <div className="flex justify-center items-center h-[58px]">
+          <p className="text-body-03 text-gray-500">
+            최근 검색어가 없습니다.
+          </p>
+        </div>
       ) : (
         <div className="flex flex-wrap gap-2">
           {items.map((keyword) => (

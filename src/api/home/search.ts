@@ -17,6 +17,16 @@ export const getRecentSearchKeywords = async (): Promise<RecentSearchResponse> =
   return data;
 };
 
+export const deleteRecentSearchKeyword = async (keyword: string) => {
+  await privateApi.delete("/search/recent", {
+    params: { keyword },
+  });
+};
+
+export const deleteAllRecentSearchKeywords = async () => {
+  await privateApi.delete("/search/recent/all");
+};
+
 export const getRecommendedSearchKeywords = async (): Promise<RecommendedSearchResponse> => {
   const { data } = await privateApi.get<RecommendedSearchResponse>(
     "/search/recommendations"

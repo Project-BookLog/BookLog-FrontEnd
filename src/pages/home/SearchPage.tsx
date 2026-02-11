@@ -12,7 +12,7 @@ import BookResults from "../../components/home/search/BookResults";
 import AuthorResults from "../../components/home/search/AuthorResults";
 
 import { useSearch } from "../../context/SearchContext";
-import { saveSearchKeyword, getRecentSearchKeywords, getRecommendedSearchKeywords} from "../../api/home/search";
+import { saveSearchKeyword, getRecentSearchKeywords, getRecommendedSearchKeywords, deleteAllRecentSearchKeywords, deleteRecentSearchKeyword} from "../../api/home/search";
 import type { RecentSearchKeyword, RecommendedKeyword } from "../../types/home/search.types";
 import { LoadingPage } from "../onboarding/LoadingPage";
 import { ErrorPage } from "../onboarding/ErrorPage";
@@ -29,6 +29,30 @@ export default function SearchPage() {
   const [recentKeywords, setRecentKeywords] = useState<
     RecentSearchKeyword[]
   >([]);
+
+  const handleRemoveRecent = async (keyword: string) => {
+    try {
+      await deleteRecentSearchKeyword(keyword);
+
+      setRecentKeywords((prev) =>
+        prev.filter((k) => k.keyword !== keyword)
+      );
+    } catch (e) {
+      console.warn("최근 검색어 삭제 실패", e);
+      alert("검색어 삭제에 실패했습니다.");
+    }
+  };
+  const handleClearRecent = async () => {
+    try {
+      await deleteAllRecentSearchKeywords();
+      setRecentKeywords([]);
+    } catch (e) {
+      console.warn("전체 삭제 실패", e);
+      alert("검색어 전체 삭제에 실패했습니다.");
+    }
+  };
+
+
   const [recommendedKeywords, setRecommendedKeywords] = useState<
     RecommendedKeyword[]
   >([]);
@@ -51,21 +75,21 @@ export default function SearchPage() {
       : "전체";
 
 
-    useEffect(() => {
-      if (isInitRef.current) return;
-      if (!q) return;
+  useEffect(() => {
+    if (isInitRef.current) return;
+    if (!q) return;
 
-      search.setKeyword(q);
+    search.setKeyword(q);
       
-      startTransition(() => {
-        if (activeTab === "도서") {
-          search.searchBooks({ query: q });
-        } else if (activeTab === "작가") {
-          search.searchAuthors({ query: q });
-        } else {
-          search.searchBoth(q);
-        }
-      });
+    startTransition(() => {
+      if (activeTab === "도서") {
+        search.searchBooks({ query: q });
+      } else if (activeTab === "작가") {
+        search.searchAuthors({ query: q });
+      } else {
+        search.searchBoth(q);
+      }
+    });
 
       isInitRef.current = true;
     }, [q, search, activeTab]);
@@ -229,6 +253,8 @@ export default function SearchPage() {
             <section className="mb-12 px-5">
               <RecentSearches
                 items={recentKeywords.map((k) => k.keyword)}
+                onRemoveItem={handleRemoveRecent}
+                onClearAll={handleClearRecent}
                 onClickItem={(keyword) => {
                   search.setKeyword(keyword);
 
