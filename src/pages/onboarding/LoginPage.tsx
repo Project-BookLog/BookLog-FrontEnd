@@ -43,7 +43,7 @@ export const LoginPage = () => {
     };
 
     const handleKakaoLogin = () => {
-         window.location.href = import.meta.env.VITE_API_BASE_URL + "/auth/kakao/login"
+         window.location.href = import.meta.env.VITE_API_BASE_URL + "/auth/kakao/redirect"
     }
 
     const isDisabled =

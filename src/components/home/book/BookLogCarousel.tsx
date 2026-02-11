@@ -11,7 +11,7 @@ import { ErrorPage } from "../../../pages/onboarding/ErrorPage";
 function BookLogCarousel() {
   const { bookId } = useParams<{ bookId: string }>();
   const [logs, setLogs] = useState<BookRelatedBooklog []>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
