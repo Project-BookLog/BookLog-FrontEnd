@@ -1,162 +1,111 @@
 import { useMemo, useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { BackIcon, /*Reset*/ } from "../../../assets/icons";
+import { useNavigate, useSearchParams, useParams } from "react-router-dom";
+import { BackIcon, Default_BookImg } from "../../../assets/icons";
 import { SortDropDown } from "../../common/dropdown/SortDropDown";
-import { BOOK_ORDER, sortOptions } from "../../../enum/book";
 import { FilterChips, type FilterChip } from "../../common/FilterChips";
+import { BOOK_ORDER, sortOptions } from "../../../enum/book";
 import { useFilter } from "../../../hooks/useFilter";
-import { useParams } from "react-router-dom";
-
-const DUMMY_BOOKS = [
-  {
-    bookId: 1,
-    title: "책 제목",
-    thumbnailUrl: "https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/9791194530817.jpg",
-    authors: "저자명",
-    author: "저자명", 
-    publisherName: "출판사",
-    publisher: "출판사",
-    createdAt: "2021-01-01",
-    mood: "잔잔한",
-  },
-  {
-    bookId: 2,
-    title: "책 제목",
-    thumbnailUrl: "https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/9791194530817.jpg",
-    authors: "저자명",
-    author: "저자명",
-    publisherName: "출판사",
-    publisher: "출판사",
-    createdAt: "2020-05-15",
-    style: "서술적",
-  },
-  {
-    bookId: 3,
-    title: "책 제목",
-    thumbnailUrl: "https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/9791194530817.jpg",
-    authors: "저자명",
-    author: "저자명",
-    publisherName: "출판사",
-    publisher: "출판사",
-    createdAt: "2019-03-10",
-  },
-  {
-    bookId: 4,
-    title: "책 제목",
-    thumbnailUrl: "https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/9791194530817.jpg",
-    authors: "저자명",
-    author: "저자명",
-    publisherName: "출판사",
-    publisher: "출판사",
-    createdAt: "2022-08-20",
-    immersion: "높음",
-  },
-  {
-    bookId: 5,
-    title: "책 제목",
-    thumbnailUrl: "https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/9791194530817.jpg",
-    authors: "저자명",
-    author: "저자명",
-    publisherName: "출판사",
-    publisher: "출판사",
-    createdAt: "2023-11-05",
-    mood: "신비로운",
-  },
-  {
-    bookId: 6,
-    title: "책 제목",
-    thumbnailUrl: "https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/9791194530817.jpg",
-    authors: "저자명",
-    author: "저자명",
-    publisherName: "출판사",
-    publisher: "출판사",
-    createdAt: "2024-02-14",
-  },
-];
+import type { AuthorBook } from "../../../types/home/detail.types";
 
 type FilterKey = "mood" | "style" | "immersion";
 
-function AuthorBooks() {
+type Props = {
+  books: AuthorBook[];
+};
+
+function AuthorBooks({ books }: Props) {
   const navigate = useNavigate();
+  const { authorid } = useParams<{ authorid: string }>();
   const [searchParams] = useSearchParams();
   const { setPageInfo } = useFilter("author");
-  const { authorid } = useParams<{ authorid: string }>();
 
-  const [currentSort, setCurrentSort] = useState<BOOK_ORDER>(BOOK_ORDER.LATEST);
+  const [currentSort, setCurrentSort] = useState<BOOK_ORDER>(
+    BOOK_ORDER.LATEST
+  );
   const [isSortOpen, setIsSortOpen] = useState(false);
-  
+
   const [selectedFilters, setSelectedFilters] = useState<
     Partial<Record<FilterKey, string>>
   >({});
 
-  
-  useEffect(() => {
-    const mood = searchParams.get("mood");
-    const style = searchParams.get("style");
-    const immersion = searchParams.get("immersion");
 
+  useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedFilters({
-      mood: mood || undefined,
-      style: style || undefined,
-      immersion: immersion || undefined,
+      mood: searchParams.get("mood") || undefined,
+      style: searchParams.get("style") || undefined,
+      immersion: searchParams.get("immersion") || undefined,
     });
   }, [searchParams]);
 
-  const currentSortLabel =
-    sortOptions.find((o) => o.value === currentSort)?.label ?? "정렬";
 
-  const sortedItems = useMemo(() => {
-    let filtered = [...DUMMY_BOOKS];
+  const processedBooks = useMemo(() => {
+    let filtered = [...books];
 
     if (selectedFilters.mood) {
-      filtered = filtered.filter((book) => book.mood === selectedFilters.mood);
-    }
-    if (selectedFilters.style) {
-      filtered = filtered.filter((book) => book.style === selectedFilters.style);
-    }
-    if (selectedFilters.immersion) {
-      filtered = filtered.filter((book) => book.immersion === selectedFilters.immersion);
+      filtered = filtered.filter(
+        (b) => b.tasteInfo?.mood === selectedFilters.mood
+      );
     }
 
-    switch (currentSort) {
+    if (selectedFilters.style) {
+      filtered = filtered.filter(
+        (b) => b.tasteInfo?.style === selectedFilters.style
+      );
+    }
+
+    if (selectedFilters.immersion) {
+      filtered = filtered.filter(
+        (b) =>
+          b.tasteInfo?.immersion === selectedFilters.immersion
+      );
+    }
+
+    switch (currentSort) { //api보고 재조정 필요 
       case BOOK_ORDER.LATEST:
-        return filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        return filtered.reverse();
+
       case BOOK_ORDER.OLDEST:
-        return filtered.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        return filtered;
+
       case BOOK_ORDER.TITLE:
-        return filtered.sort((a, b) => a.title.localeCompare(b.title, "ko", { sensitivity: "base" }));
+        return filtered.sort((a, b) =>
+          a.title.localeCompare(b.title, "ko", {
+            sensitivity: "base",
+          })
+        );
+
       default:
         return filtered;
     }
-  }, [currentSort, selectedFilters]);
+  }, [books, selectedFilters, currentSort]);
 
-  const handleBookClick = (bookId: number) => {
-    navigate(`/book/${bookId}`);
-    // navigate("/bookdetail");
+
+  const goFilter = (from: FilterKey) => {
+    if (!authorid) return;
+
+    setPageInfo({
+      returnUrl: window.location.pathname,
+      preserveQuery: [],
+    });
+
+    const params = new URLSearchParams();
+    params.set("from", from);
+
+    navigate(`/author/${authorid}/filter?${params.toString()}`);
   };
 
+  
   const handleResetFilters = () => {
     const params = new URLSearchParams(searchParams);
     params.delete("mood");
     params.delete("style");
     params.delete("immersion");
-    navigate(`${window.location.pathname}?${params.toString()}`, { replace: true });
-  };
 
-
-  const goFilter = (from: FilterKey) => {
-    if(!authorid) return;
-    setPageInfo({ 
-      returnUrl: window.location.pathname, 
-      preserveQuery: [] 
+    navigate(`${window.location.pathname}?${params.toString()}`, {
+      replace: true,
     });
-    const params = new URLSearchParams();
-    params.set("from", from);
-    navigate(`/author/${authorid}/filter?${params.toString()}`);
   };
-
-
 
   const filterChips: FilterChip[] = [
     {
@@ -181,33 +130,49 @@ function AuthorBooks() {
 
   const hasAnyFilter = Object.values(selectedFilters).some(Boolean);
 
+  const currentSortLabel =
+    sortOptions.find((o) => o.value === currentSort)?.label ??
+    "정렬";
+
+  if (!books || books.length === 0) return null;
+
   return (
     <section className="relative">
       {isSortOpen && (
         <button
           type="button"
           onClick={() => setIsSortOpen(false)}
-          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px]"
+          className="fixed inset-0 z-40 bg-b-op15/20 backdrop-blur-[4px]"
         />
       )}
 
-      {/* 상단 필터/정렬 바 */}
+
       <div className="mb-5 flex items-center gap-3 pl-5">
         <div className="no-scrollbar flex flex-1 gap-2 overflow-x-auto pr-1">
-          <FilterChips chips={filterChips} hasAnyFilter={hasAnyFilter} onReset={handleResetFilters} />
+          <FilterChips
+            chips={filterChips}
+            hasAnyFilter={hasAnyFilter}
+            onReset={handleResetFilters}
+          />
         </div>
       </div>
 
+
       <div className="mb-3 flex items-center justify-between px-5">
         <p className="text-body-03 text-gray-600">
-          총 <span className="text-primary">{sortedItems.length}</span>권
+          총 <span className="text-primary">
+            {processedBooks.length}
+          </span>
+          권
         </p>
 
         <div className="relative z-50 inline-flex">
           <button
             type="button"
             className="flex items-center gap-1 text-body-03 text-gray-600"
-            onClick={() => setIsSortOpen((prev) => !prev)}
+            onClick={() =>
+              setIsSortOpen((prev) => !prev)
+            }
           >
             <span>{currentSortLabel}</span>
             <BackIcon className="h-4 w-4 rotate-270" />
@@ -218,8 +183,12 @@ function AuthorBooks() {
               <div className="pointer-events-auto mt-3 translate-x-5">
                 <SortDropDown
                   currentSort={currentSort}
-                  onSelectSort={(sort) => setCurrentSort(sort)}
-                  onClose={() => setIsSortOpen(false)}
+                  onSelectSort={(sort) =>
+                    setCurrentSort(sort)
+                  }
+                  onClose={() =>
+                    setIsSortOpen(false)
+                  }
                 />
               </div>
             </div>
@@ -227,29 +196,37 @@ function AuthorBooks() {
         </div>
       </div>
 
-      {/* 2열 그리드 도서 리스트 */}
+ 
       <div className="grid grid-cols-3 gap-x-3 gap-y-6 px-5 pb-10">
-        {sortedItems.map((book) => (
+        {processedBooks.map((book) => (
           <button
             key={book.bookId}
             type="button"
             className="text-left"
-            onClick={() => handleBookClick(book.bookId)}
+            onClick={() =>
+              navigate(`/book/${book.bookId}`)
+            }
           >
             <div className="h-36 w-full overflow-hidden rounded">
-              <img
-                src={book.thumbnailUrl}
-                alt={book.title}
-                className="h-full w-full object-cover"
-              />
+              {book.thumbnailUrl ? (
+                <img
+                  src={book.thumbnailUrl}
+                  alt={book.title}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <Default_BookImg className="h-full w-full object-cover" />
+              )}
             </div>
+
             <p className="mt-2 line-clamp-2 text-caption-01 font-medium">
-              {book.title}
+              {book.title ?? "-"}
             </p>
+
             <p className="mt-1 truncate text-caption-02 text-gray-500">
-              {book.authors}
-              <span className="text-gray-300"> | </span>
-              {book.publisherName}
+              {book.authorName ?? "-"}
+              <span className="text-gray-400">, </span>
+              {book.publisherName ?? "-"}
             </p>
           </button>
         ))}

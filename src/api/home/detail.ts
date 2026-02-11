@@ -1,5 +1,5 @@
 import { privateApi } from "../axiosConfig";
-import type { BookDetailResponse, BookRelatedBooklogsApiResponse } from '../../types/home/detail.types';
+import type { AuthorDetail, BookDetailResponse, BookRelatedBooklogsApiResponse } from '../../types/home/detail.types';
 
 export const getBookDetail = async (bookId: number) => {
   const { data } = await privateApi.get<BookDetailResponse>(
@@ -7,8 +7,6 @@ export const getBookDetail = async (bookId: number) => {
   );
   return data;
 };
-
-
 
 export const getBookRelatedBooklogs = async (
   bookId: number,
@@ -28,4 +26,20 @@ export const getBookRelatedBooklogs = async (
      content: excerpt ?? rest.content,
    })),
   };
+};
+
+
+
+export const getAuthorDetail = async (
+  authorId: number,
+  sortBy: "latest" | "oldest" = "latest"
+) => {
+  const { data } = await privateApi.get<AuthorDetail>(
+    `/authors/${authorId}`,
+    {
+      params: { sortBy },
+    }
+  );
+
+  return data;
 };

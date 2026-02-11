@@ -75,3 +75,33 @@ export type BookRelatedBooklog = {
   tags: BookRelatedBooklogTag[];
   createdAt: string;
 };
+
+
+export interface AuthorBook {
+  bookId: number;
+  title: string;
+  authorName: string;
+  publisherName: string;
+  thumbnailUrl: string | null;
+  tasteInfo: {
+    mood: string | null;
+    style: string | null;
+    immersion: string | null;
+  };
+}
+
+export interface AuthorDetail {
+  authorId: number;
+  name: string;
+  profileImageUrl: string | null;
+  biography: string | null;
+  books: AuthorBook[];
+  profile: {
+    education: string[];
+    debut: string | null;
+    birthDate: string | null;
+    occupations: string[];
+  };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  awards: any[];
+}
