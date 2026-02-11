@@ -1,66 +1,74 @@
-import { useState } from "react";
+/* eslint-disable react-hooks/refs */
 import { BackIcon } from "../../../assets/icons";
 import type { BookDetailResponse } from "../../../types/home/detail.types";
+import { useCollapsible } from "../../../hooks/useCollapsible";
 
 interface BookInfoProps {
   book: BookDetailResponse;
 }
 
-function BookInfo({book}: BookInfoProps) {
-  const [descExpanded, setDescExpanded] = useState(false);
-  const [tocExpanded, setTocExpanded] = useState(false);
+function BookInfo({ book }: BookInfoProps) {
+  const desc = useCollapsible(book.description);
+  const toc = useCollapsible(book.tableOfContents);
 
   return (
     <div className="px-6 my-8 space-y-10">
+
       {/* 책 소개 */}
       <section>
-        <div>
-          <div className="mb-3 flex justify-between items-center">
-            <p className="text-title-02 font-semibold">책 소개</p>
-            <button type="button" onClick={() => setDescExpanded(prev => !prev)}>
+        <div className="mb-3 flex justify-between items-center">
+          <p className="text-title-02 font-semibold">책 소개</p>
+
+          {desc.collapsible && (
+            <button type="button" onClick={desc.toggle}>
               <BackIcon
                 className={`w-5 h-5 transition-transform ${
-                  descExpanded ? "rotate-90" : "rotate-270"
+                  desc.expanded ? "rotate-90" : "rotate-270"
                 }`}
               />
             </button>
-          </div>
-          <div>
-            <p
-              className={
-                "text-caption-01 text-gray-600 " +
-                (descExpanded ? "book-desc-expanded" : "book-desc-clamp")
-              }
-            >
-              {book.description || "-"}
-            </p>
-          </div>
+          )}
+        </div>
+
+        <div
+          ref={desc.ref}
+          className={`text-caption-01 text-gray-600 ${
+            desc.expanded ? "" : "line-clamp-4"
+          }`}
+        >
+          {book.description || "-"}
         </div>
       </section>
 
       {/* 목차 */}
       <section>
-        <div className="mt-10">
-          <div className="mb-3 flex justify-between items-center">
-            <p className="text-title-02 font-semibold">목차</p>
-            <button type="button" onClick={() => setTocExpanded(prev => !prev)}>
+        <div className="mb-3 flex justify-between items-center">
+          <p className="text-title-02 font-semibold">목차</p>
+
+          {toc.collapsible && (
+            <button type="button" onClick={toc.toggle}>
               <BackIcon
                 className={`w-5 h-5 transition-transform ${
-                  tocExpanded ? "rotate-90" : "rotate-270"
+                  toc.expanded ? "rotate-90" : "rotate-270"
                 }`}
               />
             </button>
-          </div>
-          <div>
-            <p
-              className={
-                "text-caption-01 text-gray-600 " +
-                (tocExpanded ? "book-toc-expanded" : "book-toc-clamp")
-              }
-            >
-              프롤로그 <br /><br /> 1. 별에 머리를 담근 소년<br />2. 어느 섬의 선지자<br />3. 신이 없는 막간극<br />4. 꼬리를 좇다<br />5. 유리단지에 담긴 기원<br />6. 박살<br />7. 파괴되지 않는 것<br />8. 기만에 대하여<br />9. 세상에서 가장 쓴 것<br />10. 진정한 공포의 공간<br />11. 사다리<br />12. 민들레<br />13. 데우스 엑스 마키나<br /><br />에필로그<br />삽화에 관한 몇 마디<br />변화에 관한 몇 마디<br />감사의 말<br />주석
-            </p>
-          </div>
+          )}
+        </div>
+
+        <div
+          ref={toc.ref}
+          className={`text-caption-01 text-gray-600 ${
+            toc.expanded ? "" : "line-clamp-4"
+          }`}
+        >
+          {book.tableOfContents?.length ? (
+            book.tableOfContents.map((item, index) => (
+              <p key={index}>{item}</p>
+            ))
+          ) : (
+            <p>-</p>
+          )}
         </div>
       </section>
 
@@ -84,7 +92,8 @@ function BookInfo({book}: BookInfoProps) {
             <span>{book.publishedDate?.slice(0, 4) || "-"}</span>
           </div>
         </div>
-      </section>
+        </section>
+
     </div>
   );
 }
