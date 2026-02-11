@@ -117,11 +117,6 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
             setAccessToken(accessToken);
             setRefreshToken(refreshToken);
 
-            const myInfo = await getMyProfile();
-            setUserId(myInfo?.userId);
-            setUserIdInStorage(myInfo?.userId);
-            setNickname(myInfo?.nickname);
-            setNicknameInStorage(myInfo?.nickname);
         } catch (error) {
             console.error("토큰 설정 오류", error);
             throw error;

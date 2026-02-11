@@ -6,10 +6,13 @@ import Step3 from "./steps/Step_3_Page";
 import CompletePage from "./steps/CompletePage";
 import { Navigate } from "react-router-dom";
 import { useGetOnboardingProfile } from "../../hooks/queries/useGetOnboardingProfile";
+import { LoadingPage } from "./LoadingPage";
 
 function StepRenderer() {
   const { step } = useOnboarding();
-  const { data } = useGetOnboardingProfile();
+  const { data, isLoading } = useGetOnboardingProfile();
+
+  if (isLoading) return <LoadingPage/>;
 
   if (data?.isCompleted === true) {
     return <Navigate to="/" replace />;
