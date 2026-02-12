@@ -4,6 +4,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
 import { usePostLogin } from "../hooks/mutations/usePostLogin";
 import { getMyProfile } from "../api/mypage/myProfile";
+import { usePostLogout } from "../hooks/mutations/usePostLogout";
 
 interface AuthContextType {
     accessToken: string | null;
@@ -60,6 +61,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     );
 
     const { mutateAsync: loginMutateAsync } = usePostLogin();
+    const { mutateAsync: logoutMutateAsync } = usePostLogout();
 
     const login = async (loginData: RequestLoginDto) => {
         try {
@@ -93,6 +95,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
     const logout = async() => {
         try {
+            await logoutMutateAsync(getRefreshTokenFromStorage());
             
             removeAccessTokenFromStorage();
             removeRefreshTokenFromStorage();
