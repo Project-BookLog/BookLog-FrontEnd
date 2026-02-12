@@ -63,6 +63,7 @@ type Post = {
   followedByMe?: boolean;
   images?: { imageId: number; imageUrl: string; order: number }[];
   bookmarkedByMe?: boolean;
+  thumbnailUrl?: string;
 };
 
 function TagPill({ children }: { children: React.ReactNode }) {
@@ -125,6 +126,7 @@ export default function BooklogDetailPage() {
         order: Number(img.order),
       })),
       bookmarkedByMe: detail.bookmarkedByMe,
+      thumbnailUrl: detail.book.coverImageUrl,
     };
   }, [detail]);
 
@@ -245,6 +247,7 @@ export default function BooklogDetailPage() {
         author: `${b.authorName} 저`,
         publisher: b.publisher,
         tags: (b.tags ?? []).map((t) => t.name),
+        coverImageUrl: b.coverImageUrl,
       })),
     [recommendBooks]
   );
@@ -375,6 +378,7 @@ export default function BooklogDetailPage() {
                 title={post.bookTitle}
                 author={post.bookAuthor}
                 publisher={post.publisher}
+                thumbnailUrl={post.thumbnailUrl}
               />
             </div>
 
@@ -477,6 +481,7 @@ export default function BooklogDetailPage() {
                     author={b.author}
                     publisher={b.publisher}
                     tags={b.tags}
+                    thumbnailUrl={b.coverImageUrl}
                   />
                 </div>
               ))}

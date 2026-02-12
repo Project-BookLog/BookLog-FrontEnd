@@ -322,6 +322,7 @@ export default function BookWritePage() {
               author={authorText}
               publisher={publisherText}
               tags={[]}
+              thumbnailUrl={book?.thumbnailUrl!}
             />
           </div>
         </section>
