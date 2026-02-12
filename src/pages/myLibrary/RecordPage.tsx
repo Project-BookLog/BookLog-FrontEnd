@@ -390,18 +390,16 @@ export default function RecordPage() {
       }
       
       const shouldSaveReadingLog = sessionPagesRead > 0;
-      if (shouldSaveReadingLog) {
-        const payload: CreateReadingLogRequest = {
-          readDate: toApiDate(date.y, date.m, date.d),
-          currentPage: currentPageAtRecord,
-          pagesRead: sessionPagesRead,
-        };
+      const payload: CreateReadingLogRequest = {
+        readDate: toApiDate(date.y, date.m, date.d),
+        currentPage: currentPageAtRecord,
+        pagesRead: sessionPagesRead,
+      };
 
-        if (isEditMode) {
-          await updateReadingLog(logId, payload);
-        } else {
-          await createReadingLog(parsedUserBookId, payload);
-        }
+      if (isEditMode) {
+        await updateReadingLog(logId, payload);
+      } else if (shouldSaveReadingLog) {
+        await createReadingLog(parsedUserBookId, payload);
       }
 
       showToast("독서 기록이 적용되었어요.")
