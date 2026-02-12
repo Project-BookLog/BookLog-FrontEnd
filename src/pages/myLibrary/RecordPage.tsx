@@ -4,13 +4,13 @@ import NavBarTop from "../../components/common/navbar/NavBarTop";
 import PlusIcon from "../../assets/icons/Plus.svg";
 
 import { createReadingLog, updateReadingLog, type CreateReadingLogRequest } from "../../api/readingLogs";
-import type { BookFormat, BookStatus } from "../../types";
 import { usePatchBookDetail } from "../../hooks/mutations/usePatchBookDetail";
 import { useGetShelves } from "../../hooks/queries/useGetShelves";
 import { useGetUserBookDetail } from "../../hooks/queries/useGetUserBookDetail";
 import { useToast } from "../../context/ToastContext";
 import { ConfirmModal } from "../../components/common/ConfirmModal";
 import { usePatchUserBookTotalPage } from "../../hooks/mutations/usePatchUserBookTotalPage";
+import type { BookFormat, BookStatus } from "../../types/book.types";
 
 /** ---------- utils ---------- */
 function pad2(n: number) {

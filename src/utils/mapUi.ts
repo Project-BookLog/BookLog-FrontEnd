@@ -1,4 +1,4 @@
-import type { Book } from "../types";
+import type { Book } from "../types/book.types";
 import type { UIBook } from "../types/ui";
 
 export const mapBookToUIBook = (book: Book): UIBook => ({
