@@ -1,14 +1,13 @@
 import { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
+
 import RecommendedCard from "./RecommendedCard";
 import { getRecommendations } from "../../api/home/home";
 import type { RecommendationSection } from "../../types/home/home.types";
 import { useGetUserBookList } from "../../hooks/queries/useGetUserBookList";
-import RecommendedCardSkeleton from "./RecommendedCardSkeleton";
 
 function RecommendedCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
   const startXRef = useRef<number | null>(null);
   const { data: userBookData } = useGetUserBookList();
 
@@ -20,7 +19,9 @@ function RecommendedCarousel() {
   });
 
   if (isLoading) {
-    return null;
+    return (
+      <div className="w-full max-w-md mx-auto h-48 bg-gray-100 animate-pulse rounded-xl" />
+    );
   }
 
   if (isError || !data) return null;
