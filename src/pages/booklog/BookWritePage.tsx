@@ -147,8 +147,8 @@ export default function BookWritePage() {
   /** ---------------- 발행 가능 여부 ---------------- */
   const hasTag = useMemo(() => {
     return (
-      filter.mood.length > 0 ||
-      filter.style.length > 0 ||
+      filter.mood.length > 0 &&
+      filter.style.length > 0 &&
       filter.immersion.length > 0
     );
   }, [filter]);

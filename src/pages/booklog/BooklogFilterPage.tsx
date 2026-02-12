@@ -34,7 +34,7 @@ export default function BooklogFilterPage() {
   const from = useMemo(() => navState.from ?? "/booklog", [navState.from]);
 
   const hasAnyFilter =
-    filter.mood.length > 0 || filter.style.length > 0 || filter.immersion.length > 0;
+    filter.mood.length > 0 && filter.style.length > 0 && filter.immersion.length > 0;
 
   const [moods, setMoods] = useState<Mood[]>([...FALLBACK_MOODS]);
   const [styles, setStyles] = useState<Style[]>([...FALLBACK_STYLES]);
