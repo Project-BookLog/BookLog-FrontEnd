@@ -2,20 +2,26 @@ import { useState, useRef, useEffect } from "react";
 import RecommendedCard from "./RecommendedCard";
 import { getRecommendations } from "../../api/home/home";
 import type { RecommendationSection } from "../../types/home/home.types";
+import { useGetUserBookList } from "../../hooks/queries/useGetUserBookList";
 
 function RecommendedCarousel() {
   const [sections, setSections] = useState<RecommendationSection[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const startXRef = useRef<number | null>(null);
+  const { data } = useGetUserBookList();
+
+  const hasBooks = (data?.items?.length ?? 0) > 0;
 
   useEffect(() => {
     getRecommendations()
       .then((res) => {
-        setSections([
+        const rawSections = [
           res.authorSection,
           res.genreSection,
           res.moodSection,
-        ]);
+        ];
+
+        setSections(rawSections);
       })
       .catch((err) => {
         console.error("추천 불러오기 실패", err);
@@ -60,12 +66,41 @@ function RecommendedCarousel() {
           style={{ transform: `translateX(-${activeIndex * 100}%)` }}
         >
           {sections
-            .filter((section) => section.books.length > 0)
-            .map((section, index) => (
-              <div key={index} className="shrink-0 w-full px-4">
-                <RecommendedCard title={section.title} description={section.description} book={section.books[0]} />
-              </div>
-          ))}
+            .map((section, index) => {
+              const titleMap = hasBooks ? ["작가", "장르", "분위기"] : ["분위기", "문체", "몰입도"];
+              return { section, title: titleMap[index] };
+            })
+            .filter(({ section }) => section.books.length > 0)
+            .map(({ section, title }) => {
+              const book = section.books[0];
+
+              let description = "";
+
+              switch (title) {
+                case "작가":
+                  description = `${book.author} 작가님의 새 작품을 확인해보세요.`;
+                  break;
+                case "장르":
+                  description = `요즘 ${book.keyword2}에서 뜨고 있는 작품을 확인해보세요.`;
+                  break;
+                case "분위기":
+                  description = `${book.keyword3} 느낌의 인기 작품을 확인해보세요.`;
+                  break;
+                case "문체":
+                  description = `${book.styleKeyword} 느낌의 인기 작품을 확인해보세요.`;
+                  break;
+                case "몰입도":
+                  description = `${book.immersionKeyword} 느낌의 인기 작품을 확인해보세요.`;
+                  break;
+              }
+
+              return (
+                <div key={section.title} className="shrink-0 w-full px-4">
+                  <RecommendedCard title={title} description={description} book={book} />
+                </div>
+              );
+            })
+          }
         </div>
       </div>
 
