@@ -1,4 +1,6 @@
-import { useEffect, useState, useRef } from "react"; 
+import { useEffect, useState, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
+
 import { Alarm, LogoBooklog } from "../assets/icons";
 import NavBarTop from "../components/common/navbar/NavBarTop";
 import Tab from "../components/common/Tab";
@@ -13,22 +15,12 @@ import { ErrorPage } from "./onboarding/ErrorPage";
 
 import { getMyProfile } from "../api/mypage/myProfile";
 import { getHome } from "../api/home/home";
-import type { BestsellerSection, RealTimeRankingBook } from "../types/home/home.types";
 
 const TABS = ["홈", "실시간 랭킹", "분위기별", "문체별", "몰입도별"] as const;
 type TapType = (typeof TABS)[number];
 
 function HomePage() {
-  const [username, setUsername] = useState<string>("");
-
   const [activeTab, setActiveTab] = useState<TapType>("홈");
-  const [rankingBooks, setRankingBooks] = useState<RealTimeRankingBook[]>([]);
-  const [moodBestsellers, setMoodBestsellers] = useState<BestsellerSection[]>([]);
-  const [writingStyleBestsellers, setWritingStyleBestsellers] = useState<BestsellerSection[]>([]);
-  const [immersionBestsellers, setImmersionBestsellers] = useState<BestsellerSection[]>([]);
-  
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
 
   const likeSectionRef = useRef<HTMLDivElement | null>(null);
   const rankingRef = useRef<HTMLDivElement | null>(null);
@@ -36,77 +28,39 @@ function HomePage() {
   const writingStyleRef = useRef<HTMLDivElement | null>(null);
   const immersionRef = useRef<HTMLDivElement | null>(null);
 
+  const {
+    data: profile,
+    isError: profileError,
+  } = useQuery({
+    queryKey: ["myProfile"],
+    queryFn: getMyProfile,
+  });
+
+  const {
+    data: homeData,
+    isError: homeError,
+  } = useQuery({
+    queryKey: ["home"],
+    queryFn: getHome,
+  });
+
+
   const handleChangeTab = (nextTab: TapType) => {
     setActiveTab(nextTab);
 
-    if (nextTab === "홈" && likeSectionRef.current) {
-      likeSectionRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
+    const map = {
+      홈: likeSectionRef,
+      "실시간 랭킹": rankingRef,
+      분위기별: moodRef,
+      문체별: writingStyleRef,
+      몰입도별: immersionRef,
+    };
 
-    if (nextTab === "실시간 랭킹" && rankingRef.current) {
-      rankingRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-
-    if (nextTab === "분위기별" && moodRef.current) {
-      moodRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-
-    if (nextTab === "문체별" && writingStyleRef.current) {
-      writingStyleRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-
-    if (nextTab === "몰입도별" && immersionRef.current) {
-      immersionRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+    const target = map[nextTab]?.current;
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
-
-  useEffect(() => {
-    getMyProfile()
-      .then((res) => {
-        setUsername(res.nickname);
-      })
-      .catch((err) => {
-        console.error("프로필 불러오기 실패:", err);
-      });
-  }, []);
-
-  useEffect(() => {
-    Promise.all([
-      getMyProfile(),
-      getHome(),
-    ])
-      .then(([profileRes, homeRes]) => {
-        setUsername(profileRes.nickname);
-
-        setRankingBooks(homeRes.realTimeRanking.rankings);
-        setMoodBestsellers(homeRes.moodBestsellers);
-        setWritingStyleBestsellers(homeRes.writingStyleBestsellers);
-        setImmersionBestsellers(homeRes.immersionBestsellers);
-      })
-      .catch((err) => {
-        console.error("홈 데이터 불러오기 실패:", err);
-        setIsError(true);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, []);
-
 
   useEffect(() => {
     const handleScroll = () => {
@@ -142,22 +96,22 @@ function HomePage() {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
-
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [activeTab]); 
+  }, [activeTab]);
 
-  if(isLoading) return <LoadingPage />;
-  if (isError) return <ErrorPage />;
-  
+
+  if (!profile || !homeData) return <LoadingPage />;
+  if (profileError || homeError) return <ErrorPage />;
+
+
   return (
     <div className="min-h-screen bg-bg">
-      {/* navbar */}
+
       <NavBarTop
         leftSlot={<LogoBooklog className="h-[30px]" />}
         rightSlot={<Alarm className="w-6 h-6 mt-1" />}
       />
 
-      {/* tab*/}
       <div className="sticky top-0 z-10 bg-bg">
         <div className="px-5 border-b border-gray-200">
           <Tab
@@ -169,27 +123,25 @@ function HomePage() {
         </div>
       </div>
 
-      {/* 내용 */}
       <main className="pb-6 pt-4 mb-10 overflow-x-hidden">
         <section ref={likeSectionRef} className="scroll-mt-15 mb-10">
           <RecommendedCarousel />
         </section>
 
         <section className="mb-12">
-          <CurrentReading username={username} />
+          <CurrentReading username={profile.nickname} />
         </section>
 
         <section ref={rankingRef} className="scroll-mt-15 mb-12">
-          <Ranking books={rankingBooks} />
+          <Ranking books={homeData.realTimeRanking.rankings} />
         </section>
-
 
         <section ref={moodRef} className="scroll-mt-15 mb-12">
           <BestSeller
             type="mood"
             title="분위기별 베스트셀러"
             subtitle="내 취향에 맞는 분위기별 책을 골라 읽어보세요!"
-            sections={moodBestsellers}
+            sections={homeData.moodBestsellers}
           />
         </section>
 
@@ -198,7 +150,7 @@ function HomePage() {
             type="writingStyle"
             title="문체별 베스트셀러"
             subtitle="내 취향에 맞는 문체별 책을 골라 읽어보세요!"
-            sections={writingStyleBestsellers}
+            sections={homeData.writingStyleBestsellers}
           />
         </section>
 
@@ -207,7 +159,7 @@ function HomePage() {
             type="immersion"
             title="몰입도별 베스트셀러"
             subtitle="내 취향에 맞는 몰입도별 책을 골라 읽어보세요!"
-            sections={immersionBestsellers}
+            sections={homeData.immersionBestsellers}
           />
         </section>
       </main>
