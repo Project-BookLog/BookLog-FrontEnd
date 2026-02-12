@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import PlusIcon from "../../assets/icons/Plus.svg";
@@ -304,6 +304,9 @@ export default function RecordPage() {
 
   const [date, setDate] = useState<{ y: number; m: number; d: number }>(today);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const handleDateChange = useCallback((v: { y: number; m: number; d: number }) => {
+    setDate(v);
+  }, []);
 
   const isValidPagesRead = useMemo(() => {
     if (!pagesRead) return false;
@@ -477,9 +480,7 @@ export default function RecordPage() {
           {datePickerOpen && (
             <InlineDatePicker
               value={date}
-              onChange={(v) => {
-                setDate(v);
-              }}
+              onChange={handleDateChange}
             />
           )}
         </div>
