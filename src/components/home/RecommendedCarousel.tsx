@@ -4,9 +4,11 @@ import RecommendedCard from "./RecommendedCard";
 import { getRecommendations } from "../../api/home/home";
 import type { RecommendationSection } from "../../types/home/home.types";
 import { useGetUserBookList } from "../../hooks/queries/useGetUserBookList";
+import RecommendedCardSkeleton from "./RecommendedCardSkeleton";
 
 function RecommendedCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
   const startXRef = useRef<number | null>(null);
   const { data: userBookData } = useGetUserBookList();
 
