@@ -10,9 +10,10 @@ type MyBookCardProps = {
 export const MyBookLogCard = ({ booklog, onClick }: MyBookCardProps) => {
     
     const { mutate: toggleBookmark } = useToggleBooklogBookmark();
+    const bookImage = booklog.book.coverImageUrl;
     const images = (booklog.images ?? []).filter((img) => Boolean(img?.imageUrl));
-    const visibleImages = images.slice(0, 3);
-    const remainCount = images.length - 2;
+    const visibleImages = images.slice(0, 2);
+    const remainCount = images.length - 1;
 
     return (
         <div
@@ -28,11 +29,16 @@ export const MyBookLogCard = ({ booklog, onClick }: MyBookCardProps) => {
                 }
             }}
         >
-            <div className="flex justify-between items-start self-stretch">
+            <div className="flex items-start self-stretch gap-[6.5px]">
+                <img
+                    className="flex w-[94px] h-[94px] justify-center items-center rounded-[8px] bg-gray-300"
+                    src={bookImage}
+                    alt={booklog.book.title ?? "책 표지"}
+                />
                 {visibleImages.map((img, index) => {
-                    if (index === 2 && images.length > 3) {
+                    if (index === 1 && images.length > 2) {
                         return (
-                            <div key={index} className="flex w-[94px] h-[94px] px-[82.276px] py-[43.606px] justify-center items-center gap-[5px] rounded-[6.582px] bg-gray-300">
+                            <div key={index} className="flex w-[94px] h-[94px] justify-center items-center rounded-[6.582px] bg-gray-300">
                                 <p className="[font-feature-settings:'liga'_off] text-black text-en-caption-01">+{remainCount}</p>
                             </div>
                         );
