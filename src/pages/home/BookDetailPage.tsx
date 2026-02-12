@@ -10,8 +10,8 @@ import { useGetBookDetail } from "../../hooks/queries/useGetBookDetail";
 import { LoadingPage } from "../onboarding/LoadingPage";
 import { usePostUserBook } from "../../hooks/mutations/usePostUserBook";
 import { useGetUserBookDetail } from "../../hooks/queries/useGetUserBookDetail";
-import type { BookFormat, BookStatus } from "../../types";
 import { useGetUserBookList } from "../../hooks/queries/useGetUserBookList";
+import type { BookFormat, BookStatus } from "../../types/book.types";
 
 const TABS = ["책 추천", "책 정보", "북로그"] as const;
 type TabType = (typeof TABS)[number];
