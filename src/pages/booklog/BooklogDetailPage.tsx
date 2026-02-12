@@ -382,12 +382,15 @@ export default function BooklogDetailPage() {
               />
             </div>
 
-            {sortedImages[0]?.imageUrl ? (
-              <img
-                src={sortedImages[0].imageUrl}
-                alt=""
-                className="shrink-0 h-[220px] w-[240px] rounded-[12px] object-cover bg-[#6F6F6F] grid place-items-center text-caption-01 text-white/80"
-              />
+            {sortedImages.length > 0 ? (
+              sortedImages.map((img) => (
+                <img
+                  key={img.imageId}
+                  src={img.imageUrl}
+                  alt=""
+                  className="shrink-0 h-[220px] w-[240px] rounded-[12px] object-cover bg-[#6F6F6F]"
+                />
+              ))
             ) : (
               <div className="shrink-0 h-[220px] w-[240px] rounded-[12px] bg-[#6F6F6F] grid place-items-center text-caption-01 text-white/80">
                 사진
