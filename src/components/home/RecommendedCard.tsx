@@ -34,7 +34,7 @@ function RecommendedCard({ title, description, book }: LikeCardProps) {
       {/* 이동 버튼 */}
       <button
         type="button"
-        className="absolute right-4 top-4 z-10 rounded-[12px] p-1"
+        className="absolute right-4 top-4 z-10 rounded-[12px] bg-black/20 p-1"
         onClick={() => {
           if (!book.bookId) return;
           navigate(`/book/${book.bookId}`)

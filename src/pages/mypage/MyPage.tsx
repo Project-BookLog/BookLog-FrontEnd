@@ -1,5 +1,4 @@
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMemo, useEffect, useState } from "react";
 import { Setting, BackIcon } from "../../assets/icons";
 import UserInfoCard from "../../components/mypage/UserInfoCard";
 import ReadingStatus from "../../components/mypage/ReadingStatus";
@@ -10,27 +9,34 @@ import { useNavigate } from "react-router-dom";
 import { getCurrentMonthString, getCurrentYearMonth } from "../../utils/date";
 
 import { getMyProfileCard } from "../../api/mypage/myProfileCard";
+import type { UserProfileCard } from "../../types/myPage/user.types";
 import { ErrorPage } from "../onboarding/ErrorPage";
-import { LoadingPage } from "../onboarding/LoadingPage";
 
 function MyPage() {
   const navigate = useNavigate();
+  const [profile, setProfile] = useState<UserProfileCard | null>(null);
 
   const monthString = useMemo(() => getCurrentMonthString(), []);
   const { year, month } = useMemo(() => getCurrentYearMonth(), []);
 
+  // const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  const {
-    data: profile,
-    isError,
-  } = useQuery({
-    queryKey: ["myProfileCard"],
-    queryFn: getMyProfileCard,
-  });
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const profileData = await getMyProfileCard();
+        setProfile(profileData);
+      } catch (error) {
+        console.error("Failed to fetch profile:", error);
+        setError(true);
+      } finally {
+        // setLoading(false);
+      }
+    };
 
-
-  if (!profile) return <LoadingPage />;
-  if (isError) return <ErrorPage />;
+    fetchProfile();
+  }, []);
 
   return (
     <div className="min-h-screen bg-bg">
@@ -46,8 +52,12 @@ function MyPage() {
           </button>
         </header>
 
-        <section className="px-5">
-          <UserInfoCard user={profile} />
+        <section className=" px-5">
+          { error ? (
+            <ErrorPage />
+          ) : profile ? (
+            <UserInfoCard user={profile} />
+          ) : null}
         </section>
 
         <div className="mt-8 h-2 w-full bg-gray-100" />
@@ -56,6 +66,8 @@ function MyPage() {
           <ReadingStatus />
         </section>
 
+
+        {/* 독서 랭킹 */}
         <section className="px-5 mt-8">
           <div className="mb-3.5 flex justify-between">
             <p className="text-title-02">독서 랭킹</p>
@@ -72,6 +84,8 @@ function MyPage() {
           <TopReadingRanking month={monthString} />
         </section>
 
+
+        {/* 독서 캘린더 */}
         <section className="px-5 mt-8 mb-28">
           <div className="mb-3.5 flex justify-between">
             <p className="text-title-02">독서 캘린더</p>
@@ -89,9 +103,11 @@ function MyPage() {
         </section>
 
         <NavbarBottom />
+
       </main>
     </div>
   );
 }
 
 export default MyPage;
+

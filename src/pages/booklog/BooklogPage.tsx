@@ -1,6 +1,5 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 
 import FilterBar from "../../components/booklog/FilterBar";
 import NavbarBottom from "../../components/common/navbar/NavBarBottom";
@@ -16,24 +15,44 @@ import { ErrorPage } from "../onboarding/ErrorPage";
 
 export default function BooklogPage() {
   const navigate = useNavigate();
+
   const { filter, resetFilter } = useFilter("booklog");
+
+  const [items, setItems] = useState<BooklogFeedItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
   const filterKey = useMemo(() => JSON.stringify(filter), [filter]);
 
-  const {
-    data,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["booklogsFeed", filterKey],
-    queryFn: () => getBooklogsFeed(0, 20),
-    placeholderData: (prev) => prev
-  });
+  useEffect(() => {
+    let alive = true;
 
-  if (isLoading && !data) return <LoadingPage />;
+    (async () => {
+      try {
+        setIsLoading(true);
+        setIsError(false);
+
+        const data = await getBooklogsFeed(0, 20);
+
+        if (alive) setItems(data.items ?? []);
+      } catch (e) {
+        console.error("북로그 피드 조회 실패:", e);
+        if (alive) {
+          setItems([]);
+          setIsError(true);
+        }
+      } finally {
+        if (alive) setIsLoading(false);
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
+  }, [filterKey]);
+
+  if (isLoading) return <LoadingPage />;
   if (isError) return <ErrorPage />;
-
-  const items: BooklogFeedItem[] = data?.items ?? [];
 
   return (
     <div className="min-h-screen bg-bg pb-24">
