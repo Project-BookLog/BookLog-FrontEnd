@@ -1,6 +1,5 @@
 import { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-
 import RecommendedCard from "./RecommendedCard";
 import { getRecommendations } from "../../api/home/home";
 import type { RecommendationSection } from "../../types/home/home.types";
