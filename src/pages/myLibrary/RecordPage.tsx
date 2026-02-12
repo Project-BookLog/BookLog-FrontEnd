@@ -377,13 +377,13 @@ export default function RecordPage() {
         return;
       }
 
-      if (hasValidUserBookId && status && hasSelectedRealShelfId) {
+      if (hasValidUserBookId && status) {
         await patchUserBook({
           userBookId: parsedUserBookId,
           body: {
             status: READ_STATUS_MAP[status],
             ...(bookType ? { format: BOOK_TYPE_MAP[bookType] } : {}),
-            shelfId: selectedShelfId as number,
+            ...(hasSelectedRealShelfId ? { shelfId: selectedShelfId } : {}),
           },
         });
       }
