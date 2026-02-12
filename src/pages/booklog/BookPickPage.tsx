@@ -26,7 +26,7 @@ const getDisplayName = (name: string) => name === "전체 도서" ? "전체" : n
 export default function BookPickPage() {
   const navigate = useNavigate();
 
-  const { data: shelves = [] } = useGetShelves();
+  const { data: shelves = [], isLoading: isShelvesLoading } = useGetShelves();
 
   const [activeTab, setActiveTab] = useState<string>("전체");
   const tabs = shelves.map((shelf) => getDisplayName(shelf.name));
@@ -52,12 +52,14 @@ export default function BookPickPage() {
         <NavBarTop title="책 고르기" onBack={() => navigate("/booklog")} />
 
         <div className="px-4 pb-2">
+          {!isShelvesLoading && (
           <Tab
             tabs={tabs}
             active={activeTab}
             onChange={setActiveTab}
             align="start"
           />
+          )}
         </div>
 
         <div className="h-[1px] w-full bg-divider" />
