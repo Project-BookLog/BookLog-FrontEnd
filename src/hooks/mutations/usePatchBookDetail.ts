@@ -11,6 +11,7 @@ export function usePatchBookDetail () {
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: [QUERY_KEY.book]});
             queryClient.invalidateQueries({ queryKey: [QUERY_KEY.shelves] });
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEY.books] });
         },
     });
 };
