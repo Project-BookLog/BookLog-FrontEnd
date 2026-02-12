@@ -1,8 +1,12 @@
 export interface RecommendationBook {
+  title: string;
   bookTitle: string;
   author: string;
   publisher: string;
   thumbnailUrl: string;
+  keyword1: string;
+  keyword2: string;
+  keyword3: string;
   moodKeyword: string;
   styleKeyword: string;
   immersionKeyword: string;
