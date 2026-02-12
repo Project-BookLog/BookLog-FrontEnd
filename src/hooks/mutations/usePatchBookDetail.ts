@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { patchUserBookDetail } from "../../api/userBooks";
-import type { RequestPatchUserBookDto } from "../../types";
 import { QUERY_KEY } from "../../constants/key";
+import type { RequestPatchUserBookDto } from "../../types/book.types";
 
 export function usePatchBookDetail () {
     const queryClient = useQueryClient();
