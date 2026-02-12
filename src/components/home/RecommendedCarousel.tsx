@@ -1,42 +1,44 @@
-import { useState, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
-
+import { useState, useRef, useEffect } from "react";
 import RecommendedCard from "./RecommendedCard";
 import { getRecommendations } from "../../api/home/home";
 import type { RecommendationSection } from "../../types/home/home.types";
 import { useGetUserBookList } from "../../hooks/queries/useGetUserBookList";
+import RecommendedCardSkeleton from "./RecommendedCardSkeleton";
 
 function RecommendedCarousel() {
+  const [sections, setSections] = useState<RecommendationSection[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
   const startXRef = useRef<number | null>(null);
-  const { data: userBookData } = useGetUserBookList();
+  const { data } = useGetUserBookList();
 
-  const hasBooks = (userBookData?.items?.length ?? 0) > 0;
+  const hasBooks = (data?.items?.length ?? 0) > 0;
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["recommendations"],
-    queryFn: getRecommendations,
-  });
+  useEffect(() => {
+    setLoading(true);
 
-  if (isLoading) {
-    return (
-      <div className="w-full max-w-md mx-auto h-48 bg-gray-100 animate-pulse rounded-xl" />
-    );
-  }
+    getRecommendations()
+      .then((res) => {
+        const rawSections = [
+          res.authorSection,
+          res.genreSection,
+          res.moodSection,
+        ];
 
-  if (isError || !data) return null;
-
-  const sections: RecommendationSection[] = [
-    data.authorSection,
-    data.genreSection,
-    data.moodSection,
-  ].filter((section) => section.books.length > 0);
+        setSections(rawSections);
+      })
+      .catch((err) => {
+        console.error("추천 불러오기 실패", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
   const next = () =>
     setActiveIndex((i) =>
       i === sections.length - 1 ? 0 : i + 1
     );
-
   const prev = () =>
     setActiveIndex((i) =>
       i === 0 ? sections.length - 1 : i - 1
@@ -51,15 +53,16 @@ function RecommendedCarousel() {
     const endX = e.changedTouches[0].clientX;
     const diff = endX - startXRef.current;
 
-    const THRESHOLD = 40;
-    if (diff > THRESHOLD) prev();
-    else if (diff < -THRESHOLD) next();
+    const THRESHOLD = 40; // 40px 드래그 시 이동 
+    if (diff > THRESHOLD) prev();      // 오른쪽 -> 이전
+    else if (diff < -THRESHOLD) next(); // 왼쪽 -> 다음 
 
     startXRef.current = null;
   };
 
   return (
     <section className="w-full max-w-md mx-auto">
+      {/* 카드 슬라이더 */}
       <div
         className="relative overflow-hidden"
         onTouchStart={handleTouchStart}
@@ -69,44 +72,47 @@ function RecommendedCarousel() {
           className="flex transition-transform duration-300"
           style={{ transform: `translateX(-${activeIndex * 100}%)` }}
         >
-          {sections.map((section, index) => {
-            const titleMap = hasBooks
-              ? ["작가", "장르", "분위기"]
-              : ["분위기", "문체", "몰입도"];
+          {loading ? (
+            <div className="shrink-0 w-full px-4">
+              <RecommendedCardSkeleton />
+            </div>
+          ) : (
+            sections
+              .map((section, index) => {
+                const titleMap = hasBooks ? ["작가", "장르", "분위기"] : ["분위기", "문체", "몰입도"];
+                return { section, title: titleMap[index] };
+              })
+              .filter(({ section }) => section.books.length > 0)
+              .map(({ section, title }) => {
+                const book = section.books[0];
 
-            const title = titleMap[index];
-            const book = section.books[0];
+                let description = "";
 
-            let description = "";
+                switch (title) {
+                  case "작가":
+                    description = `${book.author} 작가님의 새 작품을 확인해보세요.`;
+                    break;
+                  case "장르":
+                    description = `요즘 ${book.keyword2}에서 뜨고 있는 작품을 확인해보세요.`;
+                    break;
+                  case "분위기":
+                    description = `${book.keyword3} 느낌의 인기 작품을 확인해보세요.`;
+                    break;
+                  case "문체":
+                    description = `${book.styleKeyword} 느낌의 인기 작품을 확인해보세요.`;
+                    break;
+                  case "몰입도":
+                    description = `${book.immersionKeyword} 느낌의 인기 작품을 확인해보세요.`;
+                    break;
+                }
 
-            switch (title) {
-              case "작가":
-                description = `${book.author} 작가님의 새 작품을 확인해보세요.`;
-                break;
-              case "장르":
-                description = `요즘 ${book.keyword2}에서 뜨고 있는 작품을 확인해보세요.`;
-                break;
-              case "분위기":
-                description = `${book.keyword3} 느낌의 인기 작품을 확인해보세요.`;
-                break;
-              case "문체":
-                description = `${book.styleKeyword} 느낌의 인기 작품을 확인해보세요.`;
-                break;
-              case "몰입도":
-                description = `${book.immersionKeyword} 느낌의 인기 작품을 확인해보세요.`;
-                break;
-            }
-
-            return (
-              <div key={section.title} className="shrink-0 w-full px-4">
-                <RecommendedCard
-                  title={title}
-                  description={description}
-                  book={book}
-                />
-              </div>
-            );
-          })}
+                return (
+                  <div key={section.title} className="shrink-0 w-full px-4">
+                    <RecommendedCard title={title} description={description} book={book} />
+                  </div>
+                );
+              })
+          )}
         </div>
       </div>
 
