@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import PlusIcon from "../../assets/icons/Plus.svg";
@@ -211,7 +211,7 @@ function InlineDatePicker({
 
   useEffect(() => {
     onChange({ y, m, d });
-  }, [y, m, d]);
+  }, [y, m, d, onChange]);
 
   const years = useMemo(() => {
     const current = new Date().getFullYear();
@@ -304,6 +304,9 @@ export default function RecordPage() {
 
   const [date, setDate] = useState<{ y: number; m: number; d: number }>(today);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const handleDateChange = useCallback((v: { y: number; m: number; d: number }) => {
+    setDate(v);
+  }, []);
 
   const isValidPagesRead = useMemo(() => {
     if (!pagesRead) return false;
@@ -317,18 +320,17 @@ export default function RecordPage() {
   const [submitting, setSubmitting] = useState(false);
   const submittingRef = useRef(false);
   const isStoppedStatus = status === "중단";
+  const isToReadStatus = status === "읽을 예정";
   const canApplyStopped = isStoppedStatus && hasValidUserBookId;
-  const allBooksShelfId = useMemo(
-    () => shelves.find((shelf) => shelf.name === "전체 도서")?.shelfId ?? null,
-    [shelves]
-  );
-  const targetShelfId = Number.isFinite(selectedShelfId) ? selectedShelfId : allBooksShelfId;
+  const canApplyToRead = isToReadStatus && hasValidUserBookId && Boolean(bookType) && isValidTotalPages;
+  const hasSelectedRealShelfId = selectedShelfId !== null && selectedShelfId > 0;
 
   const canApply = Boolean(
     status &&
       !submitting &&
       (
         canApplyStopped ||
+        canApplyToRead ||
         (
           (isEditMode || hasValidUserBookId) &&
           bookType &&
@@ -348,28 +350,17 @@ export default function RecordPage() {
 
     try {
       setSubmitting(true);
-
-      if (canApplyStopped && status) {
-        await patchUserBook({
-          userBookId: parsedUserBookId,
-          body: {
-            status: READ_STATUS_MAP[status],
-            ...(Number.isFinite(targetShelfId) ? { shelfId: targetShelfId as number } : {}),
-            ...(bookType ? { format: BOOK_TYPE_MAP[bookType] } : {}),
-          },
-        });
-
-        showToast("독서 상태가 중단으로 변경되었어요.");
-        navigate(-1);
-        return;
-      }
-
-      const totalPagesNumber = Number(totalPages);
-      const sessionPagesRead = Number(pagesRead);
+      const rawSessionPagesRead = Number(pagesRead);
+      const allowsZeroPagesRead = isStoppedStatus || isToReadStatus;
+      const sessionPagesRead = pagesRead === "" && allowsZeroPagesRead ? 0 : rawSessionPagesRead;
       const baseCurrentPage = Number(userBookDetail?.currentPage ?? 0);
       const currentPageAtRecord = baseCurrentPage + sessionPagesRead;
 
-      if (!Number.isFinite(sessionPagesRead) || sessionPagesRead <= 0) {
+      if (
+        !Number.isFinite(sessionPagesRead) ||
+        sessionPagesRead < 0 ||
+        (!allowsZeroPagesRead && sessionPagesRead <= 0)
+      ) {
         showToast("읽은 페이지 수를 올바르게 입력해 주세요.");
         return;
       }
@@ -377,27 +368,22 @@ export default function RecordPage() {
         showToast("기존 페이지 정보를 확인할 수 없어요. 잠시 후 다시 시도해 주세요.");
         return;
       }
-      if (!Number.isFinite(currentPageAtRecord) || currentPageAtRecord <= 0) {
+      if (
+        !Number.isFinite(currentPageAtRecord) ||
+        currentPageAtRecord < 0 ||
+        (!allowsZeroPagesRead && currentPageAtRecord <= 0)
+      ) {
         showToast("현재 페이지 계산에 실패했어요. 다시 입력해 주세요.");
         return;
       }
 
-      if (
-        Number.isFinite(totalPagesNumber) &&
-        totalPagesNumber > 0 &&
-        currentPageAtRecord > totalPagesNumber
-      ) {
-        showToast("현재 페이지가 총 페이지를 초과할 수 없어요.");
-        return;
-      }
-
-      if (hasValidUserBookId && bookType && status) {
+      if (hasValidUserBookId && status && hasSelectedRealShelfId) {
         await patchUserBook({
           userBookId: parsedUserBookId,
           body: {
             status: READ_STATUS_MAP[status],
-            format: BOOK_TYPE_MAP[bookType],
-            ...(Number.isFinite(targetShelfId) ? { shelfId: targetShelfId as number } : {}),
+            ...(bookType ? { format: BOOK_TYPE_MAP[bookType] } : {}),
+            shelfId: selectedShelfId as number,
           },
         });
       }
@@ -406,6 +392,7 @@ export default function RecordPage() {
         await patchTotalPages({ userBookId: parsedUserBookId, pageCountSnapshot: totalPagesNumber});
       }
       
+      const shouldSaveReadingLog = sessionPagesRead > 0;
       const payload: CreateReadingLogRequest = {
         readDate: toApiDate(date.y, date.m, date.d),
         currentPage: currentPageAtRecord,
@@ -414,7 +401,7 @@ export default function RecordPage() {
 
       if (isEditMode) {
         await updateReadingLog(logId, payload);
-      } else {
+      } else if (shouldSaveReadingLog) {
         await createReadingLog(parsedUserBookId, payload);
       }
 
@@ -493,9 +480,7 @@ export default function RecordPage() {
           {datePickerOpen && (
             <InlineDatePicker
               value={date}
-              onChange={(v) => {
-                setDate(v);
-              }}
+              onChange={handleDateChange}
             />
           )}
         </div>
