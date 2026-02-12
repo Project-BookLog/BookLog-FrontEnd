@@ -1,5 +1,5 @@
 // src/pages/booklog/BookPickPage.tsx
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import NavBarTop from "../../components/common/navbar/NavBarTop";
@@ -8,12 +8,8 @@ import { BookCard } from "../../components/myLibrary/BookCard";
 
 import type { Book } from "../../types/book.types";
 import type { UserBook } from "../../types/library"; 
-
-type Shelf = {
-  id: string;
-  name: string; // "서재 1"
-  books: UserBook[];
-};
+import { useGetShelves } from "../../hooks/queries/useGetShelves";
+import { useGetUserBookList } from "../../hooks/queries/useGetUserBookList";
 
 function userBookToBook(ub: UserBook): Book {
   return {
@@ -25,76 +21,25 @@ function userBookToBook(ub: UserBook): Book {
   };
 }
 
+const getDisplayName = (name: string) => name === "전체 도서" ? "전체" : name;
+
 export default function BookPickPage() {
   const navigate = useNavigate();
 
-  /** ✅ BookCard(UserBook)용 더미데이터 */
-  const shelves = useMemo<Shelf[]>(
-    () => [
-      {
-        id: "s1",
-        name: "서재 1",
-        books: [
-          {
-            userBookId: 101,
-            status: "READING",
-            progressPercent: 20,
-            currentPage: 60,
-            bookId: 1,
-            title: "소년이 온다",
-            thumbnailUrl: "",
-            publisherName: "창비",
-            authorName: "한강",
-          },
-          {
-            userBookId: 102,
-            status: "TO_READ",
-            progressPercent: 0,
-            currentPage: 0, 
-            bookId: 2,
-            title: "채식주의자",
-            thumbnailUrl: "",
-            publisherName: "창비",
-            authorName: "한강",
-          },
-        ],
-      },
-      {
-        id: "s2",
-        name: "서재 2",
-        books: [
-          {
-            userBookId: 201,
-            status: "COMPLETED",
-            progressPercent: 100,
-            currentPage: 0, // ✅ null 불가
-            bookId: 3,
-            title: "불편한 편의점",
-            thumbnailUrl: "",
-            publisherName: "나무옆의자",
-            authorName: "김호연",
-          },
-        ],
-      },
-    ],
-    []
-  );
+  const { data: shelves = [] } = useGetShelves();
 
-  const tabs = useMemo(() => {
-    const shelfTabs = shelves.map((s) => s.name);
-    return ["전체", ...shelfTabs] as const;
-  }, [shelves]);
+  const [activeTab, setActiveTab] = useState<string>("전체");
+  const tabs = shelves.map((shelf) => getDisplayName(shelf.name));
+  const activeShelfId = shelves.find(
+    (s) => getDisplayName(s.name) === activeTab
+  )?.shelfId;
 
-  type TabType = (typeof tabs)[number];
-  const [activeTab, setActiveTab] = useState<TabType>("전체");
+  const { data: booksData } = useGetUserBookList(activeTab === "전체" ? undefined : activeShelfId);
 
-  const booksByTab = useMemo(() => {
-    if (activeTab === "전체") return shelves.flatMap((s) => s.books);
-    const found = shelves.find((s) => s.name === activeTab);
-    return found?.books ?? [];
-  }, [activeTab, shelves]);
+  const books = booksData?.items ?? [];
 
-  const hasBooks = booksByTab.length > 0;
+
+  const hasBooks = books.length > 0;
 
   const goWritePage = (userBook: UserBook) => {
     const book = userBookToBook(userBook);
@@ -108,9 +53,9 @@ export default function BookPickPage() {
 
         <div className="px-4 pb-2">
           <Tab
-            tabs={tabs as unknown as string[]}
-            active={activeTab as unknown as string}
-            onChange={(v: string) => setActiveTab(v as TabType)}
+            tabs={tabs}
+            active={activeTab}
+            onChange={setActiveTab}
             align="start"
           />
         </div>
@@ -128,7 +73,7 @@ export default function BookPickPage() {
         {hasBooks ? (
           <section className="pt-4">
             <div className="grid grid-cols-3 justify-items-start gap-x-4 gap-y-6">
-              {booksByTab.map((book) => (
+              {books.map((book) => (
                 <BookCard
                   key={book.userBookId} 
                   book={book}
