@@ -13,7 +13,7 @@ export const uploadBooklogImage = async (file: File) => {
   const formData = new FormData();
   formData.append("file", file);
 
-  const res = await privateApi.post<{imageUrl: string;}>("/booklogs/images", formData);
+  const res = await privateApi.post<{imageUrl: string;}>("/booklogs/images", formData, { headers: { "Content-Type": undefined } });
 
   return res.data.imageUrl;
 };
