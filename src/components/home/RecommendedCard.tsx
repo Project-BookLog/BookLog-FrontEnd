@@ -1,4 +1,4 @@
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { CircleArrow, Default_BookImg } from "../../assets/icons";
 import type { RecommendationBook } from "../../types/home/home.types";
 
@@ -9,7 +9,7 @@ type LikeCardProps = {
 };
 
 function RecommendedCard({ title, description, book }: LikeCardProps) {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   return (
     <div className="relative rounded-2xl bg-slate-900 text-white px-6 py-5 mt-2 mx-1 overflow-hidden">
@@ -35,7 +35,10 @@ function RecommendedCard({ title, description, book }: LikeCardProps) {
       <button
         type="button"
         className="absolute right-4 top-4 z-10 rounded-[12px] bg-black/20 p-1"
-        // onClick={() => navigate("/book/:bookId}") } 
+        onClick={() => {
+          if (!book.bookId) return;
+          navigate(`/book/${book.bookId}`)
+        }}
       >
         <CircleArrow className="w-8 h-8" />
       </button>

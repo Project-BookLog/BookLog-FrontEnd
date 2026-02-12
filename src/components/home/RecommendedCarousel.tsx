@@ -66,13 +66,13 @@ function RecommendedCarousel() {
           style={{ transform: `translateX(-${activeIndex * 100}%)` }}
         >
           {sections
-            .filter((section) => section.books.length > 0)
             .map((section, index) => {
-              const book = section.books[0];
-
               const titleMap = hasBooks ? ["작가", "장르", "분위기"] : ["분위기", "문체", "몰입도"];
-
-              const title = titleMap[index];
+              return { section, title: titleMap[index] };
+            })
+            .filter(({ section }) => section.books.length > 0)
+            .map(({ section, title }) => {
+              const book = section.books[0];
 
               let description = "";
 
@@ -95,7 +95,7 @@ function RecommendedCarousel() {
               }
 
               return (
-                <div key={index} className="shrink-0 w-full px-4">
+                <div key={section.title} className="shrink-0 w-full px-4">
                   <RecommendedCard title={title} description={description} book={book} />
                 </div>
               );

@@ -1,4 +1,5 @@
 export interface RecommendationBook {
+  bookId: number;
   title: string;
   bookTitle: string;
   author: string;
