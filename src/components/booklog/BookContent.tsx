@@ -27,7 +27,7 @@ export default function BookContent({
       <img
         className="mx-auto h-[140px] w-[92px] rounded-[4px] bg-[#CDCCCB] grid place-items-center text-caption-01 text-black"
         src={thumbnailUrl}
-        alt="책 img"
+        alt={title}
       />
 
       {/* 책 정보 */}

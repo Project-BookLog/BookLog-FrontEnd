@@ -10,7 +10,7 @@ type MyBookCardProps = {
 export const MyBookLogCard = ({ booklog, onClick }: MyBookCardProps) => {
     
     const { mutate: toggleBookmark } = useToggleBooklogBookmark();
-    const bookImage = booklog.book.coverImageUrl ?? "";
+    const bookImage = booklog.book.coverImageUrl;
     const images = (booklog.images ?? []).filter((img) => Boolean(img?.imageUrl));
     const visibleImages = images.slice(0, 2);
     const remainCount = images.length - 1;
@@ -33,6 +33,7 @@ export const MyBookLogCard = ({ booklog, onClick }: MyBookCardProps) => {
                 <img
                     className="flex w-[94px] h-[94px] justify-center items-center rounded-[8px] bg-gray-300"
                     src={bookImage}
+                    alt={booklog.book.title ?? "책 표지"}
                 />
                 {visibleImages.map((img, index) => {
                     if (index === 1 && images.length > 2) {
