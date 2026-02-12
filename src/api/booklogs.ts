@@ -9,26 +9,17 @@ export const getBooklogDetail = async (postId: number) => {
 };
 
 /** ---------------- 이미지 업로드 ---------------- */
-export type UploadBooklogImagesResponse = {
-  imageUrls: string[];
+export const uploadBooklogImage = async (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await privateApi.post<{imageUrl: string;}>("/booklogs/images", formData);
+
+  return res.data.imageUrl;
 };
 
 export const uploadBooklogImages = async (files: File[]) => {
-  const formData = new FormData();
-  files.forEach((file) => {
-    formData.append("images", file); 
-  });
-
-  const res = await privateApi.post<{
-    isSuccess: boolean;
-    result: UploadBooklogImagesResponse;
-  }>("/booklogs/images", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-
-  return res.data.result.imageUrls;
+  return Promise.all(files.map(uploadBooklogImage));
 };
 
 /** ---------------- 북로그 발행 ---------------- */
