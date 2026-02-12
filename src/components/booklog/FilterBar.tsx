@@ -18,7 +18,7 @@ type Props = {
 function toChipLabel(base: string, selected: string[]) {
   if (!selected || selected.length === 0) return base;
   if (selected.length === 1) return selected[0];
-  return `${selected[0]} +${selected.length - 1}`;
+  return selected.join(", ");
 }
 
 export default function FilterBar({
