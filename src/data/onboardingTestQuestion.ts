@@ -58,6 +58,7 @@ export const ONBOARDING_QUESTION: OnboardingQuestion[] = [
       {
         id: 1,
         key: ["expressionTexture"] as const,
+        label: "표현의 질감",
         options: [
           { label: "담백한", value: "PLAIN", description: "과한 꾸밈없이 진솔하며 매끄럽게 읽히는 문장" },
           { label: "섬세한", value: "DELICATE", description: "세밀한 묘사로 이야기 속 장면의 밀도를 높인 문장"},
@@ -67,6 +68,7 @@ export const ONBOARDING_QUESTION: OnboardingQuestion[] = [
       {
         id: 2,
         key: ["expressionDirection"] as const,
+        label: "표현의 방향",
         options: [
           { label: "직설적", value: "DIRECT", description: "에두르지 않고 사건 본질을 바로 꿰뚫는 문장" },
           { label: "은유적", value: "METAPHORICAL", description: "비유와 상징으로 의미를 전달하는 문장" },
