@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import NavBar from "../../components/common/navbar/NavBarTop";
 import BookContent from "../../components/booklog/BookContent";
-import { Bookmark, Kebab } from "../../assets/icons";
+import { Bookmark, Kebab, Default_ProfileImg, Default_BookImg } from "../../assets/icons";
 import {
   LibraryActionDropDown,
   type LibraryAction,
@@ -22,6 +22,8 @@ import type { RecommendPost } from "../../types/booklogRecommendPosts.types";
 
 import { useToggleBooklogBookmark } from "../../hooks/mutations/useToggleBooklogBookmark";
 import { ConfirmModal } from "../../components/common/ConfirmModal";
+
+import { LoadingPage } from "../onboarding/LoadingPage";
 
 /** ---------- utils ---------- */
 function timeAgo(iso: string) {
@@ -108,16 +110,16 @@ export default function BooklogDetailPage() {
     return {
       id: String(detail.postId),
       authorId,
-      username: detail.author.nickname,
-      email: detail.author.email,
+      username: detail.author.nickname ?? "-",
+      email: detail.author.email ?? "-",
       timeAgo: timeAgo(detail.createdAt),
       views: Number(detail.viewCount ?? 0),
       bookmarkCount: Number(detail.bookmarkCount ?? 0),
-      body: detail.content,
+      body: detail.content ?? "-",
       tags: (detail.tags ?? []).map((t) => t.name),
-      bookTitle: detail.book.title,
-      bookAuthor: `${detail.book.authorName} 저`,
-      publisher: detail.book.publisher,
+      bookTitle: detail.book.title ?? "-",
+      bookAuthor: detail.book.authorName ?? "-",
+      publisher: detail.book.publisher ?? "-",
       profileImageUrl: detail.author.profileImageUrl,
       followedByMe: detail.author.followedByMe,
       images: (detail.images ?? []).map((img) => ({
@@ -254,16 +256,7 @@ export default function BooklogDetailPage() {
 
   const profileUserId = post?.authorId ?? "0";
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-bg">
-        <div className="mx-auto w-full max-w-[420px] bg-bg">
-          <NavBar title="책 정보" onBack={() => navigate("/booklog")} />
-          <div className="p-4 text-caption-01 text-gray-600">로딩중...</div>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <LoadingPage />;
 
   if (!post) {
     return (
@@ -338,15 +331,15 @@ export default function BooklogDetailPage() {
                   className="h-10 w-10 rounded-full object-cover bg-[#D9D9D9]"
                 />
               ) : (
-                <div className="h-10 w-10 rounded-full bg-[#D9D9D9]" />
+                <Default_ProfileImg className="h-10 w-10 rounded-full" />
               )}
 
               <div className="min-w-0">
                 <div className="text-body-01-sb text-[#1F1F1F] truncate">
-                  {post.username}
+                  {post.username ?? "-"}
                 </div>
                 <div className="text-en-caption-02 text-[#8A8A8A] truncate">
-                  {post.email ?? "email@example.com"}
+                  {post.email ?? "-"}
                 </div>
               </div>
             </button>
@@ -382,7 +375,7 @@ export default function BooklogDetailPage() {
               />
             </div>
 
-            {sortedImages.length > 0 ? (
+            {sortedImages.length > 0 &&
               sortedImages.map((img) => (
                 <img
                   key={img.imageId}
@@ -390,12 +383,7 @@ export default function BooklogDetailPage() {
                   alt=""
                   className="shrink-0 h-[220px] w-[240px] rounded-[12px] object-cover bg-[#6F6F6F]"
                 />
-              ))
-            ) : (
-              <div className="shrink-0 h-[220px] w-[240px] rounded-[12px] bg-[#6F6F6F] grid place-items-center text-caption-01 text-white/80">
-                사진
-              </div>
-            )}
+              ))}
           </div>
 
           <div
@@ -540,7 +528,7 @@ export default function BooklogDetailPage() {
                       className="h-[80px] w-[80px] shrink-0 rounded-[12px] object-cover bg-[#D9D9D9]"
                     />
                   ) : (
-                    <div className="h-[80px] w-[80px] shrink-0 rounded-[12px] bg-[#D9D9D9]" />
+                    <Default_BookImg className="h-[80px] w-[80px] shrink-0 rounded-[12px]" />
                   )}
                 </div>
 
