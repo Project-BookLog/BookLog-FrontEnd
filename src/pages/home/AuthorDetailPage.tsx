@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import Tab from "../../components/common/Tab";
 import AuthorProfile from "../../components/home/author/AuthorProfile";
@@ -14,53 +15,63 @@ import type { AuthorDetail } from "../../types/home/detail.types";
 import { LoadingPage } from "../onboarding/LoadingPage";
 import { ErrorPage } from "../onboarding/ErrorPage";
 
-
 const TABS = ["프로필", "수상경력", "도서"] as const;
 type TabType = (typeof TABS)[number];
 
 export const AuthorDetailPage = () => {
   const navigate = useNavigate();
   const { authorid } = useParams<{ authorid: string }>();
+
   const [tab, setTab] = useState<TabType>("프로필");
-  const [author, setAuthor] = useState<AuthorDetail | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
 
   const ProfileRef = useRef<HTMLElement | null>(null);
   const AwardRef = useRef<HTMLElement | null>(null);
   const BookRef = useRef<HTMLElement | null>(null);
 
+  const id = authorid ? Number(authorid) : NaN;
 
-useEffect(() => {
-  const handleScroll = () => { //상단기준 
-    const OFFSET = 100; 
+  const {
+    data: author,
+    isLoading,
+    isError,
+  } = useQuery<AuthorDetail>({
+    queryKey: ["authorDetail", id],
+    queryFn: () => getAuthorDetail(id),
+    enabled: !!authorid && !Number.isNaN(id),
+  });
 
-    const sections: { name: TabType; el: HTMLElement | null }[] = [
-      { name: "프로필", el: ProfileRef.current },
-      { name: "수상경력", el: AwardRef.current },
-      { name: "도서", el: BookRef.current },
-    ];
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
-    for (let i = sections.length - 1; i >= 0; i--) {
-      const section = sections[i];
-      if (!section.el) continue;
+  useEffect(() => {
+    const handleScroll = () => {
+      const OFFSET = 100;
 
-      const rect = section.el.getBoundingClientRect();
+      const sections: { name: TabType; el: HTMLElement | null }[] = [
+        { name: "프로필", el: ProfileRef.current },
+        { name: "수상경력", el: AwardRef.current },
+        { name: "도서", el: BookRef.current },
+      ];
 
-      if (rect.top <= OFFSET) {
-        if (tab !== section.name) {
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        if (!section.el) continue;
+
+        const rect = section.el.getBoundingClientRect();
+
+        if (rect.top <= OFFSET) {
           setTab(section.name);
+          break;
         }
-        break;
       }
-    }
-  };
+    };
 
-  window.addEventListener("scroll", handleScroll, { passive: true });
-  handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
-  return () => window.removeEventListener("scroll", handleScroll);
-}, [tab]);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
 
   const handleChangeTab = (nextTab: TabType) => {
     setTab(nextTab);
@@ -85,34 +96,7 @@ useEffect(() => {
     });
   };
 
-
-  useEffect(() => {
-    if (!authorid) return;
-    const id = Number(authorid);
-    if (Number.isNaN(id)) {
-      setIsError(true);
-      setIsLoading(false);
-      return;
-    }
-
-    const fetchAuthor = async () => {
-      try {
-        setIsLoading(true);
-        setIsError(false);
-
-        const data = await getAuthorDetail(id);
-        setAuthor(data);
-      } catch (err) {
-        console.error(err);
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchAuthor();
-  }, [authorid]);
-
+  
   if (isLoading) return <LoadingPage />;
   if (isError || !author) return <ErrorPage />;
 
@@ -123,7 +107,7 @@ useEffect(() => {
         onBack={() => navigate(`/search`)}
         title="작가 정보"
       />
-      
+
       <main className="pb-6 pt-4 space-y-5 mb-10 bg-bg">
         {/* 상단 프로필 */}
         <section className="px-5">
@@ -162,7 +146,6 @@ useEffect(() => {
                   : "-"}
               </span>
               <span className="mx-2 text-gray-200">|</span>
-              {/* <span>{author.profile.국적 ?? "-"}</span> */}
             </div>
           </div>
 
@@ -182,7 +165,6 @@ useEffect(() => {
             />
           </div>
         </div>
-
 
         {/* 프로필 */}
         <section ref={ProfileRef}>

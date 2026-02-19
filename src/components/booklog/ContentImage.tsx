@@ -1,4 +1,5 @@
 import BookTag from "./BookTag";
+import { Default_BookImg } from "../../assets/icons";
 
 type Props = {
   /** 책 이미지 칸인지(첫 번째) */
@@ -43,7 +44,7 @@ export default function BooklogContentImage({
         />
       ) : (
         <div className="absolute inset-0 grid place-items-center text-caption-01 text-[#2B2B2B]">
-          {isBook ? "책 img" : label}
+          {isBook ? <Default_BookImg className="h-10 w-10" /> : label}
         </div>
       )}
 

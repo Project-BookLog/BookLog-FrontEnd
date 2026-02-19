@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { BackIcon } from "../../assets/icons";
 import NavBarTop from "../../components/common/navbar/NavBarTop";
 import CalendarCommentCard from "../../components/mypage/CalendarCommentCard";
@@ -9,65 +10,51 @@ import { getReadingStatus } from "../../api/mypage/myReading";
 function ReadingCalendarPage() {
   const today = useMemo(() => new Date(), []);
   const thisYear = today.getFullYear();
-  const thisMonth = today.getMonth() + 1; 
+  const thisMonth = today.getMonth() + 1;
 
-  // 기본값: 현재 달
   const [year, setYear] = useState(thisYear);
   const [month, setMonth] = useState(thisMonth);
-  const [status, setStatus] = useState<ReadingStatusResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-
-
 
   const isCurrentMonth =
     year === thisYear && month === thisMonth;
 
   const handlePrevMonth = () => {
     if (month === 1) {
-      setYear(year - 1);  
+      setYear(year - 1);
       setMonth(12);
     } else {
       setMonth(month - 1);
     }
   };
 
-
   const handleNextMonth = () => {
     if (isCurrentMonth) return;
-    setLoading(true);
 
     if (month === 12) {
-      setYear((prevYear) => prevYear + 1); 
+      setYear((prevYear) => prevYear + 1);
       setMonth(1);
     } else {
-      setMonth((prevMonth) => prevMonth + 1); 
+      setMonth((prevMonth) => prevMonth + 1);
     }
   };
 
-  const apiMonth = `${year}-${month.toString().padStart(2, "0")}`;
+  const apiMonth = `${year}-${month
+    .toString()
+    .padStart(2, "0")}`;
 
   const formattedTitle = `${year}.${month
     .toString()
     .padStart(2, "0")}`;
 
-  useEffect(() => {
-    let ignore = false;
 
-    getReadingStatus(apiMonth)
-      .then((data) => {
-        if (!ignore) setStatus(data);
-      })
-      .catch(() => {
-        if (!ignore) setStatus(null);
-      })
-      .finally(() => {
-        if (!ignore) setLoading(false);
-      });
-
-    return () => {
-      ignore = true;
-    };
-  }, [apiMonth]);
+  const {
+    data: status,
+    isLoading: loading,
+  } = useQuery<ReadingStatusResponse>({
+    queryKey: ["readingStatus", apiMonth],
+    queryFn: () => getReadingStatus(apiMonth),
+    placeholderData: (prev) => prev, 
+  });
 
   return (
     <div className="bg-bg min-h-screen">
@@ -85,7 +72,6 @@ function ReadingCalendarPage() {
 
         <section>
           <div className="flex justify-between mb-[14px] pt-3 items-center">
-            {/* 이전 달 */}
             <button
               type="button"
               onClick={handlePrevMonth}
@@ -94,12 +80,10 @@ function ReadingCalendarPage() {
               <BackIcon className="w-5 h-5 text-gray-900" />
             </button>
 
-            {/* 년/월 */}
             <p className="text-title-02 text-black">
               {formattedTitle}
             </p>
 
-            {/* 다음 달 */}
             <button
               type="button"
               onClick={handleNextMonth}

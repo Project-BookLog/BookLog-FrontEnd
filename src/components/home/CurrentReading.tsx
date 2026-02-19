@@ -27,16 +27,6 @@ const CurrentReading: React.FC<Props> = ({ username }) => {
       .catch(() => setBooks([]));
   }, []);
   
-  if (books.length === 0) {
-    return (
-      <div className="px-4">
-        <p className="text-[18px] text-gray-700">
-          현재 읽고 있는 책이 없습니다.
-        </p>
-      </div>
-    );
-  }
-
   const responsive = {
     all: {
       breakpoint: { max: 3000, min: 0 },
@@ -82,21 +72,31 @@ const CurrentReading: React.FC<Props> = ({ username }) => {
       </div>
 
       <div className="mt-5">
-        <Carousel
-          responsive={responsive}
-          infinite={books.length > 1}
-          swipeable={books.length > 1}
-          draggable={books.length > 1}
-          centerMode={books.length > 1}
-          arrows={false}
-          showDots={false}
-          keyBoardControl
-          autoPlay={false}
-          customTransition="transform 300ms ease-out"  
-          transitionDuration={300}                    
-          itemClass="px-2"
-          afterChange={handleAfterChange}              
-        >
+        {books.length === 0 ? (
+          <div className="flex flex-col items-center text-center py-8">
+            <p className="text-subtitle-01-sb text-gray-900">
+              아직 책장이 비어 있어요.
+            </p>
+            <p className="text-body-03 text-gray-600 mt-2">
+              한 권만 놓아도, 이 공간은 달라져요.
+            </p>
+          </div>
+        ) : (
+          <Carousel
+            responsive={responsive}
+            infinite={books.length > 1}
+            swipeable={books.length > 1}
+            draggable={books.length > 1}
+            centerMode={books.length > 1}
+            arrows={false}
+            showDots={false}
+            keyBoardControl
+            autoPlay={false}
+            customTransition="transform 300ms ease-out"
+            transitionDuration={300}
+            itemClass="px-2"
+            afterChange={handleAfterChange}
+          >
 
           {books.map((book, index) => {
             const isCenter = index === activeIndex;
@@ -174,6 +174,7 @@ const CurrentReading: React.FC<Props> = ({ username }) => {
             );
           })}
         </Carousel>
+        )}
       </div>
     </div>
   );

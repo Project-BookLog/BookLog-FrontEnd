@@ -1,3 +1,5 @@
+import { Default_BookImg } from "../../assets/icons";
+
 type BookContentProps = {
   title: string;
   author: string;
@@ -24,11 +26,16 @@ export default function BookContent({
   return (
     <div className="h-full w-[240px] rounded-[12px] bg-[#EFEDEB] px-[12px] py-[16px]">
       {/* 책 이미지 */}
-      <img
-        className="mx-auto h-[140px] w-[92px] rounded-[4px] bg-[#CDCCCB] grid place-items-center text-caption-01 text-black"
-        src={thumbnailUrl}
-        alt={title}
-      />
+      {thumbnailUrl ? (
+        <img
+          className="mx-auto h-[140px] w-[92px] rounded-[4px] object-cover bg-[#CDCCCB]"
+          src={thumbnailUrl}
+          alt={title}
+        />
+      ) : (
+        <Default_BookImg className="mx-auto h-[140px] w-[92px] rounded-[4px]" />
+      )}
+
 
       {/* 책 정보 */}
       <div className="mt-2.5 text-center">
@@ -36,8 +43,8 @@ export default function BookContent({
           {title}
         </div>
         <div className="mt-[2px] text-en-caption-02 text-[#81807F]">
-          {author}
-          {publisher ? ` | ${publisher}` : ""}
+          {author ? `${author} 저` : "-"}
+          {publisher ? ` | ${publisher}` : "-"}
         </div>
       </div>
 
