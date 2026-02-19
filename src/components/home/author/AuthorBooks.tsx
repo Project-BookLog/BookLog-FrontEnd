@@ -26,9 +26,12 @@ function AuthorBooks({ books }: Props) {
   const [sortOrder, setSortOrder] = useState<BOOK_ORDER>(BOOK_ORDER.LATEST);
   const [isSortOpen, setIsSortOpen] = useState(false);
 
-  /* ==============================
-     🔥 1. URL → 필터 파싱 (BookResults와 동일)
-  ============================== */
+  const filteredSortOptions = useMemo(() => {
+    return sortOptions.filter(
+      (option) => option.value !== BOOK_ORDER.AUTHOR
+    );
+  }, []);
+
   const selectedFilters = useMemo(() => {
     return FILTER_KEYS.reduce((acc, key) => {
       const raw = searchParams.get(key);
@@ -41,7 +44,6 @@ const normalize = (v?: string | null) =>
   v?.replace(/^#/, "").trim() ?? "";
 
 const filteredBooks = useMemo(() => {
-  // 필터 아무것도 없으면 전체 반환
   const noFilter =
     !selectedFilters.mood?.length &&
     !selectedFilters.style?.length &&
@@ -63,7 +65,6 @@ const filteredBooks = useMemo(() => {
     const immersionMatch =
       selectedFilters.immersion?.includes(immersion);
 
-    // 🔥 전체 OR 조건
     return moodMatch || styleMatch || immersionMatch;
   });
 }, [books, selectedFilters]);
@@ -133,12 +134,6 @@ const filteredBooks = useMemo(() => {
 
   return (
     <section className="relative">
-      {isSortOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-b-op15 backdrop-blur-[4px]"
-          onClick={() => setIsSortOpen(false)}
-        />
-      )}
 
       {/* 필터 칩 */}
       <div className="mb-5 flex items-center gap-3 pl-5">
@@ -168,6 +163,7 @@ const filteredBooks = useMemo(() => {
           {isSortOpen && (
             <SortDropDown
               currentSort={sortOrder}
+              options={filteredSortOptions}
               onSelectSort={(order) => {
                 setSortOrder(order);
                 setIsSortOpen(false);

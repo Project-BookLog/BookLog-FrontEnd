@@ -62,6 +62,10 @@ export const BookDetailPage = () => {
     }
   }, [bookIdNumber, matchedUserBook, isUserBooksLoading, navigate]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -94,10 +98,9 @@ export const BookDetailPage = () => {
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [tab]);
+  }, []);
 
   if (isBookLoading) return <LoadingPage />;
   if (isUserBook && isUserBookLoading) return <LoadingPage />;

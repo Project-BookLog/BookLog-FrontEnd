@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-
+import RecommendedCardSkeleton from "./RecommendedCardSkeleton";
 import RecommendedCard from "./RecommendedCard";
 import { getRecommendations } from "../../api/home/home";
 import type { RecommendationSection } from "../../types/home/home.types";
@@ -19,9 +19,7 @@ function RecommendedCarousel() {
   });
 
   if (isLoading) {
-    return (
-      <div className="w-full max-w-md mx-auto h-48 bg-gray-100 animate-pulse rounded-xl" />
-    );
+    return <RecommendedCardSkeleton />;
   }
 
   if (isError || !data) return null;

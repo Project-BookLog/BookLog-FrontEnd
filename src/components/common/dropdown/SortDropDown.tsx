@@ -6,9 +6,10 @@ type SortDropDownProps = {
   currentSort: BOOK_ORDER;
   onSelectSort: (sort: BOOK_ORDER) => void;
   onClose: () => void;
+  options?: typeof sortOptions; 
 };
 
-export function SortDropDown({ currentSort, onSelectSort, onClose }: SortDropDownProps) {
+export function SortDropDown({ currentSort, onSelectSort, onClose, options = sortOptions }: SortDropDownProps) {
 
   const ref = useRef<HTMLDivElement>(null);
 
@@ -31,7 +32,7 @@ export function SortDropDown({ currentSort, onSelectSort, onClose }: SortDropDow
         ref={ref}
         className="absolute top-full right-4 mt-3 z-50 flex w-[154px] px-5 py-2 flex-col items-center gap-[2px] rounded-[12px] bg-white"
       >
-        {sortOptions.map((option, index) => (
+        {options.map((option, index) => (
           <div className="w-full flex flex-col">
             <button
               key={option.value}
